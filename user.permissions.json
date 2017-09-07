@@ -1,0 +1,23 @@
+{
+    "code": 200,
+    "data": [
+        { "cId": "7-1-1", "cRootId": "7", "cParentId": "7-1", "cNameShort": "", "cNameLong": "新建", "cAction": "/config/org/new.html", "cWidgetTypeId": 3, "cOrderNum": 1, "cIcon": "glyphicon glyphicon-plus", "WidgetType": "Command", "CommandCode": "Add", "CommandName": "Add" },
+        { "cId": "7-2-1", "cRootId": "7", "cParentId": "7-2", "cNameShort": "", "cNameLong": "新建", "cAction": "/config/role/new.html", "cWidgetTypeId": 3, "cOrderNum": 1, "cIcon": "glyphicon glyphicon-plus", "WidgetType": "Command", "CommandCode": "Add", "CommandName": "Add" },
+        { "cId": "7-4-1", "cRootId": "7", "cParentId": "7-4", "cNameShort": "", "cNameLong": "新建", "cAction": "/config/user/new.html", "cWidgetTypeId": 3, "cOrderNum": 1, "cIcon": "glyphicon glyphicon-plus", "WidgetType": "Command", "CommandCode": "Add", "CommandName": "Add" },
+        { "cId": "7-1-2", "cRootId": "7", "cParentId": "7-1", "cNameShort": "", "cNameLong": "编辑", "cAction": "/config/org/edit.html", "cWidgetTypeId": 3, "cOrderNum": 2, "cIcon": "glyphicon glyphicon-edit", "WidgetType": "Command", "CommandCode": "Mod", "CommandName": "Modify" },
+        { "cId": "7-2-2", "cRootId": "7", "cParentId": "7-2", "cNameShort": "", "cNameLong": "编辑", "cAction": "/config/role/edit.html", "cWidgetTypeId": 3, "cOrderNum": 2, "cIcon": "glyphicon glyphicon-edit", "WidgetType": "Command", "CommandCode": "Mod", "CommandName": "Modify" },
+        { "cId": "7-4-2", "cRootId": "7", "cParentId": "7-4", "cNameShort": "", "cNameLong": "编辑", "cAction": "/config/user/edit.html", "cWidgetTypeId": 3, "cOrderNum": 2, "cIcon": "glyphicon glyphicon-edit", "WidgetType": "Command", "CommandCode": "Mod", "CommandName": "Modify" },
+        { "cId": "7-1-3", "cRootId": "7", "cParentId": "7-1", "cNameShort": "", "cNameLong": "删除", "cAction": "/config/org/remove.do", "cWidgetTypeId": 3, "cOrderNum": 3, "cIcon": "glyphicon glyphicon-remove", "WidgetType": "Command", "CommandCode": "Del", "CommandName": "Delete" },
+        { "cId": "7-2-3", "cRootId": "7", "cParentId": "7-2", "cNameShort": "", "cNameLong": "删除", "cAction": "/config/role/remove.do", "cWidgetTypeId": 3, "cOrderNum": 3, "cIcon": "glyphicon glyphicon-remove", "WidgetType": "Command", "CommandCode": "Del", "CommandName": "Delete" },
+        { "cId": "7-4-3", "cRootId": "7", "cParentId": "7-4", "cNameShort": "", "cNameLong": "删除", "cAction": "/config/user/remove.html", "cWidgetTypeId": 3, "cOrderNum": 3, "cIcon": "glyphicon glyphicon-remove", "WidgetType": "Command", "CommandCode": "Del", "CommandName": "Delete" },
+        { "cId": "7-3-1", "cRootId": "7", "cParentId": "7-3", "cNameShort": "", "cNameLong": "授权", "cAction": "/config/auth/apply.html", "cWidgetTypeId": 3, "cOrderNum": 1, "cIcon": "glyphicon glyphicon-pawn", "WidgetType": "Command", "CommandCode": "Auth", "CommandName": "Authorize" },
+        { "cId": "7", "cRootId": "7", "cParentId": "7", "cNameShort": "系统", "cNameLong": "系统管理", "cAction": "/config", "cWidgetTypeId": 1, "cOrderNum": 7, "cIcon": "glyphicon glyphicon-cog", "WidgetType": "Menu" },
+        { "cId": "7-1", "cRootId": "7", "cParentId": "7", "cNameShort": "", "cNameLong": "组织管理", "cAction": "/config/org.html", "cWidgetTypeId": 2, "cOrderNum": 1, "cIcon": "glyphicon glyphicon-home", "WidgetType": "MenuItem" },
+        { "cId": "7-2", "cRootId": "7", "cParentId": "7", "cNameShort": "", "cNameLong": "角色管理", "cAction": "/config/role.html", "cWidgetTypeId": 2, "cOrderNum": 2, "cIcon": "glyphicon glyphicon-education", "WidgetType": "MenuItem" },
+        { "cId": "7-3", "cRootId": "7", "cParentId": "7", "cNameShort": "", "cNameLong": "权限管理", "cAction": "/config/auth.html", "cWidgetTypeId": 2, "cOrderNum": 3, "cIcon": "glyphicon glyphicon-king", "WidgetType": "MenuItem" },
+        { "cId": "7-4", "cRootId": "7", "cParentId": "7", "cNameShort": "", "cNameLong": "用户管理", "cAction": "/config/user.html", "cWidgetTypeId": 2, "cOrderNum": 4, "cIcon": "glyphicon glyphicon-user", "WidgetType": "MenuItem" },
+        { "cId": "7-4-4", "cRootId": "7", "cParentId": "7-4", "cNameShort": "", "cNameLong": "启用", "cAction": "/config/user/enable.html", "cWidgetTypeId": 3, "cOrderNum": 4, "cIcon": "glyphicon glyphicon-ok-circle", "WidgetType": "Command" },
+        { "cId": "7-4-5", "cRootId": "7", "cParentId": "7-4", "cNameShort": "", "cNameLong": "停用", "cAction": "/config/user/disable.html", "cWidgetTypeId": 3, "cOrderNum": 5, "cIcon": "glyphicon glyphicon-ban-circle", "WidgetType": "Command" }
+    ],
+    "detail": "Ok"
+}
