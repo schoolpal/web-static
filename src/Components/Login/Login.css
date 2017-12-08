@@ -1,0 +1,29 @@
+#login {
+  margin: 30px auto 0;
+  width: 450px;
+}
+
+#login .mdc-card {
+  position: relative;
+  padding: 48px 40px 36px;
+  background: #fff;
+}
+
+#login .mdc-linear-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+#login .mdc-textfield {
+  width: 100%;
+}
+
+#login .mdc-textfield-helptext + .mdc-textfield--upgraded {
+  margin-top: 0;
+}
+
+#login .mdc-card__actions {
+  flex-direction: row-reverse;
+}

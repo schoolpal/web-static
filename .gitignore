@@ -1,0 +1,11 @@
+# Build
+build/
+
+#Node
+node_modules/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
