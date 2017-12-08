@@ -2135,14 +2135,14 @@ input.button[type="submit"] {
   left: 0;
   height: 100%;
   width: 100%;
-  mask: url("./tick-mask.svg?embed");
+  mask: url("tick-mask.svgmbed");
   background: transparent;
   transition-duration: 0.28s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-property: background-image; }
   .checkbox.is-checked .checkbox__tick-outline {
     background-color: rgb(63,81,181);
-    background-image: url("./tick.svg?embed"); }
+    background-image: url("tick.svgmbed"); }
   fieldset[disabled] .checkbox.is-checked .checkbox__tick-outline,
   .checkbox.is-checked.is-disabled .checkbox__tick-outline {
     background-color: rgba(0,0,0, 0.26); }

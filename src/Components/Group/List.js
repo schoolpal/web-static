@@ -94,8 +94,6 @@ class List extends React.Component {
     setTimeout(() => {
       this.setState({ list: groupProcess(getGroupList().data) });
     }, 500);
-
-    console.log(this.props)
   }
 
   componentDidUpdate() {

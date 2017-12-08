@@ -1,4 +1,5 @@
 import SCHOOLPAL_CONFIG from "./config";
+
 const ADMIN_ID = "7";
 
 function getRootMenu(item, index, array) {
@@ -52,13 +53,13 @@ export default function profileProcess(data) {
       const index = command.findIndex(cmd => {
         return cmd.id === item.cParentId;
       });
-      
+
       if (index + 1) {
         command[index].commands.push(item.CommandCode);
       }
     }
   });
 
-  console.log(menu, access, command);
-  return { hasChangeGroupBtn, menu };
+  console.log(hasChangeGroupBtn, menu, access, command);
+  return {hasChangeGroupBtn, menu, access, command};
 }

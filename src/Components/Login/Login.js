@@ -7,19 +7,11 @@ class Login extends React.Component {
     super(props);
     this.state = {
       redirectToReferrer: false,
-      username: '',
-      password: '',
-      submitLoading: 'none'
     };
-
-    this.inputChange = this.inputChange.bind(this)
-    this.login = this.login.bind(this)
   }
 
   componentDidMount() {
-    window.mdc.textfield.MDCTextfield.attachTo(document.querySelector('#nameWrapper'));
-    window.mdc.textfield.MDCTextfield.attachTo(document.querySelector('#pwdWrapper'));
-    window.mdc.ripple.MDCRipple.attachTo(document.querySelector('#submit'));
+
   }
 
   inputChange(event) {
@@ -53,7 +45,6 @@ class Login extends React.Component {
   }
 
   render() {
-    const {classes} = this.props;
     const {from} = this.props.location.state || {from: {pathname: '/'}};
 
     if (this.state.redirectToReferrer) {
@@ -65,54 +56,7 @@ class Login extends React.Component {
     return (
       <div className="app">
         <main>
-          <div id="login">
-            <div className="mdc-card">
-              <div role="progressbar"
-                   className={`mdc-linear-progress ${this.state.submitLoading === 'none' ? '' : 'mdc-linear-progress--indeterminate'}`}>
-                <div className="mdc-linear-progress__buffering-dots"/>
-                <div className="mdc-linear-progress__buffer"/>
-                <div className="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-                     style={{display: this.state.submitLoading}}>
-                  <span className="mdc-linear-progress__bar-inner"/>
-                </div>
-                <div className="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-                  <span className="mdc-linear-progress__bar-inner"/>
-                </div>
-              </div>
-              <section className="mdc-card__primary">
-                <h1 className="mdc-card__title mdc-card__title--large">登录</h1>
-                <h2 className="mdc-card__subtitle">使用您的 校客 帐号</h2>
-              </section>
-              <form className="mdc-card__supporting-text" ref={(dom) => {
-                this.form = dom
-              }}>
-                <div id="nameWrapper" className="mdc-textfield mdc-textfield--upgraded">
-                  <input id="name" name="name" type="text" className="mdc-textfield__input"
-                         aria-controls="name-helptext" value={this.state.username} onChange={this.inputChange}
-                         required/>
-                  <label htmlFor="name" className="mdc-textfield__label">账号</label>
-                  <div className="mdc-textfield__bottom-line"/>
-                </div>
-                <p id="name-helptext" className="mdc-textfield-helptext mdc-textfield-helptext--validation-msg"
-                   aria-hidden="true">
-                  Help Text (possibly validation message)
-                </p>
-                <div id="pwdWrapper" className="mdc-textfield mdc-textfield--upgraded">
-                  <input id="pwd" name="pwd" type="password" className="mdc-textfield__input"
-                         aria-controls="pwd-helptext" required/>
-                  <label htmlFor="pwd" className="mdc-textfield__label">密码</label>
-                  <div className="mdc-textfield__bottom-line"/>
-                </div>
-                <p id="pwd-helptext" className="mdc-textfield-helptext mdc-textfield-helptext--validation-msg"
-                   aria-hidden="true">
-                  Help Text (possibly validation message)
-                </p>
-              </form>
-              <section className="mdc-card__actions">
-                <button id="submit" className="mdc-button mdc-button--raised" onClick={this.login}>登录</button>
-              </section>
-            </div>
-          </div>
+
         </main>
         <div className="bg" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810" preserveAspectRatio="xMinYMin slice"
