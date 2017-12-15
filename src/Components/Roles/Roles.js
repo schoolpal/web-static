@@ -5,7 +5,7 @@ import List from './List'
 import Create from './Create'
 import Editor from './Editor'
 
-class Group extends React.Component {
+class Roles extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -35,4 +35,4 @@ class Group extends React.Component {
   }
 }
 
-export default Group;
+export default Roles;

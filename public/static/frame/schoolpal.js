@@ -905,6 +905,22 @@ window.addEventListener("load", function() {
     return label;
   };
 
+  DataTable.prototype.selected = function() {
+    var rows = Array.prototype.slice.call(
+      this.element_.querySelectorAll("tbody tr")
+    );
+    var selected = rows.filter((item)=>(
+      item.classList.contains(this.CssClasses_.IS_SELECTED)
+    ));
+
+    if(selected.length){
+      return selected;
+    }
+
+    return null;
+  };
+  DataTable.prototype["selected"] = DataTable.prototype.selected;
+
   DataTable.prototype.init = function() {
     if (this.element_) {
       var firstHeader = this.element_.querySelector("th");
@@ -1254,6 +1270,116 @@ window.addEventListener("load", function() {
 (function() {
   "use strict";
 
+  var Dialog = function Dialog(element) {
+    this.element_ = element;
+    this.isOpen_ = false;
+    this.init();
+  };
+
+  window["Dialog"] = Dialog;
+
+  Dialog.prototype.CssClasses_ = {
+    IS_VISIBLE: "dialog--open",
+    IS_ANIMATING: "dialog--animating",
+    BACKDROP: "dialog__backdrop",
+    ACCEPT_BTN: "dialog__footer__button--accept",
+    CANCEL_BTN: "dialog__footer__button--cancel"
+  };
+
+  Dialog.prototype.init = function() {
+    var forElId =
+      this.element_.getAttribute("for") ||
+      this.element_.getAttribute("data-for");
+    var forEl = null;
+
+    if (forElId) {
+      forEl = document.getElementById(forElId);
+      if (forEl) {
+        this.forElement_ = forEl;
+        forEl.addEventListener("click", this.handleForClick_.bind(this));
+      }
+    }
+
+    this.acceptBtn = this.element_.querySelector(
+      "." + this.CssClasses_.ACCEPT_BTN
+    );
+    this.cancelBtn = this.element_.querySelector(
+      "." + this.CssClasses_.CANCEL_BTN
+    );
+
+    var backdrop = this.element_.querySelector("." + this.CssClasses_.BACKDROP);
+
+    backdrop.addEventListener("click", this.handleForClick_.bind(this));
+  };
+
+  Dialog.prototype.handleForClick_ = function(evt) {
+    if (this.element_ && this.forElement_) {
+      if (this.isOpen_) {
+        this.hide();
+      } else {
+        this.show(evt);
+      }
+    }
+  };
+
+  Dialog.prototype.removeAnimationEndListener_ = function(evt) {
+    if (this.classList.contains(Dialog.prototype.CssClasses_.IS_ANIMATING)) {
+      this.classList.remove(Dialog.prototype.CssClasses_.IS_ANIMATING);
+    }
+  };
+
+  Dialog.prototype.addAnimationEndListener_ = function() {
+    this.element_.addEventListener(
+      "transitionend",
+      this.removeAnimationEndListener_
+    );
+    this.element_.addEventListener(
+      "webkitTransitionEnd",
+      this.removeAnimationEndListener_
+    );
+  };
+
+  Dialog.prototype.show = function(evt) {
+    this.isOpen_ = true;
+
+    window.requestAnimationFrame(
+      function() {
+        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
+        this.element_.classList.add(this.CssClasses_.IS_VISIBLE);
+      }.bind(this)
+    );
+
+    this.addAnimationEndListener_();
+  };
+
+  Dialog.prototype["show"] = Dialog.prototype.show;
+
+  Dialog.prototype.hide = function(evt) {
+    this.isOpen_ = false;
+
+    window.requestAnimationFrame(
+      function() {
+        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
+        this.element_.classList.remove(this.CssClasses_.IS_VISIBLE);
+      }.bind(this)
+    );
+
+    this.addAnimationEndListener_();
+  };
+
+  Dialog.prototype["hide"] = Dialog.prototype.hide;
+
+  componentHandler.register({
+    constructor: Dialog,
+    classAsString: "Dialog",
+    cssClass: "js-dialog",
+    widget: true
+  });
+})();
+
+(function() {
+  "use strict";
+
   var Drawer = function Drawer(element) {
     this.element_ = element;
     this.init();
@@ -1341,112 +1467,6 @@ window.addEventListener("load", function() {
     constructor: Drawer,
     classAsString: 'Drawer',
     cssClass: 'js-drawer',
-    widget: true
-  });
-})();
-
-(function() {
-  "use strict";
-
-  var Dialog = function Dialog(element) {
-    this.element_ = element;
-    this.isOpen_ = false;
-    this.init();
-  };
-
-  window["Dialog"] = Dialog;
-
-  Dialog.prototype.CssClasses_ = {
-    IS_VISIBLE: "dialog--open",
-    IS_ANIMATING: "dialog--animating",
-    BACKDROP: "dialog__backdrop",
-    ACCEPT_BTN: "dialog__footer__button--accept",
-    CANCEL_BTN: "dialog__footer__button--cancel"
-  };
-
-  Dialog.prototype.init = function() {
-    var forElId =
-      this.element_.getAttribute("for") ||
-      this.element_.getAttribute("data-for");
-    var forEl = null;
-
-    if (forElId) {
-      forEl = document.getElementById(forElId);
-      if (forEl) {
-        this.forElement_ = forEl;
-        forEl.addEventListener("click", this.handleForClick_.bind(this));
-      }
-    }
-
-    this.acceptBtn = this.element_.querySelector(
-      "." + this.CssClasses_.ACCEPT_BTN
-    );
-    this.cancelBtn = this.element_.querySelector(
-      "." + this.CssClasses_.CANCEL_BTN
-    );
-
-    var backdrop = this.element_.querySelector("." + this.CssClasses_.BACKDROP);
-
-    backdrop.addEventListener("click", this.handleForClick_.bind(this));
-  };
-
-  Dialog.prototype.handleForClick_ = function(evt) {
-    if (this.element_ && this.forElement_) {
-      if (this.isOpen_) {
-        this.hide();
-      } else {
-        this.show(evt);
-      }
-    }
-  };
-
-  Dialog.prototype.removeAnimationEndListener_ = function(evt) {
-    if (this.classList.contains(Dialog.prototype.CssClasses_.IS_ANIMATING)) {
-      this.classList.remove(Dialog.prototype.CssClasses_.IS_ANIMATING);
-    }
-  };
-
-  Dialog.prototype.addAnimationEndListener_ = function() {
-    this.element_.addEventListener(
-      "transitionend",
-      this.removeAnimationEndListener_
-    );
-    this.element_.addEventListener(
-      "webkitTransitionEnd",
-      this.removeAnimationEndListener_
-    );
-  };
-
-  Dialog.prototype.show = function(evt) {
-    this.isOpen_ = true;
-
-    window.requestAnimationFrame(
-      function() {
-        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-        this.element_.classList.add(this.CssClasses_.IS_VISIBLE);
-      }.bind(this)
-    );
-
-    this.addAnimationEndListener_();
-  };
-
-  Dialog.prototype.hide = function(evt) {
-    this.isOpen_ = false;
-
-    window.requestAnimationFrame(
-      function() {
-        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-        this.element_.classList.remove(this.CssClasses_.IS_VISIBLE);
-      }.bind(this)
-    );
-
-    this.addAnimationEndListener_();
-  };
-
-  componentHandler.register({
-    constructor: Dialog,
-    classAsString: "Dialog",
-    cssClass: "js-dialog",
     widget: true
   });
 })();
@@ -1616,6 +1636,22 @@ window.addEventListener("load", function() {
     }
     return next;
   };
+
+  Groups.prototype.selected = function() {
+    var rows = Array.prototype.slice.call(
+      this.element_.querySelectorAll("." + this.CssClasses_.ITEM)
+    );
+    var selected = rows.filter((item)=>(
+      item.classList.contains(this.CssClasses_.IS_SELECTED)
+    ));
+
+    if(selected.length){
+      return selected;
+    }
+
+    return null;
+  };
+  Groups.prototype["selected"] = Groups.prototype.selected;
 
   componentHandler.register({
     constructor: Groups,
@@ -2054,174 +2090,142 @@ window.addEventListener("load", function() {
 })();
 
 (function() {
-  "use strict";
+  'use strict';
 
-  var Textfield = function Textfield(element) {
+  var Snackbar = function Snackbar(element) {
     this.element_ = element;
-    this.maxRows = this.Constant_.NO_MAX_ROWS;
-    this.init();
-  };
-
-  window["Textfield"] = Textfield;
-
-  Textfield.prototype.Constant_ = {
-    NO_MAX_ROWS: -1,
-    MAX_ROWS_ATTRIBUTE: "maxrows"
-  };
-
-  Textfield.prototype.CssClasses_ = {
-    LABEL: "textfield__label",
-    INPUT: "textfield__input",
-    IS_DIRTY: "is-dirty",
-    IS_FOCUSED: "is-focused",
-    IS_DISABLED: "is-disabled",
-    IS_INVALID: "is-invalid",
-    IS_UPGRADED: "is-upgraded",
-    HAS_PLACEHOLDER: "has-placeholder"
-  };
-
-  Textfield.prototype.onKeyDown_ = function(event) {
-    var currentRowCount = event.target.value.split("\n").length;
-    if (event.keyCode === 13) {
-      if (currentRowCount >= this.maxRows) {
-        event.preventDefault();
-      }
+    this.textElement_ = this.element_.querySelector('.' + this.cssClasses_.MESSAGE);
+    this.actionElement_ = this.element_.querySelector('.' + this.cssClasses_.ACTION);
+    if (!this.textElement_) {
+      throw new Error('There must be a message element for a snackbar.');
     }
+    if (!this.actionElement_) {
+      throw new Error('There must be an action element for a snackbar.');
+    }
+    this.active = false;
+    this.actionHandler_ = undefined;
+    this.message_ = undefined;
+    this.actionText_ = undefined;
+    this.timeoutID_ = undefined;
+    this.queuedNotifications_ = [];
+    this.setActionHidden_(true);
+  };
+  window['Snackbar'] = Snackbar;
+
+  Snackbar.prototype.Constant_ = {
+    // The duration of the snackbar show/hide animation, in ms.
+    ANIMATION_LENGTH: 250
   };
 
-  Textfield.prototype.onFocus_ = function(event) {
-    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
+  Snackbar.prototype.cssClasses_ = {
+    SNACKBAR: 'snackbar',
+    MESSAGE: 'snackbar__text',
+    ACTION: 'snackbar__action',
+    ACTIVE: 'snackbar--active'
   };
 
-  Textfield.prototype.onBlur_ = function(event) {
-    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
+  Snackbar.prototype.displaySnackbar_ = function() {
+    this.element_.setAttribute('aria-hidden', 'true');
+
+    if (this.actionHandler_) {
+      this.actionElement_.textContent = this.actionText_;
+      this.actionElement_.addEventListener('click', this.actionHandler_);
+      this.setActionHidden_(false);
+    }
+
+    this.textElement_.textContent = this.message_;
+    this.element_.classList.add(this.cssClasses_.ACTIVE);
+    this.element_.setAttribute('aria-hidden', 'false');
+    this.timeoutID_ = setTimeout(this.cleanup_.bind(this), this.timeout_);
+
   };
 
-  Textfield.prototype.onReset_ = function(event) {
-    this.updateClasses_();
-  };
-
-  Textfield.prototype.updateClasses_ = function() {
-    this.checkDisabled();
-    this.checkValidity();
-    this.checkDirty();
-    this.checkFocus();
-  };
-
-  Textfield.prototype.checkDisabled = function() {
-    if (this.input_.disabled) {
-      this.element_.classList.add(this.CssClasses_.IS_DISABLED);
+  Snackbar.prototype.showSnackbar = function(data) {
+    if (data === undefined) {
+      throw new Error(
+        'Please provide a data object with at least a message to display.');
+    }
+    if (data['message'] === undefined) {
+      throw new Error('Please provide a message to be displayed.');
+    }
+    if (data['actionHandler'] && !data['actionText']) {
+      throw new Error('Please provide action text with the handler.');
+    }
+    if (this.active) {
+      this.queuedNotifications_.push(data);
     } else {
-      this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
-    }
-  };
-
-  Textfield.prototype["checkDisabled"] = Textfield.prototype.checkDisabled;
-
-  Textfield.prototype.checkFocus = function() {
-    if (Boolean(this.element_.querySelector(":focus"))) {
-      this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
-    } else {
-      this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
-    }
-  };
-  Textfield.prototype["checkFocus"] = Textfield.prototype.checkFocus;
-
-  Textfield.prototype.checkValidity = function() {
-    if (this.input_.validity) {
-      if (this.input_.validity.valid) {
-        this.element_.classList.remove(this.CssClasses_.IS_INVALID);
+      this.active = true;
+      this.message_ = data['message'];
+      if (data['timeout']) {
+        this.timeout_ = data['timeout'];
       } else {
-        this.element_.classList.add(this.CssClasses_.IS_INVALID);
+        this.timeout_ = 2750;
       }
+      if (data['actionHandler']) {
+        this.actionHandler_ = data['actionHandler'];
+      }
+      if (data['actionText']) {
+        this.actionText_ = data['actionText'];
+      }
+      this.displaySnackbar_();
     }
   };
-  Textfield.prototype["checkValidity"] = Textfield.prototype.checkValidity;
+  Snackbar.prototype['showSnackbar'] = Snackbar.prototype.showSnackbar;
 
-  Textfield.prototype.checkDirty = function() {
-    if (
-      (this.input_.value && this.input_.value.length > 0) ||
-      (this.input_.placeholder && this.input_.placeholder.trim() !== "")
-    ) {
-      this.element_.classList.add(this.CssClasses_.IS_DIRTY);
+  Snackbar.prototype.hideSnackbar = function() {
+    if (!this.active) {
+      return;
+    }
+    if (typeof this.timeoutID_ === 'number') {
+      clearTimeout(this.timeoutID_);
+      this.cleanup_();
+    }
+  };
+  Snackbar.prototype['hideSnackbar'] = Snackbar.prototype.hideSnackbar;
+
+  Snackbar.prototype.checkQueue_ = function() {
+    if (this.queuedNotifications_.length > 0) {
+      this.showSnackbar(this.queuedNotifications_.shift());
+    }
+  };
+
+  Snackbar.prototype.cleanup_ = function() {
+    this.element_.classList.remove(this.cssClasses_.ACTIVE);
+    setTimeout(function() {
+      this.element_.setAttribute('aria-hidden', 'true');
+      this.textElement_.textContent = '';
+      if (!Boolean(this.actionElement_.getAttribute('aria-hidden'))) {
+        this.setActionHidden_(true);
+        this.actionElement_.textContent = '';
+        this.actionElement_.removeEventListener('click', this.actionHandler_);
+      }
+      this.actionHandler_ = undefined;
+      this.message_ = undefined;
+      this.actionText_ = undefined;
+      this.timeoutID_ = undefined;
+      this.active = false;
+      this.checkQueue_();
+    }.bind(this), /** @type {number} */ (this.Constant_.ANIMATION_LENGTH));
+  };
+
+  Snackbar.prototype.setActionHidden_ = function(value) {
+    if (value) {
+      this.actionElement_.setAttribute('aria-hidden', 'true');
     } else {
-      this.element_.classList.remove(this.CssClasses_.IS_DIRTY);
-    }
-  };
-  Textfield.prototype["checkDirty"] = Textfield.prototype.checkDirty;
-  Textfield.prototype.disable = function() {
-    this.input_.disabled = true;
-    this.updateClasses_();
-  };
-  Textfield.prototype["disable"] = Textfield.prototype.disable;
-  Textfield.prototype.enable = function() {
-    this.input_.disabled = false;
-    this.updateClasses_();
-  };
-  Textfield.prototype["enable"] = Textfield.prototype.enable;
-  Textfield.prototype.change = function(value) {
-    this.input_.value = value || "";
-    this.updateClasses_();
-  };
-  Textfield.prototype["change"] = Textfield.prototype.change;
-
-  Textfield.prototype.init = function() {
-    if (this.element_) {
-      this.label_ = this.element_.querySelector("." + this.CssClasses_.LABEL);
-      this.input_ = this.element_.querySelector("." + this.CssClasses_.INPUT);
-
-      if (this.input_) {
-        if (this.input_.hasAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE)) {
-          this.maxRows = parseInt(
-            this.input_.getAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE),
-            10
-          );
-          if (isNaN(this.maxRows)) {
-            this.maxRows = this.Constant_.NO_MAX_ROWS;
-          }
-        }
-
-        if (this.input_.hasAttribute("placeholder")) {
-          this.element_.classList.add(this.CssClasses_.HAS_PLACEHOLDER);
-        }
-
-        this.boundUpdateClassesHandler = this.updateClasses_.bind(this);
-        this.boundFocusHandler = this.onFocus_.bind(this);
-        this.boundBlurHandler = this.onBlur_.bind(this);
-        this.boundResetHandler = this.onReset_.bind(this);
-        this.input_.addEventListener("input", this.boundUpdateClassesHandler);
-        this.input_.addEventListener("focus", this.boundFocusHandler);
-        this.input_.addEventListener("blur", this.boundBlurHandler);
-        this.input_.addEventListener("reset", this.boundResetHandler);
-
-        if (this.maxRows !== this.Constant_.NO_MAX_ROWS) {
-          this.boundKeyDownHandler = this.onKeyDown_.bind(this);
-          this.input_.addEventListener("keydown", this.boundKeyDownHandler);
-        }
-        var invalid = this.element_.classList.contains(
-          this.CssClasses_.IS_INVALID
-        );
-        this.updateClasses_();
-        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
-        if (invalid) {
-          this.element_.classList.add(this.CssClasses_.IS_INVALID);
-        }
-        if (this.input_.hasAttribute("autofocus")) {
-          this.element_.focus();
-          this.checkFocus();
-        }
-      }
+      this.actionElement_.removeAttribute('aria-hidden');
     }
   };
 
+  // The component registers itself. It can assume componentHandler is available
+  // in the global scope.
   componentHandler.register({
-    constructor: Textfield,
-    classAsString: "Textfield",
-    cssClass: "js-textfield",
+    constructor: Snackbar,
+    classAsString: 'Snackbar',
+    cssClass: 'js-snackbar',
     widget: true
   });
-})();
 
+})();
 (function() {
   "use strict";
 
@@ -2361,6 +2365,186 @@ window.addEventListener("load", function() {
     constructor: Switch,
     classAsString: "Switch",
     cssClass: "js-switch",
+    widget: true
+  });
+})();
+
+(function() {
+  "use strict";
+
+  var Textfield = function Textfield(element) {
+    this.element_ = element;
+    this.maxRows = this.Constant_.NO_MAX_ROWS;
+    this.init();
+  };
+
+  window["Textfield"] = Textfield;
+
+  Textfield.prototype.Constant_ = {
+    NO_MAX_ROWS: -1,
+    MAX_ROWS_ATTRIBUTE: "maxrows"
+  };
+
+  Textfield.prototype.CssClasses_ = {
+    LABEL: "textfield__label",
+    INPUT: "textfield__input",
+    IS_DIRTY: "is-dirty",
+    IS_FOCUSED: "is-focused",
+    IS_DISABLED: "is-disabled",
+    IS_INVALID: "is-invalid",
+    IS_UPGRADED: "is-upgraded",
+    HAS_PLACEHOLDER: "has-placeholder"
+  };
+
+  Textfield.prototype.onKeyDown_ = function(event) {
+    var currentRowCount = event.target.value.split("\n").length;
+    if (event.keyCode === 13) {
+      if (currentRowCount >= this.maxRows) {
+        event.preventDefault();
+      }
+    }
+  };
+
+  Textfield.prototype.onFocus_ = function(event) {
+    this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
+  };
+
+  Textfield.prototype.onBlur_ = function(event) {
+    this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
+    this.updateClasses_();
+  };
+
+  Textfield.prototype.onReset_ = function(event) {
+    this.updateClasses_();
+  };
+
+  Textfield.prototype.updateClasses_ = function() {
+    this.checkDisabled();
+    this.checkValidity();
+    this.checkDirty();
+    this.checkFocus();
+  };
+
+  Textfield.prototype.checkDisabled = function() {
+    if (this.input_.disabled) {
+      this.element_.classList.add(this.CssClasses_.IS_DISABLED);
+    } else {
+      this.element_.classList.remove(this.CssClasses_.IS_DISABLED);
+    }
+  };
+
+  Textfield.prototype["checkDisabled"] = Textfield.prototype.checkDisabled;
+
+  Textfield.prototype.checkFocus = function() {
+    if (Boolean(this.element_.querySelector(":focus"))) {
+      this.element_.classList.add(this.CssClasses_.IS_FOCUSED);
+    } else {
+      this.element_.classList.remove(this.CssClasses_.IS_FOCUSED);
+    }
+  };
+  Textfield.prototype["checkFocus"] = Textfield.prototype.checkFocus;
+
+  Textfield.prototype.checkValidity = function() {
+    if (this.input_.validity) {
+      if (this.input_.validity.valid) {
+        this.element_.classList.remove(this.CssClasses_.IS_INVALID);
+      } else {
+        this.element_.classList.add(this.CssClasses_.IS_INVALID);
+      }
+    }
+  };
+  Textfield.prototype["checkValidity"] = Textfield.prototype.checkValidity;
+
+  Textfield.prototype.checkDirty = function() {
+    if (
+      (this.input_.value && this.input_.value.length > 0) ||
+      (this.input_.placeholder && this.input_.placeholder.trim() !== "")
+    ) {
+      this.element_.classList.add(this.CssClasses_.IS_DIRTY);
+    } else {
+      this.element_.classList.remove(this.CssClasses_.IS_DIRTY);
+    }
+  };
+  Textfield.prototype["checkDirty"] = Textfield.prototype.checkDirty;
+  Textfield.prototype.disable = function() {
+    this.input_.disabled = true;
+    this.updateClasses_();
+  };
+  Textfield.prototype["disable"] = Textfield.prototype.disable;
+  Textfield.prototype.enable = function() {
+    this.input_.disabled = false;
+    this.updateClasses_();
+  };
+  Textfield.prototype["enable"] = Textfield.prototype.enable;
+  Textfield.prototype.change = function(value) {
+    this.input_.value = value || "";
+    this.updateClasses_();
+  };
+  Textfield.prototype["change"] = Textfield.prototype.change;
+
+  Textfield.prototype.isChanged = function() {
+    this.checkDirty()
+    this.updateClasses_();
+  };
+  Textfield.prototype["isChanged"] = Textfield.prototype.isChanged;
+
+  Textfield.prototype.init = function() {
+    if (this.element_) {
+      this.label_ = this.element_.querySelector("." + this.CssClasses_.LABEL);
+      this.input_ = this.element_.querySelector("." + this.CssClasses_.INPUT);
+
+      if (this.input_) {
+        if (this.input_.hasAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE)) {
+          this.maxRows = parseInt(
+            this.input_.getAttribute(this.Constant_.MAX_ROWS_ATTRIBUTE),
+            10
+          );
+          if (isNaN(this.maxRows)) {
+            this.maxRows = this.Constant_.NO_MAX_ROWS;
+          }
+        }
+
+        if (this.input_.hasAttribute("placeholder")) {
+          this.element_.classList.add(this.CssClasses_.HAS_PLACEHOLDER);
+        }
+
+        this.boundUpdateClassesHandler = this.updateClasses_.bind(this);
+        this.boundFocusHandler = this.onFocus_.bind(this);
+        this.boundBlurHandler = this.onBlur_.bind(this);
+        this.boundResetHandler = this.onReset_.bind(this);
+        this.input_.addEventListener("input", this.boundUpdateClassesHandler);
+        this.input_.addEventListener("focus", this.boundFocusHandler);
+        this.input_.addEventListener("blur", this.boundBlurHandler);
+        this.input_.addEventListener("reset", this.boundResetHandler);
+
+        if (this.maxRows !== this.Constant_.NO_MAX_ROWS) {
+          this.boundKeyDownHandler = this.onKeyDown_.bind(this);
+          this.input_.addEventListener("keydown", this.boundKeyDownHandler);
+        }
+        var invalid = this.element_.classList.contains(
+          this.CssClasses_.IS_INVALID
+        );
+        // this.updateClasses_();
+        this.checkDisabled();
+        // this.checkValidity();
+        this.checkDirty();
+        this.checkFocus();
+        this.element_.classList.add(this.CssClasses_.IS_UPGRADED);
+        if (invalid) {
+          this.element_.classList.add(this.CssClasses_.IS_INVALID);
+        }
+        if (this.input_.hasAttribute("autofocus")) {
+          this.element_.focus();
+          this.checkFocus();
+        }
+      }
+    }
+  };
+
+  componentHandler.register({
+    constructor: Textfield,
+    classAsString: "Textfield",
+    cssClass: "js-textfield",
     widget: true
   });
 })();

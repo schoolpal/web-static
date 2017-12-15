@@ -6,15 +6,29 @@ function getRootMenu(item, index, array) {
   return item.cId === item.cParentId && item.cId === item.cRootId;
 }
 
-export default function profileProcess(data) {
+export default function (data) {
   let hasChangeGroupBtn = true;
+  let profile = {};
   let menu = [];
   let func = [];
-  let command = [];
+  let commands = [];
   let access = [];
+
+  profile.cRealname = data.cRealname;
+  profile.cNickname = data.cNickname;
+  profile.cPhone = data.cPhone;
+  profile.cEmail = data.cEmail;
+  profile.cQq = data.cQq;
+  profile.org = {
+    cId: data.org.cId,
+    cName: data.org.cName
+  };
+  profile.roles = [];
+
 
   data.roles.map(item => {
     func = func.concat(item.functions);
+    profile.roles.push(item.cName);
   });
 
   menu = func.filter(getRootMenu);
@@ -42,7 +56,7 @@ export default function profileProcess(data) {
     }
 
     if (item.WidgetType === "MenuItem") {
-      command.push({
+      commands.push({
         id: item.cId,
         rule: SCHOOLPAL_CONFIG.AUTH[item.cId].PATH_RULE,
         commands: []
@@ -50,16 +64,16 @@ export default function profileProcess(data) {
     }
 
     if (item.WidgetType === "Command") {
-      const index = command.findIndex(cmd => {
+      const index = commands.findIndex(cmd => {
         return cmd.id === item.cParentId;
       });
 
       if (index + 1) {
-        command[index].commands.push(item.CommandCode);
+        commands[index].commands.push(item.CommandCode);
       }
     }
   });
 
-  console.log(hasChangeGroupBtn, menu, access, command);
-  return {hasChangeGroupBtn, menu, access, command};
+  console.log(hasChangeGroupBtn, menu, access, commands, profile);
+  return {hasChangeGroupBtn, menu, access, commands, profile};
 }

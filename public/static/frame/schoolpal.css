@@ -16,6 +16,8 @@
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 /* COLOR */
 /* Device Breakpoint */
@@ -34,6 +36,8 @@
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 html {
   font-size: 1em;
@@ -146,6 +150,8 @@ body {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 html, body {
   font-family: "Hiragino Sans GB", "Microsoft YaHei", "Arial", sans-serif;
@@ -283,6 +289,9 @@ main {
       top: 56px;
       padding: 8px; } }
 
+.typography--text__center {
+  text-align: center; }
+
 /* COLOR */
 /* Device Breakpoint */
 /* Typography */
@@ -300,6 +309,8 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .shadow--2dp {
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }
@@ -339,11 +350,14 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .grid {
   display: flex;
   flex-flow: row wrap;
   margin: 0 auto 0 auto;
+  width: 100%;
   align-items: stretch; }
   .grid.grid--no-spacing, .grid.grid--gutter-1 {
     padding: 0; }
@@ -986,6 +1000,8 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .layout {
   width: 100%;
@@ -1068,6 +1084,9 @@ main {
   .toolbar__spacer {
     flex-grow: 1; }
 
+.layout-spacer {
+  flex-grow: 1; }
+
 @media (max-width: 599px) {
   .toolbar__icon {
     padding-right: 8px;
@@ -1093,6 +1112,8 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .drawer {
   width: 0; }
@@ -1213,6 +1234,8 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .menu__container {
   display: block;
@@ -1355,6 +1378,8 @@ main {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .list {
   font-family: "Roboto", "Hiragino Sans GB", "Microsoft YaHei", "Arial", sans-serif;
@@ -1438,6 +1463,9 @@ main {
     height: 72px; }
   .list--two-line.list--dense .list-item {
     height: 60px; }
+  .list--auto-line .list-item {
+    height: auto;
+    min-height: 72px; }
   .list-item .textfield {
     width: 100%; }
   .list-item .list-item__end-form .textfield {
@@ -1513,6 +1541,8 @@ a.list-item {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .collapse .collapse-arrow {
   will-change: transform;
@@ -1555,6 +1585,8 @@ a.list-item {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .groups .groups-arrow {
   will-change: transform;
@@ -1632,6 +1664,8 @@ li.groups-item {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .dialog {
   display: flex;
@@ -1746,6 +1780,8 @@ li.groups-item {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .button {
   background: transparent;
@@ -1900,6 +1936,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .textfield {
   position: relative;
@@ -2080,6 +2118,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .checkbox {
   position: relative;
@@ -2135,14 +2175,14 @@ input.button[type="submit"] {
   left: 0;
   height: 100%;
   width: 100%;
-  mask: url("tick-mask.svgmbed");
+  mask: url("./tick-mask.svg?embed");
   background: transparent;
   transition-duration: 0.28s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-property: background-image; }
   .checkbox.is-checked .checkbox__tick-outline {
     background-color: rgb(63,81,181);
-    background-image: url("tick.svgmbed"); }
+    background-image: url("./tick.svg?embed"); }
   fieldset[disabled] .checkbox.is-checked .checkbox__tick-outline,
   .checkbox.is-checked.is-disabled .checkbox__tick-outline {
     background-color: rgba(0,0,0, 0.26); }
@@ -2196,6 +2236,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .radio {
   position: relative;
@@ -2315,6 +2357,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .switch {
   position: relative;
@@ -2442,13 +2486,14 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .card {
   display: flex;
   flex-direction: column;
   font-size: 16px;
   font-weight: 400;
-  min-height: 200px;
   overflow: hidden;
   width: 100%;
   z-index: 1;
@@ -2521,12 +2566,14 @@ input.button[type="submit"] {
       overflow-x: auto; } }
 
 .card__actions {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
   font-size: 16px;
   line-height: normal;
   width: 100%;
   background-color: transparent;
-  padding: 8px;
-  box-sizing: border-box; }
+  padding: 8px; }
   .card__actions.card--border {
     border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
@@ -2555,6 +2602,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .data-table {
   position: relative;
@@ -2581,6 +2630,8 @@ input.button[type="submit"] {
       background-color: #e0e0e0; }
     .data-table tbody tr:hover {
       background-color: #eeeeee; }
+    .data-table tbody tr .checkbox + .checkbox {
+      margin-left: 24px; }
   .data-table td,
   .data-table th {
     position: relative;
@@ -2674,6 +2725,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .chip {
   height: 32px;
@@ -2749,6 +2802,8 @@ input.button[type="submit"] {
 /* Card dimensions */
 /* DATA TABLE */
 /* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
 /* ANIMATION */
 .date-picker {
   position: relative;
@@ -2966,3 +3021,183 @@ input.button[type="submit"] {
       height: 96px;
       padding: 16px 24px;
       margin-bottom: 0; } }
+
+/* COLOR */
+/* Device Breakpoint */
+/* Typography */
+/* GRID */
+/* SHADOWS */
+/* LAYOUT */
+/* MENU */
+/* LIST */
+/* BUTTON */
+/* TEXTFIELD */
+/* CHECKBOX */
+/* RADIO */
+/* SWITCH */
+/* CARD */
+/* Card dimensions */
+/* DATA TABLE */
+/* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
+/* ANIMATION */
+.progress {
+  display: block;
+  position: relative;
+  height: 4px;
+  width: 100%;
+  max-width: 100%; }
+
+.progress > .bar {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+
+.progress > .progressbar {
+  background-color: rgb(63,81,181);
+  z-index: 1;
+  left: 0; }
+
+.progress > .bufferbar {
+  background-image: linear-gradient(to right, rgba(255,255,255, 0.7), rgba(255,255,255, 0.7)), linear-gradient(to right, rgb(63,81,181), rgb(63,81,181));
+  z-index: 0;
+  left: 0; }
+
+.progress > .auxbar {
+  right: 0; }
+
+.progress:not(.progress--indeterminate) > .auxbar,
+.progress:not(.progress__indeterminate) > .auxbar {
+  background-image: linear-gradient(to right, rgba(255,255,255, 0.9), rgba(255,255,255, 0.9)), linear-gradient(to right, rgb(63,81,181), rgb(63,81,181)); }
+
+.progress.progress--indeterminate > .bar1,
+.progress.progress__indeterminate > .bar1 {
+  background-color: rgb(63,81,181);
+  animation-name: indeterminate1;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; }
+
+.progress.progress--indeterminate > .bar3,
+.progress.progress__indeterminate > .bar3 {
+  background-image: none;
+  background-color: rgb(63,81,181);
+  animation-name: indeterminate2;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; }
+
+@keyframes indeterminate1 {
+  0% {
+    left: 0%;
+    width: 0%; }
+  50% {
+    left: 25%;
+    width: 75%; }
+  75% {
+    left: 100%;
+    width: 0%; } }
+
+@keyframes indeterminate2 {
+  0% {
+    left: 0%;
+    width: 0%; }
+  50% {
+    left: 0%;
+    width: 0%; }
+  75% {
+    left: 0%;
+    width: 25%; }
+  100% {
+    left: 100%;
+    width: 0%; } }
+
+/* COLOR */
+/* Device Breakpoint */
+/* Typography */
+/* GRID */
+/* SHADOWS */
+/* LAYOUT */
+/* MENU */
+/* LIST */
+/* BUTTON */
+/* TEXTFIELD */
+/* CHECKBOX */
+/* RADIO */
+/* SWITCH */
+/* CARD */
+/* Card dimensions */
+/* DATA TABLE */
+/* CHIP */
+/* PROGRESS */
+/* SNACKBAR */
+/* ANIMATION */
+.snackbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  cursor: default;
+  background-color: #323232;
+  z-index: 3;
+  display: block;
+  display: flex;
+  justify-content: space-between;
+  font-family: "Roboto", "Hiragino Sans GB", "Microsoft YaHei", "Arial", sans-serif;
+  will-change: transform;
+  transform: translate(0, 80px);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 1, 1);
+  pointer-events: none; }
+  @media (max-width: 479px) {
+    .snackbar {
+      width: 100%;
+      left: 0;
+      min-height: 48px;
+      max-height: 80px; } }
+  @media (min-width: 480px) {
+    .snackbar {
+      min-width: 288px;
+      max-width: 568px;
+      border-radius: 2px;
+      transform: translate(-50%, 80px); } }
+  .snackbar--active {
+    transform: translate(0, 0);
+    pointer-events: auto;
+    transition: transform 0.25s cubic-bezier(0, 0, 0.2, 1); }
+    @media (min-width: 480px) {
+      .snackbar--active {
+        transform: translate(-50%, 0); } }
+  .snackbar__text {
+    padding: 14px 12px 14px 24px;
+    vertical-align: middle;
+    color: white;
+    float: left; }
+  .snackbar__action {
+    background: transparent;
+    border: none;
+    color: rgb(255,64,129);
+    float: right;
+    text-transform: uppercase;
+    padding: 14px 24px 14px 12px;
+    font-family: "Roboto", "Hiragino Sans GB", "Microsoft YaHei", "Arial", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: 0;
+    overflow: hidden;
+    outline: none;
+    opacity: 0;
+    pointer-events: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    align-self: center; }
+    .snackbar__action::-moz-focus-inner {
+      border: 0; }
+    .snackbar__action:not([aria-hidden]) {
+      opacity: 1;
+      pointer-events: auto; }

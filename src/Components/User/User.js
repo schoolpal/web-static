@@ -5,13 +5,9 @@ import List from './List'
 import Create from './Create'
 import Editor from './Editor'
 
-class Group extends React.Component {
+class User extends React.Component {
   constructor(props) {
     super(props)
-  }
-
-  componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
   }
 
   render() {
@@ -24,7 +20,7 @@ class Group extends React.Component {
         <Route path={`${this.props.match.url}/create`} render={(props) => (
           <Create {...props} profile={this.props.profile}/>
         )}/>
-        <Route path={`${this.props.match.url}/:groupId`} render={(props) => (
+        <Route path={`${this.props.match.url}/:userId`} render={(props) => (
           <Editor {...props} profile={this.props.profile}/>
         )}/>
         <Route path={`${this.props.match.url}`} render={(props) => (
@@ -35,4 +31,4 @@ class Group extends React.Component {
   }
 }
 
-export default Group;
+export default User;

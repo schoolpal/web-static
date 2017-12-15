@@ -3,21 +3,21 @@ import {Route, Redirect} from 'react-router-dom'
 
 const PrivateRoute = ({component: Component, ...rest}) => {
   const temp = {...rest}
-  const access = temp.access.filter((item) => {
-    return item.test(temp.path) === true;
+  const isAccess = temp.access.filter((item) => {
+    return item.test(temp.location.pathname) === true;
   })
 
-  console.log("PrivateRoute visit path is " + temp.path)
+  console.log("====================================================")
+  console.log(isAccess)
+  console.log("PrivateRoute visit path is " + temp.location.pathname)
+  console.log("====================================================")
 
   return (
     <Route {...rest} render={props => (
-      access.length ? (
-        <Component {...props}/>
+      isAccess.length ? (
+        <Component profile={temp.profile} commands={temp.commands} {...props}/>
       ) : (
-        <Redirect to={{
-          pathname: '/login',
-          state: {from: props.location}
-        }}/>
+        <Redirect to="/404"/>
       )
     )}/>
   )

@@ -1,29 +1,200 @@
-#login {
-  margin: 30px auto 0;
-  width: 450px;
-}
-
-#login .mdc-card {
-  position: relative;
-  padding: 48px 40px 36px;
+.login .bg {
   background: #fff;
-}
-
-#login .mdc-linear-progress {
-  position: absolute;
+  bottom: 0;
   left: 0;
+  overflow: hidden;
+  position: absolute;
   right: 0;
   top: 0;
+  z-index: 1;
 }
 
-#login .mdc-textfield {
+.login .bg svg {
+  display: none;
+  height: 100%;
+  position: relative;
   width: 100%;
 }
 
-#login .mdc-textfield-helptext + .mdc-textfield--upgraded {
-  margin-top: 0;
+.login .content {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  background: #fff;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
 }
 
-#login .mdc-card__actions {
-  flex-direction: row-reverse;
+.login .body {
+  -webkit-box-flex: 1;
+  box-flex: 1;
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 24px 24px 36px;
+}
+
+.login .body .logo {
+  height: 60px;
+}
+
+.login .body .logo img {
+  display: block;
+  height: 100%;
+}
+
+.login .body .body-text h1 {
+  padding-bottom: 0;
+  padding-top: 16px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  margin: 0;
+}
+
+.login .body .body-text p {
+  padding-bottom: 3px;
+  padding-top: 1px;
+  margin: 0;
+}
+
+.login .body .body-form {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  white-space: nowrap;
+}
+
+.login .body .body-form .body-form-container {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 14px;
+  padding: 24px 0 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  vertical-align: top;
+  white-space: normal;
+  width: 100%;
+}
+
+.login .body .body-form .body-form-container .row {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 14px;
+  padding: 24px 0 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  vertical-align: top;
+  white-space: normal;
+  width: 100%;
+}
+
+.login .body .body-form .body-form-container .row .textfield {
+  width: 100%;
+}
+
+.login .body .body-form .body-form-container .body-form-action {
+  margin-top: 32px;
+  min-height: 48px;
+}
+
+.login .body .body-form .body-form-container .body-form-action .button {
+  float: right;
+}
+
+.login .body .body-form .body-form-container .body-form-action:after {
+  clear: both;
+  content: '';
+  display: block;
+}
+
+.login .body .progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+@media (min-width: 601px) {
+  .login {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  .login::before,
+  .login::after {
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+    content: '';
+    display: block;
+    height: 24px;
+  }
+
+  .login::before {
+    min-height: 30px;
+  }
+
+  .login::after {
+    min-height: 64.8px;
+  }
+
+  .login .bg {
+    background: #e0e0e0;
+  }
+
+  .login .bg svg {
+    display: block;
+  }
+
+  .login .content,
+  .login .body {
+    -webkit-transition: .2s;
+    transition: .2s;
+  }
+
+  .login .content {
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    background: #fff;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    display: block;
+    margin: 0 auto;
+    min-height: 0;
+    width: 450px;
+  }
+
+  .login .body {
+    height: auto;
+    min-height: 500px;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 450px) {
+  .login .body {
+    padding: 48px 40px 36px;
+  }
 }

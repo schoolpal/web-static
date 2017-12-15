@@ -1,4 +1,4 @@
-export default function getGroupList() {
+export default function () {
   return {
     code: 200,
     data: [

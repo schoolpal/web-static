@@ -14,7 +14,7 @@ function insertGroup(rootData, data) {
   }
 }
 
-export default function profileProcess(data) {
+export default function (data) {
   let group = [];
 
   data.map((item, index) => {
