@@ -61,7 +61,7 @@ class DialogGroup extends React.Component {
 
     this.state = {list: []}
     this.group = null;
-    this.selected = this.selected.bind(this)
+    this.accept = this.accept.bind(this)
     this.cancel = this.cancel.bind(this)
   }
 
@@ -80,7 +80,7 @@ class DialogGroup extends React.Component {
     }, 2000)
   }
 
-  selected() {
+  accept() {
     if (this.group === null || this.group.selected() === null) {
       return;
     }
@@ -103,10 +103,10 @@ class DialogGroup extends React.Component {
           <Group list={this.state.list}/>
           <footer className="dialog__footer">
             <button onClick={this.cancel} type="button"
-                    className="button button--cancel dialog__footer__button--cancel">Decline
+                    className="button button--cancel dialog__footer__button--cancel">取消
             </button>
-            <button onClick={this.selected} type="button"
-                    className="button button--primary dialog__footer__button--accept">Accept
+            <button onClick={this.accept} type="button"
+                    className="button button--primary dialog__footer__button--accept">选择
             </button>
           </footer>
         </div>

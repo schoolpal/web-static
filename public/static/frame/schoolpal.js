@@ -960,6 +960,116 @@ window.addEventListener("load", function() {
 (function() {
   "use strict";
 
+  var Dialog = function Dialog(element) {
+    this.element_ = element;
+    this.isOpen_ = false;
+    this.init();
+  };
+
+  window["Dialog"] = Dialog;
+
+  Dialog.prototype.CssClasses_ = {
+    IS_VISIBLE: "dialog--open",
+    IS_ANIMATING: "dialog--animating",
+    BACKDROP: "dialog__backdrop",
+    ACCEPT_BTN: "dialog__footer__button--accept",
+    CANCEL_BTN: "dialog__footer__button--cancel"
+  };
+
+  Dialog.prototype.init = function() {
+    var forElId =
+      this.element_.getAttribute("for") ||
+      this.element_.getAttribute("data-for");
+    var forEl = null;
+
+    if (forElId) {
+      forEl = document.getElementById(forElId);
+      if (forEl) {
+        this.forElement_ = forEl;
+        forEl.addEventListener("click", this.handleForClick_.bind(this));
+      }
+    }
+
+    this.acceptBtn = this.element_.querySelector(
+      "." + this.CssClasses_.ACCEPT_BTN
+    );
+    this.cancelBtn = this.element_.querySelector(
+      "." + this.CssClasses_.CANCEL_BTN
+    );
+
+    var backdrop = this.element_.querySelector("." + this.CssClasses_.BACKDROP);
+
+    backdrop.addEventListener("click", this.handleForClick_.bind(this));
+  };
+
+  Dialog.prototype.handleForClick_ = function(evt) {
+    if (this.element_ && this.forElement_) {
+      if (this.isOpen_) {
+        this.hide();
+      } else {
+        this.show(evt);
+      }
+    }
+  };
+
+  Dialog.prototype.removeAnimationEndListener_ = function(evt) {
+    if (this.classList.contains(Dialog.prototype.CssClasses_.IS_ANIMATING)) {
+      this.classList.remove(Dialog.prototype.CssClasses_.IS_ANIMATING);
+    }
+  };
+
+  Dialog.prototype.addAnimationEndListener_ = function() {
+    this.element_.addEventListener(
+      "transitionend",
+      this.removeAnimationEndListener_
+    );
+    this.element_.addEventListener(
+      "webkitTransitionEnd",
+      this.removeAnimationEndListener_
+    );
+  };
+
+  Dialog.prototype.show = function(evt) {
+    this.isOpen_ = true;
+
+    window.requestAnimationFrame(
+      function() {
+        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
+        this.element_.classList.add(this.CssClasses_.IS_VISIBLE);
+      }.bind(this)
+    );
+
+    this.addAnimationEndListener_();
+  };
+
+  Dialog.prototype["show"] = Dialog.prototype.show;
+
+  Dialog.prototype.hide = function(evt) {
+    this.isOpen_ = false;
+
+    window.requestAnimationFrame(
+      function() {
+        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
+        this.element_.classList.remove(this.CssClasses_.IS_VISIBLE);
+      }.bind(this)
+    );
+
+    this.addAnimationEndListener_();
+  };
+
+  Dialog.prototype["hide"] = Dialog.prototype.hide;
+
+  componentHandler.register({
+    constructor: Dialog,
+    classAsString: "Dialog",
+    cssClass: "js-dialog",
+    widget: true
+  });
+})();
+
+(function() {
+  "use strict";
+
   var DatePicker = function DatePicker(element) {
     this.element_ = element;
     this.init();
@@ -1270,116 +1380,6 @@ window.addEventListener("load", function() {
 (function() {
   "use strict";
 
-  var Dialog = function Dialog(element) {
-    this.element_ = element;
-    this.isOpen_ = false;
-    this.init();
-  };
-
-  window["Dialog"] = Dialog;
-
-  Dialog.prototype.CssClasses_ = {
-    IS_VISIBLE: "dialog--open",
-    IS_ANIMATING: "dialog--animating",
-    BACKDROP: "dialog__backdrop",
-    ACCEPT_BTN: "dialog__footer__button--accept",
-    CANCEL_BTN: "dialog__footer__button--cancel"
-  };
-
-  Dialog.prototype.init = function() {
-    var forElId =
-      this.element_.getAttribute("for") ||
-      this.element_.getAttribute("data-for");
-    var forEl = null;
-
-    if (forElId) {
-      forEl = document.getElementById(forElId);
-      if (forEl) {
-        this.forElement_ = forEl;
-        forEl.addEventListener("click", this.handleForClick_.bind(this));
-      }
-    }
-
-    this.acceptBtn = this.element_.querySelector(
-      "." + this.CssClasses_.ACCEPT_BTN
-    );
-    this.cancelBtn = this.element_.querySelector(
-      "." + this.CssClasses_.CANCEL_BTN
-    );
-
-    var backdrop = this.element_.querySelector("." + this.CssClasses_.BACKDROP);
-
-    backdrop.addEventListener("click", this.handleForClick_.bind(this));
-  };
-
-  Dialog.prototype.handleForClick_ = function(evt) {
-    if (this.element_ && this.forElement_) {
-      if (this.isOpen_) {
-        this.hide();
-      } else {
-        this.show(evt);
-      }
-    }
-  };
-
-  Dialog.prototype.removeAnimationEndListener_ = function(evt) {
-    if (this.classList.contains(Dialog.prototype.CssClasses_.IS_ANIMATING)) {
-      this.classList.remove(Dialog.prototype.CssClasses_.IS_ANIMATING);
-    }
-  };
-
-  Dialog.prototype.addAnimationEndListener_ = function() {
-    this.element_.addEventListener(
-      "transitionend",
-      this.removeAnimationEndListener_
-    );
-    this.element_.addEventListener(
-      "webkitTransitionEnd",
-      this.removeAnimationEndListener_
-    );
-  };
-
-  Dialog.prototype.show = function(evt) {
-    this.isOpen_ = true;
-
-    window.requestAnimationFrame(
-      function() {
-        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-        this.element_.classList.add(this.CssClasses_.IS_VISIBLE);
-      }.bind(this)
-    );
-
-    this.addAnimationEndListener_();
-  };
-
-  Dialog.prototype["show"] = Dialog.prototype.show;
-
-  Dialog.prototype.hide = function(evt) {
-    this.isOpen_ = false;
-
-    window.requestAnimationFrame(
-      function() {
-        this.element_.classList.add(this.CssClasses_.IS_ANIMATING);
-        this.element_.classList.remove(this.CssClasses_.IS_VISIBLE);
-      }.bind(this)
-    );
-
-    this.addAnimationEndListener_();
-  };
-
-  Dialog.prototype["hide"] = Dialog.prototype.hide;
-
-  componentHandler.register({
-    constructor: Dialog,
-    classAsString: "Dialog",
-    cssClass: "js-dialog",
-    widget: true
-  });
-})();
-
-(function() {
-  "use strict";
-
   var Drawer = function Drawer(element) {
     this.element_ = element;
     this.init();
@@ -1399,13 +1399,25 @@ window.addEventListener("load", function() {
         this.element_.getAttribute("data-for");
       var forEl = null;
 
-      if (forElId) {
-        forEl = document.getElementById(forElId);
-        if (forEl) {
-          this.forElement_ = forEl;
-          forEl.addEventListener("click", this.handleForClick_.bind(this));
-        }
-      }
+     document.getElementById("root").addEventListener("click", function(evt){
+       if(evt.target.id === forElId){
+         forEl = evt.target;
+         this.forElement_ = forEl;
+         this.handleForClick_();
+       }else if(evt.target.parentNode.id === forElId){
+         forEl = evt.target;
+         this.forElement_ = forEl;
+         this.handleForClick_();
+       }
+     }.bind(this));
+
+      // if (forElId) {
+      //   forEl = document.getElementById(forElId);
+      //   if (forEl) {
+      //     this.forElement_ = forEl;
+      //     forEl.addEventListener("click", this.handleForClick_.bind(this));
+      //   }
+      // }
     }
   };
 
@@ -1414,7 +1426,6 @@ window.addEventListener("load", function() {
   };
 
   Drawer.prototype.removeAnimationEndListener_ = function(evt) {
-    console.log('removeAnimationEndListener_')
     evt.target.parentNode.classList.remove(
       Drawer.prototype.CssClasses_.IS_ANIMATING
     );
@@ -2113,7 +2124,6 @@ window.addEventListener("load", function() {
   window['Snackbar'] = Snackbar;
 
   Snackbar.prototype.Constant_ = {
-    // The duration of the snackbar show/hide animation, in ms.
     ANIMATION_LENGTH: 250
   };
 
@@ -2205,7 +2215,7 @@ window.addEventListener("load", function() {
       this.timeoutID_ = undefined;
       this.active = false;
       this.checkQueue_();
-    }.bind(this), /** @type {number} */ (this.Constant_.ANIMATION_LENGTH));
+    }.bind(this),(this.Constant_.ANIMATION_LENGTH));
   };
 
   Snackbar.prototype.setActionHidden_ = function(value) {

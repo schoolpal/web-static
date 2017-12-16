@@ -22,7 +22,7 @@ class DialogArea extends React.Component {
     }
     this.initArea = this.initArea.bind(this);
     this.changed = this.changed.bind(this);
-    this.selected = this.selected.bind(this);
+    this.accept = this.accept.bind(this);
     this.cancel = this.cancel.bind(this)
   }
 
@@ -109,7 +109,7 @@ class DialogArea extends React.Component {
     }
   }
 
-  selected() {
+  accept() {
     let areaCodeArray = [];
     let areaTextArray = [];
 
@@ -224,10 +224,10 @@ class DialogArea extends React.Component {
           </section>
           <footer className="dialog__footer">
             <button onClick={this.cancel} type="button"
-                    className="button button--cancel dialog__footer__button--cancel">Decline
+                    className="button button--cancel dialog__footer__button--cancel">取消
             </button>
-            <button onClick={this.selected} type="button"
-                    className="button button--primary dialog__footer__button--accept">Accept
+            <button onClick={this.accept} type="button"
+                    className="button button--primary dialog__footer__button--accept">选择
             </button>
           </footer>
         </div>

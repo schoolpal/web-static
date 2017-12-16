@@ -9,6 +9,7 @@ import getFuncByIds from "../../api/getFuncByIds";
 import getRolesByGroup from "../../api/getRolesByGroup";
 import getRoleById from "../../api/getRoleById"
 import permissionsProcess from "../../utils/permissionsProcess"
+import nodeListToArray from "../../utils/nodeListToArray"
 import ReactDOM from "react-dom";
 
 const Table = ({list, selectedFunc, changedFunc}) => {
@@ -135,9 +136,6 @@ class Permissions extends React.Component {
   }
 
   componentDidMount() {
-    // console.log(getRolesByGroup().data)
-    // console.log(getRoleById().data)
-    // console.log(permissionsProcess(getFuncByIds().data))
     const selectedFunc = getRoleById().data.functions.map((func) => (func.cId));
 
     setTimeout(() => {
@@ -158,22 +156,38 @@ class Permissions extends React.Component {
   }
 
   componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
+    const button = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-button"))
+    const menu = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-menu"))
+    const checkbox = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-checkbox"))
+    const dataTable = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-data-table"))
+    let elems = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-groups"))
+
+    elems = elems.concat(button, menu, checkbox, dataTable);
+
+    window.componentHandler.upgradeElements(elems);
+  }
+
+  componentWillUnmount() {
+    if (this.groupContainer) {
+      document.body.removeChild(this.groupContainer);
+    }
   }
 
   createGroupsDialog() {
-    if (this.groupDialog === undefined) {
+    if (this.group === undefined) {
       this.groupContainer = document.createElement('div');
       ReactDOM.render(
-        <DialogGroup accept={this.acceptGroupDialog}/>,
+        <DialogGroup
+          accept={this.acceptGroupDialog}
+          ref={(dom) => {
+            this.group = dom
+          }}
+        />,
         document.body.appendChild(this.groupContainer)
       );
-
-      const dialogElem = document.getElementById("dialogGroup");
-      this.groupDialog = dialogElem["Dialog"];
     }
 
-    this.groupDialog.show();
+    this.group.dialog.show();
   }
 
   acceptGroupDialog(selected) {
@@ -192,7 +206,6 @@ class Permissions extends React.Component {
   }
 
   changedFunc(evt) {
-    console.log(evt.target)
     let tempFunc = [];
 
     if (this.state.selectedFunc.includes(evt.target.value)) {
@@ -226,7 +239,7 @@ class Permissions extends React.Component {
         <main>
           <div className="grid">
             <div className="cell cell--12-col">
-              <div className="card shadow--2dp">
+              <div id="permissions" className="card shadow--2dp">
                 <Progress isAnimating={this.state.isAnimating}/>
 
                 <div className="card__title">

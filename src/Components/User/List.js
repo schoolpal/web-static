@@ -6,6 +6,7 @@ import Commands from "../Commands/Commands";
 import DialogGroup from "../Dialog/DialogGroup";
 
 import getUsers from "../../api/getUsers"
+import nodeListToArray from "../../utils/nodeListToArray";
 
 const Table = ({list, changedState}) => {
   if (list.length) {
@@ -95,7 +96,15 @@ class List extends React.Component {
   }
 
   componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
+    const button = nodeListToArray(document.getElementById("users").querySelectorAll(".js-button"))
+    const switchs = nodeListToArray(document.getElementById("users").querySelectorAll(".js-switch"))
+    const checkbox = nodeListToArray(document.getElementById("users").querySelectorAll(".js-checkbox"))
+    const dataTable = nodeListToArray(document.getElementById("users").querySelectorAll(".js-data-table"))
+    let elems = [];
+
+    elems = elems.concat(button, switchs, checkbox, dataTable);
+
+    window.componentHandler.upgradeElements(elems);
   }
 
   componentWillUnmount() {
@@ -105,18 +114,20 @@ class List extends React.Component {
   }
 
   createGroupsDialog() {
-    if (this.groupDialog === undefined) {
+    if (this.group === undefined) {
       this.groupContainer = document.createElement('div');
       ReactDOM.render(
-        <DialogGroup accept={this.acceptGroupDialog}/>,
+        <DialogGroup
+          accept={this.acceptGroupDialog}
+          ref={(dom) => {
+            this.group = dom
+          }}
+        />,
         document.body.appendChild(this.groupContainer)
       );
-
-      const dialogElem = document.getElementById("dialogGroup");
-      this.groupDialog = dialogElem["Dialog"];
     }
 
-    this.groupDialog.show();
+    this.group.dialog.show();
   }
 
   acceptGroupDialog(selected) {
@@ -184,7 +195,7 @@ class List extends React.Component {
         <main>
           <div className="grid">
             <div className="cell cell--12-col">
-              <div className="card shadow--2dp">
+              <div id="users" className="card shadow--2dp">
                 <div className="card__title">
                   {this.state.groupName}
                   <div onClick={this.createGroupsDialog} className="button button--icon js-button">

@@ -7,16 +7,6 @@ import DialogGroup from "../Dialog/DialogGroup";
 
 import getRoles from "../../api/getRoles"
 
-const getFuncText = (func) => {
-  let textArray = [];
-
-  func.map((item) => {
-    textArray.push(item.cNameShort)
-  })
-
-  return textArray.join(", ");
-}
-
 const Table = ({list}) => {
   if (list.length) {
     return (
@@ -34,7 +24,11 @@ const Table = ({list}) => {
           {
             list.map((role) => (
               <tr key={role.cId} rid={role.cId}>
-                <td className="data-table__cell--non-numeric">{getFuncText(role.rootFuncs)}</td>
+                <td className="data-table__cell--non-numeric">
+                  {
+                    role.rootFuncs.map(func => (func.cNameShort)).join(", ")
+                  }
+                </td>
                 <td className="data-table__cell--non-numeric">{role.cRankName}</td>
                 <td className="data-table__cell--non-numeric">{role.cName}</td>
                 <td className="data-table__cell--non-numeric">{role.cDesc ? role.cDesc : "--"}</td>
@@ -78,7 +72,9 @@ class List extends React.Component {
   }
 
   componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
+    const table = document.getElementById("list");
+
+    window.componentHandler.upgradeElement(table);
   }
 
   componentWillUnmount() {
@@ -88,18 +84,20 @@ class List extends React.Component {
   }
 
   createGroupsDialog() {
-    if (this.groupDialog === undefined) {
+    if (this.group === undefined) {
       this.groupContainer = document.createElement('div');
       ReactDOM.render(
-        <DialogGroup accept={this.acceptGroupDialog}/>,
+        <DialogGroup
+          accept={this.acceptGroupDialog}
+          ref={(dom) => {
+            this.group = dom
+          }}
+        />,
         document.body.appendChild(this.groupContainer)
       );
-
-      const dialogElem = document.getElementById("dialogGroup");
-      this.groupDialog = dialogElem["Dialog"];
     }
 
-    this.groupDialog.show();
+    this.group.dialog.show();
   }
 
   acceptGroupDialog(selected) {

@@ -98,7 +98,9 @@ class List extends React.Component {
   }
 
   componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
+    const table = document.getElementById("list");
+
+    window.componentHandler.upgradeElement(table);
   }
 
   addAction() {

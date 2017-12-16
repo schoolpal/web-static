@@ -10,10 +10,6 @@ class Roles extends React.Component {
     super(props)
   }
 
-  componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
-  }
-
   render() {
     const groupCommands = this.props.commands.find((item) => {
       return item.rule.test(this.props.location.pathname) === true

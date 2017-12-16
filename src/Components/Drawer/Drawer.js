@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import {NavLink} from "react-router-dom";
 
 import SCHOOLPAL_CONFIG from "../../utils/config";
 
@@ -11,7 +11,7 @@ const GroupDialogBBtn = () => (
     />
     Group
     <span className="list-item__end-detail">
-      <i className="fa fa-angle-right" aria-hidden="true" />
+      <i className="fa fa-angle-right" aria-hidden="true"/>
     </span>
   </div>
 );
@@ -31,7 +31,7 @@ const Menu = data => {
             <i
               className={`fa ${
                 SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-              } fa-fw list-item__start-detail`}
+                } fa-fw list-item__start-detail`}
               aria-hidden="true"
             />
             {item.cNameLong}
@@ -56,7 +56,7 @@ const Menu = data => {
           <i
             className={`fa ${
               SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-            } fa-fw list-item__start-detail`}
+              } fa-fw list-item__start-detail`}
             aria-hidden="true"
           />
           {item.cNameLong}
@@ -68,20 +68,32 @@ const Menu = data => {
   return menu;
 };
 
-const Drawer = ({ hasChangeGroupBtn, menu }) => {
-  return (
-    <aside className="drawer js-drawer drawer--open" htmlFor="drawer-button">
-      <div className="drawer__drawer">
-        <div className="drawer__toolbar-spacer">
-          <img src="http://www.risecenter.com/images/index/rise_logo.png" />
+class Drawer extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  componentDidMount() {
+    const collapses = document.getElementById("drawer").querySelectorAll(".js-collapse");
+
+    window.componentHandler.upgradeElements(collapses);
+  }
+
+  render() {
+    return (
+      <aside id="drawer" className="drawer js-drawer drawer--open" htmlFor="drawer-button">
+        <div className="drawer__drawer">
+          <div className="drawer__toolbar-spacer">
+            <img src="http://www.risecenter.com/images/index/rise_logo.png"/>
+          </div>
+          <div className="list">
+            {this.props.hasChangeGroupBtn ? <GroupDialogBBtn/> : ""}
+            <Menu data={this.props.menu}/>
+          </div>
         </div>
-        <div className="list">
-          {hasChangeGroupBtn ? <GroupDialogBBtn /> : ""}
-          <Menu data={menu} />
-        </div>
-      </div>
-    </aside>
-  );
-};
+      </aside>
+    );
+  }
+}
 
 export default Drawer;

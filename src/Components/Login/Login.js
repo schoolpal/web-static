@@ -4,6 +4,7 @@ import './Login.css'
 
 import Progress from "../Progress/Progress"
 import MD5Mixed from "../../utils/MD5Mixed"
+import nodeListToArray from "../../utils/nodeListToArray"
 
 class Login extends React.Component {
   constructor(props) {
@@ -17,7 +18,11 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
+    let elems = nodeListToArray(document.getElementById("login").querySelectorAll(".js-textfield"));
+    const actions = nodeListToArray(document.getElementById("login").querySelectorAll(".js-button"));
 
+    elems = elems.concat(actions);
+    window.componentHandler.upgradeElements(elems);
   }
 
   login() {
@@ -55,7 +60,7 @@ class Login extends React.Component {
     return (
       <div className="layout">
         <div className="layout__container">
-          <div className="login">
+          <div id="login" className="login">
             <div className="content">
               <div className="body">
                 <Progress isAnimating={this.state.isAnimating}/>

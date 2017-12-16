@@ -25,8 +25,10 @@ class Home extends React.Component {
     }, 500);
   }
 
-  componentDidUpdate() {
-    window.componentHandler.upgradeAllRegistered();
+  componentDidUpdate(){
+    const toast = document.querySelector("#toast");
+
+    window.componentHandler.upgradeElement(toast);
   }
 
   render() {
@@ -88,7 +90,18 @@ class Home extends React.Component {
         </div>
       )
     } else {
-      return <p>程序准备中...</p>;
+      return (
+        <div className="layout">
+          <div className="layout__container">
+            <header className="toolbar">
+              <div className="toolbar__row"></div>
+            </header>
+            <main>
+              <p>程序准备中...</p>
+            </main>
+          </div>
+        </div>
+      );
     }
   }
 }
