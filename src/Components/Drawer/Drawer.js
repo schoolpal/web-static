@@ -1,6 +1,8 @@
 import React from "react";
 import {NavLink} from "react-router-dom";
 
+import isPhone from "../../utils/isPhone";
+
 import SCHOOLPAL_CONFIG from "../../utils/config";
 
 const GroupDialogBBtn = () => (
@@ -71,6 +73,8 @@ const Menu = data => {
 class Drawer extends React.Component {
   constructor(props) {
     super(props)
+
+    this.drawerClass = `drawer js-drawer ${isPhone() ? "" : "drawer--open"}`;
   }
 
   componentDidMount() {
@@ -81,7 +85,7 @@ class Drawer extends React.Component {
 
   render() {
     return (
-      <aside id="drawer" className="drawer js-drawer drawer--open" htmlFor="drawer-button">
+      <aside id="drawer" className={this.drawerClass} htmlFor="drawer-button">
         <div className="drawer__drawer">
           <div className="drawer__toolbar-spacer">
             <img src="http://www.risecenter.com/images/index/rise_logo.png"/>
