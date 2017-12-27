@@ -4,6 +4,9 @@ build/
 #Node
 node_modules/
 
+#MockServer
+mockServer/
+
 # IntelliJ IDEA
 .idea/
 *.iml

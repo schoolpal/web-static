@@ -7,19 +7,15 @@ import {
 
 import Home from "../Home/Home";
 import Login from '../Login/Login'
-import NoMatch from "../NoMatch/NoMatch";
+import "./App.css"
 
-class App extends React.Component {
-  render() {
-    return (
-      <Router>
-        <Switch>
-          <Route path='/login' component={Login}/>
-          <Route path='/' component={Home}/>
-        </Switch>
-      </Router>
-    )
-  }
-}
+const App = () => (
+  <Router>
+    <Switch>
+      <Route path='/login' component={Login}/>
+      <Route path='/' component={Home}/>
+    </Switch>
+  </Router>
+);
 
 export default App;

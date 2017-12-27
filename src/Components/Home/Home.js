@@ -26,33 +26,24 @@ class Home extends React.Component {
   }
 
   componentDidUpdate(){
-    const toast = document.querySelector("#toast");
 
-    window.componentHandler.upgradeElement(toast);
   }
 
   render() {
     if (this.state.profile) {
       return (
-        <div className="layout">
-          <Drawer
-            menu={this.state.profile.menu}
-            hasChangeGroupBtn={this.state.profile.hasChangeGroupBtn}
-          />
-
-          <div id="toast" className="js-snackbar snackbar">
-            <div className="snackbar__text"></div>
-            <button className="snackbar__action" type="button"></button>
-          </div>
+        <div className="container-fluid">
+          {/*<Drawer*/}
+            {/*menu={this.state.profile.menu}*/}
+            {/*hasChangeGroupBtn={this.state.profile.hasChangeGroupBtn}*/}
+          {/*/>*/}
 
           <Switch>
             <Route
               exact
               path={this.props.match.url}
               render={() => (
-                <div className="layout__container">
-                  <Header title="" profile={this.state.profile.profile}/>
-                </div>
+                <Header title="" profile={this.state.profile.profile}/>
               )}
             />
             <PrivateRoute

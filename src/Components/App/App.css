@@ -1,0 +1,27 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+}
+
+.container-fluid {
+  position: relative;
+  padding: 0;
+  height: 100%;
+}
+
+.navbar .btn-link {
+  color: #ffffff;
+}
