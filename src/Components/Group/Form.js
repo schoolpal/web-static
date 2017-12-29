@@ -25,13 +25,14 @@ class Form extends React.Component {
       const areaCodeArray = [];
       const areaTextArray = [];
 
-      areaCodeArray.push(nextProps.data.cStateCode)
-      areaCodeArray.push(nextProps.data.cCityCode)
-      areaTextArray.push(nextProps.data.cState)
-      areaTextArray.push(nextProps.data.cCity)
+      areaCodeArray.push(nextProps.data.cStateCode);
+      areaCodeArray.push(nextProps.data.cCityCode);
+      areaTextArray.push(nextProps.data.cState);
+      areaTextArray.push(nextProps.data.cCity);
 
       this.setState({
-        parentId: nextProps.data.cParentId,
+        parentId: nextProps.data.parentOrg.cId,
+        parentName: nextProps.data.parentOrg.cName,
         areaCodeArray: areaCodeArray,
         areaTextArray: areaTextArray
       }, () => {
