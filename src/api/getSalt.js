@@ -1,8 +1,7 @@
-import 'whatwg-fetch'
 import ajax from "../utils/ajax";
 
 export default function (query) {
-  const url = "http://localhost:3001";
+  const url = "/user/salt.do";
 
   return ajax(url)
 }

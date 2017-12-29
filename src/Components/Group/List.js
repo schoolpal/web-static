@@ -1,61 +1,71 @@
 import React from "react";
+import ReactDOM from "react-dom";
+import {Redirect} from 'react-router-dom'
+import {$} from '../../vendor';
 
-import Header from "../Header/Header";
+import DialogTips from "../Dialog/DialogTips";
 import Commands from "../Commands/Commands";
-import getGroup from "../../api/getGroups";
+import Progress from "../Progress/Progress"
 import groupProcess from "../../utils/groupProcess";
+import mainSize from "../../utils/mainSize";
+import ajax from "../../utils/ajax";
 
 const Table = ({list}) => {
-  if (list.length) {
-    return (
-      <div className="card__supporting-datatable">
-        <table id="list" className="data-table groups js-data-table js-groups data-table--selectable">
-          <thead>
-          <tr>
-            <th className="data-table__cell--non-numeric">组织名称</th>
-            <th className="data-table__cell--non-numeric">所在地区</th>
-            <th className="data-table__cell--non-numeric">详细地址</th>
-            <th className="data-table__cell--non-numeric">负责人</th>
-            <th>联系电话</th>
-          </tr>
-          </thead>
-          <tbody>{TableItem(list)}</tbody>
-        </table>
-      </div>
-    );
-  } else {
-    return (
-      <div className="card__supporting-text">
-        <p>数据加载中...</p>
-      </div>
-    );
-  }
+  return (
+    <table className="table table-bordered table-sm">
+      <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>组织名称</th>
+        <th>所在地区</th>
+        <th>详细地址</th>
+        <th>负责人</th>
+        <th>联系电话</th>
+      </tr>
+      </thead>
+      <tbody>{TableItem(list)}</tbody>
+    </table>
+  );
 };
 
 const TableItem = data => {
   let table = [];
 
+  if (data.length === 0) {
+    return table;
+  }
+
   data.map(item => {
-    const spacingStyle = {marginLeft: 56 * item.level + "px"};
+    const spacingStyle = {marginLeft: 26 * item.level + "px"};
+    const childrenClass = item.children ? '' : 'not-child';
     const area = item.cState + " " + item.cCity + " " + item.cCounty;
     const addr = area + " " + item.cAddress;
 
-    table.push(
-      <tr key={item.cId} gid={item.cId} gname={item.cName} level={item.level}>
-        <td className="data-table__cell--non-numeric">
-          <div className="groups-item" style={spacingStyle}>
-            <HasChildren
-              children={item.children && item.children.length ? true : false}
-            />
-            {item.cName}
-          </div>
-        </td>
-        <td className="data-table__cell--non-numeric">{area}</td>
-        <td className="data-table__cell--non-numeric">{addr}</td>
-        <td className="data-table__cell--non-numeric">{item.cOwner}</td>
-        <td>{item.cOwnerPhone}</td>
-      </tr>
-    );
+    if (item.cName) {
+      table.push(
+        <tr key={item.cId} gid={item.cId} gname={item.cName} level={item.level}>
+          <th scope="row">
+            <div className="form-check">
+              <label className="form-check-label">
+                <input
+                  className="form-check-input position-static"
+                  type="radio"
+                  name="org"
+                  value={item.cId}
+                />
+              </label>
+            </div>
+          </th>
+          <td>
+            <p onClick={handleNode} className={'tree-node ' + childrenClass} style={spacingStyle}>{item.cName}</p>
+          </td>
+          <td>{area}</td>
+          <td>{addr}</td>
+          <td>{item.cOwner}</td>
+          <td>{item.cOwnerPhone}</td>
+        </tr>
+      );
+    }
 
     if (item.children && item.children.length) {
       let children = [];
@@ -68,98 +78,154 @@ const TableItem = data => {
   return table;
 };
 
-const HasChildren = ({children}) => {
-  if (children) {
-    return (
-      <i
-        className="groups-item__start-detail fa fa-angle-down fa-fw groups-arrow"
-        aria-hidden="true"
-      />
-    );
-  } else {
-    return <span className="groups-item__start-detail"/>;
+const handleNode = (evt) => {
+  if ($(evt.target).hasClass('not-child')) {
+    return;
   }
+
+  const tr = $(evt.target).parents("tr");
+  const level = parseInt(tr.attr('level'));
+  const children = tr.nextAll('tr').filter((i, item) => (
+    $(item).attr('level') > level
+  ));
+
+  children.map((i, item) => {
+    const childrenLevel = parseInt($(item).attr('level'));
+
+    if ($(evt.target).hasClass('closed')) {
+      if (childrenLevel === (level + 1)) {
+        $(item).show();
+      }
+    } else {
+      $(item)
+        .hide()
+        .find('.tree-node')
+        .addClass('closed');
+    }
+  });
+
+  $(evt.target).toggleClass('closed');
 };
 
 class List extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {list: []};
+    this.state = {
+      list: [],
+      isAnimating: true,
+      redirectToReferrer: false,
+    };
+    this.createDialogTips = this.createDialogTips.bind(this);
     this.addAction = this.addAction.bind(this);
     this.modAction = this.modAction.bind(this);
     this.delAction = this.delAction.bind(this);
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({list: groupProcess(getGroup().data)});
-    }, 500);
+    const request = async () => {
+      try {
+        let list = await ajax('/sys/org/list.do');
+        this.setState({list: groupProcess(list)});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
+    mainSize();
   }
 
-  componentDidUpdate() {
-    const table = document.getElementById("list");
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
 
-    window.componentHandler.upgradeElement(table);
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
   }
 
   addAction() {
-    const selectedRow = document.getElementById("list")["DataTable"].selected();
+    const selectedElem = $('table [name=org]:checked');
+
     const location = {
       pathname: `${this.props.match.url}/create`,
       state: {
-        parentGroup: selectedRow ? {
-          id: selectedRow[0].getAttribute("gid"),
-          name: selectedRow[0].getAttribute("gname")
+        parentGroup: selectedElem ? {
+          id: selectedElem.parents('tr').attr("gid"),
+          name: selectedElem.parents('tr').attr("gname")
         } : null
       }
-    }
+    };
 
     this.props.history.push(location);
   }
 
   modAction() {
-    const selectedRow = document.getElementById("list")["DataTable"].selected();
+    const selectedElem = $('table [name=org]:checked');
 
-    if (!selectedRow) {
+    if (!selectedElem) {
       return;
     }
 
-    const targetPath = `${this.props.match.url}/${selectedRow[0].getAttribute("gid")}`;
+    const targetPath = `${this.props.match.url}/${selectedElem.val()}`;
 
     this.props.history.push(targetPath);
   }
 
   delAction() {
-    const selectedRow = document.getElementById("list")["DataTable"].selected();
+    const selectedElem = $('table [name=org]:checked');
 
-    if (!selectedRow) {
+    if (!selectedElem) {
       return;
     }
   }
 
   render() {
+    if (this.state.redirectToReferrer) {
+      return (
+        <Redirect to={{
+          pathname: '/login',
+          state: {from: this.props.location}
+        }}/>
+      )
+    }
+
     return (
-      <div className="layout__container">
-        <Header title="组织管理" profile={this.props.profile}/>
-        <main>
-          <div className="grid">
-            <div className="cell cell--12-col">
-              <div className="card shadow--2dp">
-                <div className="card__title">
-                  <div className="card__title--spacer"/>
-                  <Commands
-                    commands={this.props.commands}
-                    addAction={this.addAction}
-                    modAction={this.modAction}
-                    delAction={this.delAction}
-                  />
-                </div>
-                <Table list={this.state.list}/>
-              </div>
-            </div>
-          </div>
-        </main>
+      <div>
+        <h5 id="subNav">
+          <i className="fa fa-sitemap" aria-hidden="true"/>&nbsp;组织管理
+
+          <Commands
+            commands={this.props.commands}
+            addAction={this.addAction}
+            modAction={this.modAction}
+            delAction={this.delAction}
+          />
+        </h5>
+        <div id="main" className="main p-3">
+          <Progress isAnimating={this.state.isAnimating}/>
+          <Table list={this.state.list}/>
+        </div>
       </div>
     );
   }

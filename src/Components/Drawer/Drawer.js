@@ -1,5 +1,6 @@
 import React from "react";
 import {NavLink} from "react-router-dom";
+import {$} from "../../vendor";
 
 import isPhone from "../../utils/isPhone";
 
@@ -28,23 +29,22 @@ const Menu = data => {
 
       children.push(Menu(item.children));
       menu.push(
-        <div key={item.cId} className="collapse">
-          <div className="collapse-header list-item js-collapse">
-            <i
-              className={`fa ${
-                SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-                } fa-fw list-item__start-detail`}
-              aria-hidden="true"
-            />
-            {item.cNameLong}
-            <span className="list-item__end-detail">
+        <div key={item.cId} data-children=".item">
+          <div className="item">
+            <a data-toggle="collapse" href={`#${item.cId}`} data-parent="#accordion" aria-expanded="true"
+               aria-controls="accordion" className="d-block">
               <i
-                className="fa fa-angle-down collapse-arrow"
+                className={`fa ${
+                  SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
+                  } fa-fw`}
                 aria-hidden="true"
               />
-            </span>
+              {item.cNameLong}
+            </a>
+            <div id={item.cId} className="collapse" role="tabpanel">
+              {children}
+            </div>
           </div>
-          <div className="collapse-body list list--dense">{children}</div>
         </div>
       );
     } else {
@@ -52,13 +52,13 @@ const Menu = data => {
         <NavLink
           key={item.cId}
           to={`/${SCHOOLPAL_CONFIG.AUTH[item.cId].PATH}`}
-          className="list-item"
-          activeClassName="drawer--selected"
+          className="d-block"
+          activeClassName="active"
         >
           <i
             className={`fa ${
               SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-              } fa-fw list-item__start-detail`}
+              } fa-fw`}
             aria-hidden="true"
           />
           {item.cNameLong}
@@ -73,29 +73,34 @@ const Menu = data => {
 class Drawer extends React.Component {
   constructor(props) {
     super(props)
-
-    this.drawerClass = `drawer js-drawer ${isPhone() ? "" : "drawer--open"}`;
   }
 
   componentDidMount() {
-    const collapses = document.getElementById("drawer").querySelectorAll(".js-collapse");
+    this.drawer = $('#drawer');
 
-    window.componentHandler.upgradeElements(collapses);
+    if (isPhone()) {
+      $('#drawer').hide();
+    } else {
+      $('#drawer').show();
+    }
+
+    window.addEventListener('resize', () => {
+      if (isPhone()) {
+        $('#drawer').hide();
+      } else {
+        $('#drawer').show();
+      }
+    })
   }
 
   render() {
     return (
-      <aside id="drawer" className={this.drawerClass} htmlFor="drawer-button">
-        <div className="drawer__drawer">
-          <div className="drawer__toolbar-spacer">
-            <img src="http://www.risecenter.com/images/index/rise_logo.png"/>
-          </div>
-          <div className="list">
-            {this.props.hasChangeGroupBtn ? <GroupDialogBBtn/> : ""}
-            <Menu data={this.props.menu}/>
-          </div>
+      <div id="drawer" className="aside-bar">
+        <div id="accordion" role="tablist">
+          {this.props.hasChangeGroupBtn ? <GroupDialogBBtn/> : ""}
+          <Menu data={this.props.menu}/>
         </div>
-      </aside>
+      </div>
     );
   }
 }

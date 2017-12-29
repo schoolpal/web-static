@@ -5,9 +5,12 @@ import {
   Switch,
 } from 'react-router-dom'
 
+import "bootstrap/dist/css/bootstrap.min.css"
+import "./App.css"
+import "bootstrap/dist/js/bootstrap"
+
 import Home from "../Home/Home";
 import Login from '../Login/Login'
-import "./App.css"
 
 const App = () => (
   <Router>

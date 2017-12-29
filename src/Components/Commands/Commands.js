@@ -1,28 +1,28 @@
 import React from "react";
 
 const Add = ({action}) => (
-  <button onClick={action} className="button button--icon js-button">
-    <i className="fa fa-plus" aria-hidden="true"/>
+  <button onClick={action} type="button" className="btn btn-primary">
+    <i className="fa fa-plus" aria-hidden="true"/>&nbsp;&nbsp;新建
   </button>
-)
+);
 
 const Mod = ({action}) => (
-  <button onClick={action} className="button button--icon js-button">
-    <i className="fa fa-pencil" aria-hidden="true"/>
+  <button onClick={action} type="button" className="btn btn-primary">
+    <i className="fa fa-pencil" aria-hidden="true"/>&nbsp;&nbsp;编辑
   </button>
-)
+);
 
 const Del = ({action}) => (
-  <button onClick={action} className="button button--icon js-button">
-    <i className="fa fa-trash-o" aria-hidden="true"/>
+  <button type="button" className="btn btn-danger" onClick={action}>
+    <i className="fa fa-trash-o" aria-hidden="true"/>&nbsp;&nbsp;删除
   </button>
-)
+);
 
 const Auth = ({action, disabled}) => (
   <button onClick={action} className="button button--primary js-button" disabled={disabled}>
     授权
   </button>
-)
+);
 
 class Commands extends React.Component {
   constructor(props) {
@@ -31,22 +31,18 @@ class Commands extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="btn-group float-right" role="group">
         {
           this.props.commands.map((command, index) => {
             switch (command) {
               case "Add":
-                return <Add key={index} action={this.props.addAction}/>
-                break;
+                return <Add key={index} action={this.props.addAction}/>;
               case "Mod":
-                return <Mod key={index} action={this.props.modAction}/>
-                break;
+                return <Mod key={index} action={this.props.modAction}/>;
               case "Del":
-                return <Del key={index} action={this.props.delAction}/>
-                break;
+                return <Del key={index} action={this.props.delAction}/>;
               case "Auth":
-                return <Auth key={index} action={this.props.authAction} disabled={this.props.disabled}/>
-                break
+                return <Auth key={index} action={this.props.authAction} disabled={this.props.disabled}/>;
               default:
                 return null;
             }

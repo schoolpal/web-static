@@ -1,12 +1,12 @@
 import React from 'react'
+import ReactDOM from "react-dom";
 import {Redirect} from 'react-router-dom'
 import './Login.css'
 
 import Progress from "../Progress/Progress"
+import DialogTips from "../Dialog/DialogTips";
 import MD5Mixed from "../../utils/MD5Mixed"
-import nodeListToArray from "../../utils/nodeListToArray"
-
-import getSalt from "../../api/getSalt"
+import ajax from "../../utils/ajax";
 
 class Login extends React.Component {
   constructor(props) {
@@ -17,10 +17,35 @@ class Login extends React.Component {
       redirectToReferrer: false,
     };
     this.login = this.login.bind(this);
+    this.createDialogTips = this.createDialogTips.bind(this);
   }
 
-  componentDidMount() {
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
+  }
 
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
   }
 
   login(evt) {
@@ -28,34 +53,34 @@ class Login extends React.Component {
       evt.preventDefault()
     }
 
-    this.setState({isAnimating: true})
+    this.setState({isAnimating: true});
 
     const userName = this.form.userName.value;
     const userPwd = this.form.userPwd.value;
     let mixedPWD;
 
     this.setState({submitLoading: 'block'});
-    const salt = "";
 
-    mixedPWD = MD5Mixed(MD5Mixed(MD5Mixed(userPwd)) + salt);
+    const request = async () => {
+      try {
+        let salt = await ajax('/user/salt.do');
 
-    //login
-    //
-    // let ajax = async () => {
-    //   try {
-    //     let result = await getSalt();
-    //
-    //     this.setState({redirectToReferrer: true, isAnimating: false});
-    //   } catch (err) {
-    //     console.log(err)
-    //
-    //     this.form.userName.parentNode["Textfield"].change("");
-    //     this.form.userPwd.parentNode["Textfield"].change("");
-    //     this.setState({isAnimating: false});
-    //   }
-    // }
-    //
-    // ajax();
+        mixedPWD = MD5Mixed(MD5Mixed(MD5Mixed(userPwd)) + salt);
+
+        let login = await ajax('/user/login.do', {
+          loginName: userName,
+          mixedPWD: mixedPWD
+        });
+
+        this.setState({redirectToReferrer: true});
+      } catch (err) {
+        this.createDialogTips(`${err.errCode}: ${err.errText}`);
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   render() {
@@ -68,9 +93,10 @@ class Login extends React.Component {
     }
 
     return (
-      <div className="container-fluid">
+      <div className="container">
         <div className="login">
           <div className="card border-0">
+            <Progress isAnimating={this.state.isAnimating}/>
             <div className="card-body">
               <h4 className="card-title">登陆校客系统</h4>
               <form
@@ -81,17 +107,33 @@ class Login extends React.Component {
               >
                 <div className="form-group">
                   <label htmlFor="userName">用户名</label>
-                  <input type="text" className="form-control" id="userName" placeholder="Enter user name"
-                         required={true}/>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="userName"
+                    placeholder="Enter user name"
+                    required={true}
+                  />
                   <small className="form-text text-muted">&nbsp;</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="userPwd">密码</label>
-                  <input type="text" className="form-control" id="userPwd" placeholder="Enter user password"
-                         required={true}/>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="userPwd"
+                    placeholder="Enter user password"
+                    required={true}
+                  />
                   <small className="form-text text-muted">&nbsp;</small>
                 </div>
-                <button type="submit" className="btn btn-primary float-right">登&nbsp;&nbsp;陆</button>
+                <button
+                  type="submit"
+                  className="btn btn-primary float-right"
+                  disabled={this.state.isAnimating}
+                >
+                  登&nbsp;&nbsp;陆
+                </button>
               </form>
             </div>
           </div>

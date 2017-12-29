@@ -2,39 +2,22 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import DialogGroup from "../Dialog/DialogGroup"
-import DialogArea from "../Dialog/DialogArea"
+import Area from "../Area/Area";
 
 class Form extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      parentId: "",
-      parentName: "",
+      parentId: (!this.props.isEditor && this.props.parentGroup) ? this.props.parentGroup.id : "",
+      parentName: (!this.props.isEditor && this.props.parentGroup) ? this.props.parentGroup.name : "",
       areaCodeArray: [],
       areaTextArray: []
-    }
+    };
 
     this.createGroupsDialog = this.createGroupsDialog.bind(this);
     this.acceptGroupDialog = this.acceptGroupDialog.bind(this);
-    this.createAreaDialog = this.createAreaDialog.bind(this);
-    this.acceptAreaDialog = this.acceptAreaDialog.bind(this);
     this.getFormValue = this.getFormValue.bind(this);
-  }
-
-  componentDidMount() {
-    const elems = this.form.querySelectorAll(".js-textfield");
-
-    if (!this.props.isEditor && this.props.parentGroup) {
-      this.setState({
-        parentId: this.props.parentGroup.id,
-        parentName: this.props.parentGroup.name
-      });
-    }
-
-    if (elems.length) {
-      window.componentHandler.upgradeElements(elems);
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -52,14 +35,11 @@ class Form extends React.Component {
         areaCodeArray: areaCodeArray,
         areaTextArray: areaTextArray
       }, () => {
-        const elems = this.form.querySelectorAll(".js-textfield");
-
-        window.componentHandler.upgradeElements(elems);
-        document.getElementById("name").parentNode["Textfield"].change(nextProps.data.cName)
-        document.getElementById("code").parentNode["Textfield"].change(nextProps.data.cCode)
-        document.getElementById("address").parentNode["Textfield"].change(nextProps.data.cAddress)
-        document.getElementById("owner").parentNode["Textfield"].change(nextProps.data.cOwner)
-        document.getElementById("phone").parentNode["Textfield"].change(nextProps.data.cOwnerPhone)
+        this.form.name.value = nextProps.data.cName;
+        this.form.code.value = nextProps.data.cCode;
+        this.form.address.value = nextProps.data.cAddress;
+        this.form.owner.value = nextProps.data.cOwner;
+        this.form.phone.value = nextProps.data.cOwnerPhone;
       })
     }
   }
@@ -67,10 +47,6 @@ class Form extends React.Component {
   componentWillUnmount() {
     if (this.groupContainer) {
       document.body.removeChild(this.groupContainer);
-    }
-
-    if (this.areaContainer) {
-      document.body.removeChild(this.areaContainer);
     }
   }
 
@@ -80,6 +56,7 @@ class Form extends React.Component {
       ReactDOM.render(
         <DialogGroup
           accept={this.acceptGroupDialog}
+          defaults={this.state.parentId}
           ref={(dom) => {
             this.group = dom
           }}
@@ -88,52 +65,33 @@ class Form extends React.Component {
       );
     }
 
-    this.group.dialog.show();
+    this.group.dialog.modal('show');
   }
 
   acceptGroupDialog(selected) {
     this.setState({
-      parentId: selected.getAttribute("gid"),
-      parentName: selected.textContent
+      parentId: selected.id,
+      parentName: selected.name
     })
   }
 
-  createAreaDialog() {
-    if (this.areaDialog === undefined) {
-      this.areaContainer = document.createElement('div');
-      ReactDOM.render(
-        <DialogArea
-          accept={this.acceptAreaDialog}
-          ref={(dom) => {
-            this.area = dom
-          }}
-        />,
-        document.body.appendChild(this.areaContainer)
-      );
-    }
-
-    this.area.dialog.show();
-  }
-
-  acceptAreaDialog(selected) {
-    this.setState(selected)
-  }
-
   getFormValue() {
-    if (!this.form.checkValidity() || !this.state.parentId || !this.state.areaCodeArray.length) {
+    if (!this.form.checkValidity() || !this.state.parentId || !this.area.getArea().areaCodeArray.length) {
       return
     }
 
     let query = {};
 
     for (let i = 0; i < this.form.length; i++) {
-      query[this.form[i].name] = this.form[i].value;
+      if (this.form[i].tagName !== 'BUTTON' && !this.form[i].readOnly) {
+        query[this.form[i].name] = this.form[i].value;
+      }
     }
 
     query.parentId = this.state.parentId;
-    query.state = this.state.areaCodeArray[0];
-    query.city = this.state.areaCodeArray[1];
-    query.county = this.state.areaCodeArray[2] || "";
+    query.state = this.area.getArea().areaTextArray[0];
+    query.city = this.area.getArea().areaTextArray[1];
+    query.county = this.area.getArea().areaTextArray[2] || "";
 
     return query;
   }
@@ -144,13 +102,13 @@ class Form extends React.Component {
         <form ref={(dom) => {
           this.form = dom
         }}>
-          <ul className="list list--two-line">
-            <li className="list-item">
-            <span className="list-item__text">
-              数据加载中...
-            </span>
-            </li>
-          </ul>
+          <div className="row justify-content-md-center">
+            <div className="col col-md-6">
+              <div className="card">
+                <div className="card-body">数据加载中...</div>
+              </div>
+            </div>
+          </div>
         </form>
       )
     } else {
@@ -158,93 +116,54 @@ class Form extends React.Component {
         <form ref={(dom) => {
           this.form = dom
         }}>
-          <ul className="list list--two-line">
-            <li className="list-item">
-              <span className="list-item__text">
-              组织名称
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="name" name="name" className="textfield__input" type="text" required={true}/>
-                  <label className="textfield__label" htmlFor="name">组织名称...</label>
+          <div className="row justify-content-md-center">
+            <div className="col col-md-5">
+              <div className="card">
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="name"><em className="text-danger">*</em>组织名称</label>
+                    <input type="text" className="form-control" name="name" required={true}/>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="name"><em className="text-danger">*</em>组织代码</label>
+                    <input type="text" className="form-control" name="code" required={true}/>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="name"><em className="text-danger">*</em>父级组织</label>
+                    <div className="input-group">
+                      <input type="text" className="form-control" value={this.state.parentName} readOnly={true}/>
+                      <span className="input-group-btn">
+                        <button onClick={this.createGroupsDialog} className="btn btn-secondary" type="button">
+                          <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"/>
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label><em className="text-danger">*</em>所在地区</label>
+                    <Area
+                      ref={(dom) => {
+                        this.area = dom
+                      }}
+                      defaults={this.state.areaCodeArray}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="address"><em className="text-danger">*</em>详细地址</label>
+                    <textarea name="address" className="form-control" rows="3" required={true}></textarea>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="owner"><em className="text-danger">*</em>负责人</label>
+                    <input type="text" className="form-control" name="owner" required={true}/>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone"><em className="text-danger">*</em>联系电话</label>
+                    <input type="text" className="form-control" name="phone" pattern="^1\d{10}$" required={true}/>
+                  </div>
                 </div>
               </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              组织代码
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="code" name="code" className="textfield__input" type="text" required={true}/>
-                  <label className="textfield__label" htmlFor="code">组织代码...</label>
-                </div>
-              </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              父级组织
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                {this.state.parentName}
-                <div onClick={this.createGroupsDialog} className="button button--icon js-button">
-                  <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                </div>
-              </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              所在地区
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                {this.state.areaTextArray.join(" ")}
-                <div onClick={this.createAreaDialog} className="button button--icon js-button">
-                  <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                </div>
-              </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              详细地址
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield">
-                  <input id="address" name="address" className="textfield__input" type="text"
-                         required={true}/>
-                  <label className="textfield__label" htmlFor="address">详细地址...</label>
-                </div>
-              </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              负责人
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="owner" name="owner" className="textfield__input" type="text" required={true}/>
-                  <label className="textfield__label" htmlFor="owner">负责人...</label>
-                </div>
-              </div>
-            </li>
-            <li className="list-item">
-              <span className="list-item__text">
-              联系电话
-              <span className="list-item__text__secondary">必填字段</span>
-              </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="phone" name="phone" className="textfield__input" type="text" required={true}/>
-                  <label className="textfield__label" htmlFor="phone">联系电话...</label>
-                </div>
-              </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </form>
       )
     }

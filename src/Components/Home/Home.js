@@ -1,5 +1,6 @@
 import React from "react";
-import {Route, Switch} from 'react-router-dom'
+import ReactDOM from "react-dom";
+import {Route, Switch, Redirect} from 'react-router-dom'
 
 import PrivateRoute from '../PrivateRoute/PrivateRoute'
 import Drawer from "../Drawer/Drawer";
@@ -9,42 +10,91 @@ import Roles from "../Roles/Roles";
 import Permissions from "../Permissions/Permissions";
 import User from "../User/User"
 import NoMatch from "../NoMatch/NoMatch";
+import DialogTips from "../Dialog/DialogTips";
 
-import getProfile from "../../api/getProfile";
+import ajax from "../../utils/ajax";
 import profileProcess from "../../utils/profileProcess";
 
 class Home extends React.Component {
   constructor(props) {
-    super(props)
-    this.state = {profile: null};
+    super(props);
+
+    this.state = {profile: null, redirectToReferrer: false};
+    this.createDialogTips = this.createDialogTips.bind(this);
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({profile: profileProcess(getProfile().data)});
-    }, 500);
+    const request = async () => {
+      try {
+        let profile = await ajax('/user/profile.do');
+        this.setState({profile: profileProcess(profile)});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      }
+    };
+
+    request();
   }
 
-  componentDidUpdate(){
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
 
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
   }
 
   render() {
-    if (this.state.profile) {
+    if (this.state.redirectToReferrer) {
+      return (
+        <Redirect to={{
+          pathname: '/login',
+          state: {from: this.props.location}
+        }}/>
+      )
+    }
+
+    if (!this.state.profile) {
       return (
         <div className="container-fluid">
-          {/*<Drawer*/}
-            {/*menu={this.state.profile.menu}*/}
-            {/*hasChangeGroupBtn={this.state.profile.hasChangeGroupBtn}*/}
-          {/*/>*/}
+          <p className="p-2">程序准备中...</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="container-fluid">
+        <Drawer
+          menu={this.state.profile.menu}
+          hasChangeGroupBtn={this.state.profile.hasChangeGroupBtn}
+        />
+
+        <main>
+          <Header profile={this.state.profile.profile}/>
 
           <Switch>
             <Route
               exact
               path={this.props.match.url}
-              render={() => (
-                <Header title="" profile={this.state.profile.profile}/>
-              )}
+              render={() => (<div/>)}
             />
             <PrivateRoute
               path="/groups"
@@ -78,22 +128,9 @@ class Home extends React.Component {
               <NoMatch {...props} profile={this.state.profile.profile}/>
             )}/>
           </Switch>
-        </div>
-      )
-    } else {
-      return (
-        <div className="layout">
-          <div className="layout__container">
-            <header className="toolbar">
-              <div className="toolbar__row"></div>
-            </header>
-            <main>
-              <p>程序准备中...</p>
-            </main>
-          </div>
-        </div>
-      );
-    }
+        </main>
+      </div>
+    )
   }
 }
 

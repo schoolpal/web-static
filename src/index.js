@@ -8,4 +8,4 @@ root.style.position = "relative";
 root.style.width = "100%";
 root.style.height = "100%";
 
-ReactDOM.render(<App />, root);
+ReactDOM.render(<App/>, root);

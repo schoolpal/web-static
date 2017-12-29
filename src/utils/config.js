@@ -19,7 +19,7 @@ export default {
     "7-3": {
       PATH: "permissions",
       PATH_RULE: /^\/permissions$/,
-      ICON_CLASS: "fa-shield"
+      ICON_CLASS: "fa-users"
     },
 
     "7-4": {PATH: "users", PATH_RULE: /^\/users$/, ICON_CLASS: "fa-user"},

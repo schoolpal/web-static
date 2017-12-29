@@ -1,48 +1,57 @@
 import React from "react";
+import {$} from '../../vendor';
 
 class DialogTips extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props)
 
+    this.state = {text: this.props.text};
+    this.setText = this.setText.bind(this);
     this.accept = this.accept.bind(this);
     this.cancel = this.cancel.bind(this);
   }
 
-  componentDidMount(){
-    const dialogElem = document.getElementById("dialogTips");
-
-    window.componentHandler.upgradeElement(dialogElem);
-    this.dialog = dialogElem["Dialog"];
+  componentDidMount() {
+    this.dialog = $("#dialogTips");
   }
 
-  cancel(){
-    this.dialog.hide()
+  setText(text) {
+    this.setState({text: text});
   }
 
-  accept(){
-    this.props.accept();
-    this.dialog.hide()
+  cancel() {
+    this.dialog.modal('hide')
   }
 
-  render(){
-    return(
-      <aside id="dialogTips" className="dialog js-dialog" role="alertdialog">
-        <div className="dialog__surface">
-          <header className="dialog__header">
-            <h2 className="dialog__header__title">{this.props.title}</h2>
-          </header>
-          <section className="dialog__body">{this.props.text}</section>
-          <footer className="dialog__footer">
-            <button onClick={this.cancel} type="button"
-                    className="button button--cancel dialog__footer__button--cancel">取消
-            </button>
-            <button onClick={this.accept} type="button"
-                    className="button button--primary dialog__footer__button--accept">确认
-            </button>
-          </footer>
+  accept() {
+    if (this.props.accept) {
+      this.props.accept();
+    }
+
+    this.dialog.modal('hide')
+  }
+
+  render() {
+    return (
+      <div id="dialogTips" className="modal fade" tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">{this.props.title}</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>{this.state.text}</p>
+            </div>
+            <div className="modal-footer">
+              <button onClick={this.cancel} type="button" className="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button onClick={this.accept} type="button" className="btn btn-primary">确认</button>
+            </div>
+          </div>
         </div>
-        <div className="dialog__backdrop"></div>
-      </aside>
+      </div>
     )
   }
 }

@@ -1,117 +1,184 @@
 import React from 'react'
+import {$} from "../../vendor";
 
 import getSimpleGroup from "../../api/getSimoleGroups";
 import groupProcess from "../../utils/groupProcess";
+import ajax from "../../utils/ajax";
 
 const Group = ({list}) => {
   if (list.length) {
     return (
-      <section className="dialog__body dialog__body--scrollable">
-        <ul id="group" className="list groups js-groups">
+      <div className="tree">
+        <ul>
           {GroupItem(list)}
         </ul>
-      </section>
+      </div>
     );
   } else {
     return (
-      <section className="dialog__body">数据加载中...</section>
+      <div className="dialog__body">数据加载中...</div>
     );
   }
 };
 
 const GroupItem = data => {
-  let table = [];
+  let tree = [];
 
   data.map(item => {
-    const spacingStyle = {paddingLeft: 56 * item.level + "px"};
-
-    table.push(
-      <li key={item.cId} gid={item.cId} level={item.level} style={spacingStyle} className="groups-item">
-        <HasChildren
-          children={item.children && item.children.length ? true : false}
-        />
-        {item.cName}
-      </li>
-    );
+    let children = [];
 
     if (item.children && item.children.length) {
       let children = [];
 
       children.push(GroupItem(item.children));
-      table.push(children);
+
+      if (item.cName) {
+        tree.push(
+          <li key={item.cId}>
+            {GroupItemContent(item)}
+            <ul>{children}</ul>
+          </li>
+        );
+      } else {
+        tree.push(children);
+      }
+    } else {
+      tree.push(
+        <li key={item.cId}>{GroupItemContent(item)}</li>
+      )
     }
   });
 
-  return table;
+  return tree;
 };
 
-const HasChildren = ({children}) => {
-  if (children) {
-    return (
-      <i className="groups-item__start-detail fa fa-angle-down fa-fw groups-arrow" aria-hidden="true"></i>
-    );
+const GroupItemContent = data => {
+  const nodeClass = 'tree-node ' + ((data.children && data.children.length) ? '' : 'not-child');
+
+  return (
+    <div className="hd">
+      <i data-node className={nodeClass}/>
+      <p data-o={data.cId} className="select"><span>{data.cName}</span></p>
+    </div>
+  )
+};
+
+const handleNode = (evt) => {
+  if ($(evt.target).hasClass('not-child')) {
+    return;
+  }
+
+  if ($(evt.target).hasClass('closed')) {
+    $(evt.target)
+      .removeClass('closed')
+      .closest('li')
+      .children('ul')
+      .show();
   } else {
-    return <span className="groups-item__start-detail"></span>;
+    $(evt.target)
+      .closest('li')
+      .find('[data-node]')
+      .addClass('closed')
+      .end()
+      .closest('li')
+      .find('ul')
+      .hide();
   }
 };
 
 class DialogGroup extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.state = {list: []}
+    this.state = {list: [], selected: null, errText: null};
     this.group = null;
-    this.accept = this.accept.bind(this)
-    this.cancel = this.cancel.bind(this)
+    this.handleSelect = this.handleSelect.bind(this);
+    this.accept = this.accept.bind(this);
+    this.cancel = this.cancel.bind(this);
   }
 
   componentDidMount() {
-    const dialogElem = document.getElementById("dialogGroup");
+    this.dialog = $("#dialogGroup");
+    this.dialog
+      .on('click', '[data-node]', handleNode)
+      .on('click', '[data-o]', this.handleSelect);
 
-    window.componentHandler.upgradeElement(dialogElem);
-    this.dialog = dialogElem["Dialog"];
+    const request = async () => {
+      try {
+        let list = await ajax('/user/listOrgs.do');
 
-    setTimeout(() => {
-      this.setState({list: groupProcess(getSimpleGroup().data)});
+        this.setState({list: groupProcess(list)}, () => {
+          if (this.props.defaults) {
+            this.dialog.find(`[data-o=${this.props.defaults}]`).trigger('click');
+          }
+        });
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.setState({errText: `${err.errCode}: ${err.errText}`});
+        }
+      }
+    };
 
-      const groupElem = document.getElementById("group");
-      window.componentHandler.upgradeElement(groupElem);
-      this.group = groupElem["Groups"];
-    }, 2000)
+    request();
   }
 
-  accept() {
-    if (this.group === null || this.group.selected() === null) {
+  handleSelect(evt) {
+    const elem = $(evt.target).data('o') ? $(evt.target) : $(evt.target).parent();
+    let selected = null;
+
+    if (elem.hasClass('selected')) {
       return;
     }
 
-    this.props.accept(this.group.selected()[0]);
-    this.dialog.hide()
+    this.dialog.find('[data-o]').removeClass('selected');
+    elem.addClass('selected');
+
+    selected = {
+      id: elem.data('o'),
+      name: elem.children('span').text()
+    };
+
+    this.setState({selected})
   }
 
-  cancel(){
-    this.dialog.hide()
+  accept() {
+    if (this.state.selected === null) {
+      return;
+    }
+
+    this.props.accept(this.state.selected);
+    this.dialog.modal('hide');
+  }
+
+  cancel() {
+    this.dialog.modal('hide');
   }
 
   render() {
     return (
-      <aside id="dialogGroup" className="dialog js-dialog" role="alertdialog">
-        <div className="dialog__surface">
-          <header className="dialog__header">
-            <h2 className="dialog__header__title">清选择一个组织</h2>
-          </header>
-          <Group list={this.state.list}/>
-          <footer className="dialog__footer">
-            <button onClick={this.cancel} type="button"
-                    className="button button--cancel dialog__footer__button--cancel">取消
-            </button>
-            <button onClick={this.accept} type="button"
-                    className="button button--primary dialog__footer__button--accept">选择
-            </button>
-          </footer>
+      <div id="dialogGroup" className="modal fade" tabIndex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">请选择一个组织</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              {
+                this.state.errText ? <p>{this.state.errText}</p> : <Group list={this.state.list}/>
+              }
+            </div>
+            <div className="modal-footer">
+              <button onClick={this.cancel} type="button" className="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button onClick={this.accept} type="button" className="btn btn-primary">确认</button>
+            </div>
+          </div>
         </div>
-        <div className="dialog__backdrop"></div>
-      </aside>
+      </div>
     )
   }
 }
