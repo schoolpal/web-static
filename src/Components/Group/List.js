@@ -167,10 +167,14 @@ class List extends React.Component {
   addAction() {
     const selectedElem = $('table [name=org]:checked');
 
+    if (this.state.isAnimating) {
+      return;
+    }
+
     const location = {
       pathname: `${this.props.match.url}/create`,
       state: {
-        parentGroup: selectedElem ? {
+        parentGroup: selectedElem.length ? {
           id: selectedElem.parents('tr').attr("gid"),
           name: selectedElem.parents('tr').attr("gname")
         } : null
@@ -181,23 +185,43 @@ class List extends React.Component {
   }
 
   modAction() {
-    const selectedElem = $('table [name=org]:checked');
+    const selectedId = $('table [name=org]:checked').val();
 
-    if (!selectedElem) {
+    if (!selectedId || this.state.isAnimating) {
       return;
     }
 
-    const targetPath = `${this.props.match.url}/${selectedElem.val()}`;
+    const targetPath = `${this.props.match.url}/${selectedId}`;
 
     this.props.history.push(targetPath);
   }
 
   delAction() {
-    const selectedElem = $('table [name=org]:checked');
+    const selectedId = $('table [name=org]:checked').val();
 
-    if (!selectedElem) {
+    if (!selectedId || this.state.isAnimating) {
       return;
     }
+
+    this.setState({isAnimating: true});
+
+    const request = async () => {
+      try {
+        let rs = await ajax('/sys/org/del.do', {id: selectedId});
+        let list = await ajax('/sys/org/list.do');
+        this.setState({list: groupProcess(list)});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   render() {

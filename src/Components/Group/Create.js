@@ -5,8 +5,8 @@ import {Redirect} from 'react-router-dom'
 import Form from "./Form";
 import DialogTips from "../Dialog/DialogTips";
 import Progress from "../Progress/Progress"
-import mainSize from "../../utils/mainSize";
 
+import mainSize from "../../utils/mainSize";
 import historyBack from "../../utils/historyBack";
 import ajax from "../../utils/ajax";
 
