@@ -2,11 +2,13 @@ import React from "react";
 import {Redirect} from 'react-router-dom'
 
 import Form from "./Form";
+import DialogTips from "../Dialog/DialogTips";
 import Progress from "../Progress/Progress"
 
 import historyBack from "../../utils/historyBack";
 import mainSize from "../../utils/mainSize";
 import ajax from "../../utils/ajax";
+import ReactDOM from "react-dom";
 
 class Editor extends React.Component {
   constructor(props) {
@@ -19,6 +21,7 @@ class Editor extends React.Component {
       id: this.props.match.params.groupId,
       data: null
     };
+    this.createDialogTips = this.createDialogTips.bind(this);
     this.updated = this.updated.bind(this);
   }
 
@@ -41,6 +44,34 @@ class Editor extends React.Component {
 
     request();
     mainSize();
+  }
+
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
+  }
+
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
   }
 
   updated() {

@@ -142,6 +142,12 @@ class List extends React.Component {
     mainSize();
   }
 
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
+  }
+
   createDialogTips(text) {
     if (this.tips === undefined) {
       this.tipsContainer = document.createElement('div');

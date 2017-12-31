@@ -307,7 +307,6 @@ main h5 p {
 }
 
 .table {
-  min-width: 1000px;
   background: #ffffff;
 }
 
@@ -318,4 +317,10 @@ main h5 p {
 
 .table thead th {
   white-space: nowrap;
+}
+
+@media (max-width: 1000px) {
+  .table {
+    min-width: 1000px;
+  }
 }

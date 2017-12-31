@@ -20,7 +20,7 @@ class Roles extends React.Component {
         <Route path={`${this.props.match.url}/create`} render={(props) => (
           <Create {...props} profile={this.props.profile}/>
         )}/>
-        <Route path={`${this.props.match.url}/:groupId`} render={(props) => (
+        <Route path={`${this.props.match.url}/:roleId`} render={(props) => (
           <Editor {...props} profile={this.props.profile}/>
         )}/>
         <Route path={`${this.props.match.url}`} render={(props) => (

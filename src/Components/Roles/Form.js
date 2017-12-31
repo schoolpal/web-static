@@ -21,7 +21,7 @@ class Form extends React.Component {
 
       selectedRole: "",
       selectedFunc: []
-    }
+    };
     this.changedAdmin = this.changedAdmin.bind(this);
     this.changedFunc = this.changedFunc.bind(this);
     this.changedRole = this.changedRole.bind(this);
@@ -35,17 +35,7 @@ class Form extends React.Component {
     funcDic = funcDic.filter(func => (func.cId === func.cRootId && func.cId !== this.FUNC_ADMIN));
     rankDic = rankDic.filter(rank => (rank.cId !== this.RANK_ADMIN));
 
-    this.setState({funcDic, rankDic}, () => {
-      const checkboxs = nodeListToArray(this.form.querySelectorAll(".js-checkbox"));
-      const radios = nodeListToArray(this.form.querySelectorAll(".js-radio"));
-      const switchs = nodeListToArray(this.form.querySelectorAll(".js-switch"));
-      let elems = nodeListToArray(this.form.querySelectorAll(".js-textfield"));
-
-      if (elems.length) {
-        elems = elems.concat(checkboxs, radios, switchs)
-        window.componentHandler.upgradeElements(elems);
-      }
-    })
+    this.setState({funcDic, rankDic})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,23 +50,19 @@ class Form extends React.Component {
       }
 
       this.setState({...state}, () => {
-        const checkboxs = nodeListToArray(this.form.querySelectorAll(".js-checkbox"));
-        const radios = nodeListToArray(this.form.querySelectorAll(".js-radio"));
-        const switchs = nodeListToArray(this.form.querySelectorAll(".js-switch"));
-        let elems = nodeListToArray(this.form.querySelectorAll(".js-textfield"));
-
-        elems = elems.concat(checkboxs, radios, switchs)
-        window.componentHandler.upgradeElements(elems);
-
-        document.getElementById("isAdmin").parentNode["Switch"].checkToggleState();
-        document.getElementById("name").parentNode["Textfield"].change(nextProps.data.cName);
-        document.getElementById("desc").parentNode["Textfield"].change(nextProps.data.cDesc);
-      })
+        this.form.group.value = nextProps.data.cOrgName;
+        this.form.name.value = nextProps.data.cName;
+        this.form.desc.value = nextProps.data.cDesc;
+      });
     }
   }
 
   changedAdmin() {
-    this.setState({isAdmin: !this.state.isAdmin})
+    this.setState({
+      isAdmin: true,
+      selectedRole: "",
+      selectedFunc: []
+    })
   }
 
   changedFunc(evt) {
@@ -96,35 +82,28 @@ class Form extends React.Component {
 
     this.setState({
       selectedFunc: tempFunc
-    }, () => {
-      const checkboxs = this.form.querySelectorAll(".js-checkbox");
+    });
 
-      for (let i = 0; i < checkboxs.length; i++) {
-        checkboxs[i]["Checkbox"].checkToggleState();
-      }
-    })
+    if (tempFunc.length) {
+      this.setState({isAdmin: false})
+    }
   }
 
   changedRole(evt) {
-    const isManger = evt.target.value === this.RANK_MANGER.toString();
+    const isManger = parseInt(evt.target.value) === this.RANK_MANGER;
     let tempFunc = [];
 
     if (!isManger && this.state.selectedFunc.length > 1) {
       tempFunc = this.state.selectedFunc.shift();
       this.setState({
         selectedFunc: tempFunc
-      }, () => {
-        const checkboxs = this.form.querySelectorAll(".js-checkbox");
-
-        for (let i = 0; i < checkboxs.length; i++) {
-          checkboxs[i]["Checkbox"].checkToggleState();
-        }
       })
     }
 
     this.setState({
       isManger,
-      selectedRole: evt.target.value
+      isAdmin: false,
+      selectedRole: parseInt(evt.target.value)
     })
   }
 
@@ -155,129 +134,119 @@ class Form extends React.Component {
         <form ref={(dom) => {
           this.form = dom
         }}>
-          <ul className="list list--two-line">
-            <li className="list-item">
-            <span className="list-item__text">
-              数据加载中...
-            </span>
-            </li>
-          </ul>
+          <div className="row justify-content-md-center">
+            <div className="col col-md-6">
+              <div className="card">
+                <div className="card-body">数据加载中...</div>
+              </div>
+            </div>
+          </div>
         </form>
       )
     } else {
-      const isAdminClass = {display: `${this.state.isAdmin ? "none" : "flex"}`};
-      const isAdminText = this.state.isAdmin ? "管理员" : "非管理员";
-
       return (
         <form ref={(dom) => {
           this.form = dom
         }}>
-          <ul className="list list--auto-line">
-            <li className="list-item">
-            <span className="list-item__text">
-              所属组织
-            </span>
-              <div className="list-item__end-form">
-                {this.props.groupName}
-              </div>
-            </li>
-            <li className="list-item">
-            <span className="list-item__text">
-              管理员
-              <span className="list-item__text__secondary">是否为管理员</span>
-            </span>
-              <div className="list-item__end-form">
-                <label className="switch js-switch" htmlFor="isAdmin">
-                  <input
-                    type="checkbox"
-                    id="isAdmin"
-                    className="switch__input"
-                    value={this.state.isAdmin ? "on" : "off"}
-                    onChange={this.changedAdmin}
-                    checked={this.state.isAdmin}
-                  />
-                  <span className="switch__label"></span>
-                </label>
-              </div>
-            </li>
-            <li className="list-item">
-            <span className="list-item__text">
-              角色职能
-              <span className="list-item__text__secondary">{isAdminText}</span>
-            </span>
-            </li>
-            <li className="list-item" style={isAdminClass}>
-              <div className="grid">
-                {
-                  this.state.funcDic.map((func) => (
-                    <div key={func.cId} className="cell cell--4-col typography--text__center">
-                      <label className="checkbox js-checkbox" htmlFor={`func-${func.cId}`}>
+          <div className="row justify-content-md-center">
+            <div className="col col-md-5">
+              <div className="card">
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="group"><em className="text-danger">*</em>所属组织</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="group"
+                      value={this.props.groupName}
+                      disabled={true}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="group"><em className="text-danger">*</em>角色职能</label>
+                    <div>
+                      {
+                        this.state.funcDic.map((func) => (
+                          <div key={func.cId} className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              value={func.cId}
+                              id={`func-${func.cId}`}
+                              onChange={this.changedFunc}
+                              checked={this.state.selectedFunc.includes(func.cId)}
+                            />
+                            <label className="form-check-label" htmlFor={`func-${func.cId}`}>
+                              {func.cNameShort}
+                            </label>
+                          </div>
+                        ))
+                      }
+                      <div className="form-check form-check-inline">
                         <input
-                          type="checkbox"
-                          id={`func-${func.cId}`}
-                          value={func.cId}
-                          className="checkbox__input"
-                          onChange={this.changedFunc}
-                          checked={this.state.selectedFunc.includes(func.cId)}
-                        />
-                        <span className="checkbox__label">{func.cNameShort}</span>
-                      </label>
-                    </div>
-                  ))
-                }
-              </div>
-            </li>
-            <li className="list-item">
-            <span className="list-item__text">
-              角色职级
-              <span className="list-item__text__secondary">{isAdminText}</span>
-            </span>
-            </li>
-            <li className="list-item" style={isAdminClass}>
-              <div className="grid">
-                {
-                  this.state.rankDic.map((rank) => (
-                    <div key={rank.cId} className="cell cell--4-col typography--text__center">
-                      <label className="radio js-radio" htmlFor={`option-${rank.cId}`}>
-                        <input
+                          id="funcAdmin"
+                          className="form-check-input"
                           type="radio"
-                          id={`option-${rank.cId}`}
-                          className="radio__button"
-                          name="rank"
-                          value={rank.cId}
-                          onChange={this.changedRole}
+                          name="funcAdmin"
+                          value={this.FUNC_ADMIN}
+                          onChange={this.changedAdmin}
+                          checked={this.state.isAdmin}
                         />
-                        <span className="radio__label">{rank.cName}</span>
-                      </label>
+                        <label className="form-check-label" htmlFor="funcAdmin">
+                          系统
+                        </label>
+                      </div>
                     </div>
-                  ))
-                }
-              </div>
-            </li>
-            <li className="list-item">
-            <span className="list-item__text">
-              角色名称
-              <span className="list-item__text__secondary">必填字段</span>
-            </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="name" name="name" className="textfield__input" type="text" required={true}/>
-                  <label className="textfield__label" htmlFor="name">角色名称...</label>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="group"><em className="text-danger">*</em>角色职级</label>
+                    <div>
+                      {
+                        this.state.rankDic.map((rank) => (
+                          <div key={rank.cId} className="form-check form-check-inline">
+                            <input
+                              id={`option-${rank.cId}`}
+                              className="form-check-input"
+                              type="radio"
+                              name="rank"
+                              value={rank.cId}
+                              onChange={this.changedRole}
+                              checked={rank.cId === this.state.selectedRole ? true : false}
+                            />
+                            <label className="form-check-label" htmlFor={`option-${rank.cId}`}>
+                              {rank.cName}
+                            </label>
+                          </div>
+                        ))
+                      }
+                      <div className="form-check form-check-inline">
+                        <input
+                          id="rankAdmin"
+                          className="form-check-input"
+                          type="radio"
+                          name="rankAdmin"
+                          value={this.RANK_ADMIN}
+                          onChange={this.changedAdmin}
+                          checked={this.state.isAdmin}
+                        />
+                        <label className="form-check-label" htmlFor="rankAdmin">
+                          系统管理员
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="name"><em className="text-danger">*</em>角色名称</label>
+                    <input type="text" className="form-control" name="name" required={true}/>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="name">角色描述</label>
+                    <textarea name="desc" className="form-control" rows="3"></textarea>
+                  </div>
                 </div>
               </div>
-            </li>
-            <li className="list-item">
-            <span className="list-item__text">
-              角色描述
-            </span>
-              <div className="list-item__end-form">
-                <div className="textfield js-textfield is-upgraded">
-                  <input id="desc" name="desc" className="textfield__input" type="text"/>
-                  <label className="textfield__label" htmlFor="desc">角色描述...</label>
-                </div>
-              </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </form>
       )
     }

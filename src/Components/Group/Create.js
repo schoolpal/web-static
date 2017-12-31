@@ -20,11 +20,17 @@ class Create extends React.Component {
       isCreated: false,
     };
     this.createDialogTips = this.createDialogTips.bind(this);
-    this.created = this.created.bind(this);
+    this.create = this.create.bind(this);
   }
 
   componentDidMount() {
     mainSize();
+  }
+
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
   }
 
   createDialogTips(text) {
@@ -49,7 +55,7 @@ class Create extends React.Component {
     this.tips.dialog.modal('show');
   }
 
-  created() {
+  create() {
     const query = this.form.getFormValue();
 
     if (!query) {
@@ -107,7 +113,7 @@ class Create extends React.Component {
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={this.created}
+              onClick={this.create}
               disabled={this.state.isAnimating}
             >
               保存

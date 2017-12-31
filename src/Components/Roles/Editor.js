@@ -1,37 +1,82 @@
 import React from 'react'
+import ReactDOM from "react-dom";
 import {Redirect} from 'react-router-dom'
 
 import Form from "./Form";
-import Header from "../Header/Header"
+import DialogTips from "../Dialog/DialogTips";
 import Progress from "../Progress/Progress"
 
+import mainSize from "../../utils/mainSize";
 import historyBack from "../../utils/historyBack";
-import getRole from "../../api/getRole";
+import ajax from "../../utils/ajax";
 
 class Editor extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
+      redirectToReferrer: false,
       isAnimating: false,
-      isCreated: false,
+      isUpdated: false,
+      id: this.props.match.params.roleId,
 
       data: null
-    }
-    this.updateRole = this.updateRole.bind(this);
+    };
+    this.createDialogTips = this.createDialogTips.bind(this);
+    this.update = this.update.bind(this);
   }
 
   componentDidMount() {
-    const data = getRole().data;
+    const request = async () => {
+      try {
+        let data = await ajax('/role/query.do', {id: this.state.id});
 
-    setTimeout(() => {
-      this.setState({
-        data: data
-      })
-    }, 2000)
+        data.cOrgName = this.props.location.state.groupName;
+        this.setState({data: data})
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
+    mainSize()
   }
 
-  updateRole() {
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
+  }
+
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
+  }
+
+  update() {
     const toast = document.getElementById("toast");
     let query = this.form.getFormValue();
 
@@ -39,67 +84,77 @@ class Editor extends React.Component {
       return;
     }
 
+    query.id = this.state.id;
     query.orgId = this.props.location.state.groupId;
-
-    console.log(query)
     this.setState({isAnimating: true});
-    setTimeout(() => {
-      toast["Snackbar"].showSnackbar({message: "编辑成功，将跳转到列表页！"})
-      this.setState({isCreated: true})
-    }, 2500)
+    const request = async () => {
+      try {
+        let rs = await ajax('/sys/role/mod.do', query);
+
+        this.setState({isUpdated: true})
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request()
   }
 
   render() {
-    if (this.state.isCreated) {
-      return <Redirect to="/roles"/>
-    } else {
+    if (this.state.redirectToReferrer) {
       return (
-        <div className="layout__container">
-          <Header title="角色编辑" profile={this.props.profile}/>
-          <main>
-            <div className="grid grid--no-spacing">
-              <div className="cell--3-offset cell--1-offset-tablet"></div>
-              <div className="cell--6-col">
-                <div className="card shadow--2dp">
-                  <Progress isAnimating={this.state.isAnimating}/>
-
-                  <div className="card__title">
-                    <div className="card__title-text">
-                      <h2 className="card__title-text--large">角色信息</h2>
-                    </div>
-                  </div>
-
-                  <Form
-                    isEditor={true}
-                    data={this.state.data}
-                    ref={(dom) => {
-                      this.form = dom
-                    }}
-                  />
-
-                  <div className="card__actions card--border">
-                    <div className="layout-spacer"></div>
-                    <button onClick={() => {
-                      historyBack(this.props.history)
-                    }} className="button js-button">
-                      返回
-                    </button>
-                    <button
-                      onClick={this.updateRole}
-                      className="button button--primary js-button"
-                      disabled={this.state.isAnimating}
-                    >
-                      保存
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="cell--3-offset cell--1-offset-tablet"></div>
-            </div>
-          </main>
-        </div>
+        <Redirect to={{
+          pathname: '/login',
+          state: {from: this.props.location}
+        }}/>
       )
     }
+
+    if (this.state.isUpdated) {
+      return <Redirect to="/roles"/>
+    }
+
+    return (
+      <div>
+        <h5 id="subNav">
+          <i className="fa fa-users" aria-hidden="true"/>
+          &nbsp;角色管理&nbsp;&nbsp;|&nbsp;&nbsp;
+          <p className="d-inline text-muted">角色编辑</p>
+          <div className="btn-group float-right" role="group">
+            <button onClick={() => {
+              historyBack(this.props.history)
+            }} type="button" className="btn btn-light">返回
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={this.update}
+              disabled={this.state.isAnimating}
+            >
+              保存
+            </button>
+          </div>
+        </h5>
+
+        <div id="main" className="main p-3">
+          <Progress isAnimating={this.state.isAnimating}/>
+
+          <Form
+            isEditor={true}
+            data={this.state.data}
+            ref={(dom) => {
+              this.form = dom
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 }
 

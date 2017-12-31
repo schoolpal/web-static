@@ -1,7 +1,6 @@
 import React from 'react'
 import {$} from "../../vendor";
 
-import getSimpleGroup from "../../api/getSimoleGroups";
 import groupProcess from "../../utils/groupProcess";
 import ajax from "../../utils/ajax";
 
@@ -91,7 +90,6 @@ class DialogGroup extends React.Component {
     super(props);
 
     this.state = {list: [], selected: null, errText: null};
-    this.group = null;
     this.handleSelect = this.handleSelect.bind(this);
     this.accept = this.accept.bind(this);
     this.cancel = this.cancel.bind(this);
