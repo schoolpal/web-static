@@ -1,74 +1,101 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import {Redirect} from 'react-router-dom'
 
-import Header from "../Header/Header";
+import Tree from '../Group/Tree';
+import DialogTips from "../Dialog/DialogTips";
 import Commands from "../Commands/Commands";
-import DialogGroup from "../Dialog/DialogGroup";
+import Progress from "../Progress/Progress"
 
-import getUsers from "../../api/getUsers"
-import nodeListToArray from "../../utils/nodeListToArray";
+import mainSize from "../../utils/mainSize";
+import ajax from "../../utils/ajax";
+import {$} from "../../vendor";
 
 const Table = ({list, changedState}) => {
   if (list.length) {
     return (
-      <div className="card__supporting-datatable">
-        <table id="list" className="data-table groups js-data-table js-groups data-table--selectable">
-          <thead>
-          <tr>
-            <th className="data-table__cell--non-numeric">状态</th>
-            <th className="data-table__cell--non-numeric">用户名</th>
-            <th className="data-table__cell--non-numeric">姓名</th>
-            <th className="data-table__cell--non-numeric">昵称</th>
-            <th className="data-table__cell--non-numeric">电话号码</th>
-            <th className="data-table__cell--non-numeric">电子邮件</th>
-            <th>IM(QQ)</th>
-            <th className="data-table__cell--non-numeric">用户角色</th>
-          </tr>
-          </thead>
-          <tbody>
-          {
-            list.map((user) => (
-              <tr key={user.cId} uid={user.cId}>
-                <td className="data-table__cell--non-numeric">
-                  <label className="switch js-switch" htmlFor={`switch-${user.cId}`}>
+      <table className="table table-bordered table-sm">
+        <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>状态</th>
+          <th>用户名</th>
+          <th>姓名</th>
+          <th>昵称</th>
+          <th>电话号码</th>
+          <th>电子邮件</th>
+          <th>IM(QQ)</th>
+          <th>用户角色</th>
+        </tr>
+        </thead>
+        <tbody>
+        {
+          list.map((user) => (
+            <tr key={user.cId} uid={user.cId}>
+              <th scope="row">
+                <div className="form-check">
+                  <label className="form-check-label">
                     <input
-                      type="checkbox"
-                      id={`switch-${user.cId}`}
-                      className="switch__input"
-                      value={user.cAvailable ? "on" : "off"}
-                      onChange={changedState}
-                      checked={user.cAvailable}
+                      className="form-check-input position-static"
+                      type="radio"
+                      name="user"
+                      value={user.cId}
                     />
-                    <span className="switch__label"></span>
                   </label>
-                </td>
-                <td className="data-table__cell--non-numeric">{user.cLoginname}</td>
-                <td className="data-table__cell--non-numeric">{user.cRealname}</td>
-                <td className="data-table__cell--non-numeric">{user.cNickname}</td>
-                <td className="data-table__cell--non-numeric">{user.cPhone}</td>
-                <td className="data-table__cell--non-numeric">{user.cEmail}</td>
-                <td>{user.cQq}</td>
-                <td className="data-table__cell--non-numeric">
-                  {
-                    user.roles.map((role) => {
-                      return role.cName
-                    }).join(',')
-                  }
-                </td>
-              </tr>
-            ))
-          }
-          </tbody>
-        </table>
-      </div>
-    );
-  } else {
-    return (
-      <div className="card__supporting-text">
-        <p>数据加载中...</p>
-      </div>
+                </div>
+              </th>
+              <td>
+                <div className="switch">
+                  <input
+                    type="checkbox"
+                    id={`switch-${user.cId}`}
+                    name={`switch-${user.cId}`}
+                    value={user.cId}
+                    onChange={changedState}
+                    checked={user.cAvailable}
+                  />
+                  <label htmlFor={`switch-${user.cId}`}/>
+                </div>
+              </td>
+              < td> {user.cLoginname}</td>
+              <td>{user.cRealname}</td>
+              <td>{user.cNickname}</td>
+              <td>{user.cPhone}</td>
+              <td>{user.cEmail}</td>
+              <td>{user.cQq}</td>
+              <td>
+                {
+                  user.roles.map((role) => {
+                    return role.cName
+                  }).join(',')
+                }
+              </td>
+            </tr>
+          ))
+        }
+        </tbody>
+      </table>
     );
   }
+
+  return (
+    <table className="table table-bordered table-sm">
+      <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>状态</th>
+        <th>用户名</th>
+        <th>姓名</th>
+        <th>昵称</th>
+        <th>电话号码</th>
+        <th>电子邮件</th>
+        <th>IM(QQ)</th>
+        <th>用户角色</th>
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  )
 };
 
 class List extends React.Component {
@@ -76,13 +103,15 @@ class List extends React.Component {
     super(props)
 
     this.state = {
+      isAnimating: true,
+      redirectToReferrer: false,
       groupId: this.props.profile.org.cId,
       groupName: this.props.profile.org.cName,
 
       list: []
-    }
-    this.createGroupsDialog = this.createGroupsDialog.bind(this);
-    this.acceptGroupDialog = this.acceptGroupDialog.bind(this);
+    };
+    this.createDialogTips = this.createDialogTips.bind(this);
+    this.changedGroup = this.changedGroup.bind(this);
     this.addAction = this.addAction.bind(this);
     this.modAction = this.modAction.bind(this);
     this.delAction = this.delAction.bind(this);
@@ -90,51 +119,60 @@ class List extends React.Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({list: getUsers().data});
-    }, 500);
-  }
-
-  componentDidUpdate() {
-    const button = nodeListToArray(document.getElementById("users").querySelectorAll(".js-button"))
-    const switchs = nodeListToArray(document.getElementById("users").querySelectorAll(".js-switch"))
-    const checkbox = nodeListToArray(document.getElementById("users").querySelectorAll(".js-checkbox"))
-    const dataTable = nodeListToArray(document.getElementById("users").querySelectorAll(".js-data-table"))
-    let elems = [];
-
-    elems = elems.concat(button, switchs, checkbox, dataTable);
-
-    window.componentHandler.upgradeElements(elems);
+    mainSize()
   }
 
   componentWillUnmount() {
-    if (this.groupContainer) {
-      document.body.removeChild(this.groupContainer);
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
     }
   }
 
-  createGroupsDialog() {
-    if (this.group === undefined) {
-      this.groupContainer = document.createElement('div');
+  changedGroup(groupId, groupName) {
+    this.setState({
+      isAnimating: true,
+      groupId: groupId,
+      groupName: groupName
+    });
+
+    const request = async () => {
+      try {
+        let list = await ajax('/org/listUsers.do', {id: groupId});
+        this.setState({list: list});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
+  }
+
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
       ReactDOM.render(
-        <DialogGroup
-          accept={this.acceptGroupDialog}
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
           ref={(dom) => {
-            this.group = dom
+            this.tips = dom
           }}
         />,
-        document.body.appendChild(this.groupContainer)
+        document.body.appendChild(this.tipsContainer)
       );
+    } else {
+      this.tips.setText(text);
     }
 
-    this.group.dialog.show();
-  }
-
-  acceptGroupDialog(selected) {
-    this.setState({
-      groupId: selected.getAttribute("gid"),
-      groupName: selected.textContent
-    })
+    this.tips.dialog.modal('show');
   }
 
   addAction() {
@@ -144,78 +182,130 @@ class List extends React.Component {
         groupId: this.state.groupId,
         groupName: this.state.groupName
       }
-    }
+    };
 
     this.props.history.push(location);
   }
 
   modAction() {
-    const selectedRow = document.getElementById("list")["DataTable"].selected();
+    const selectedId = $('table [name=user]:checked').val();
 
-    if (!selectedRow) {
+    if (!selectedId || this.state.isAnimating) {
       return;
     }
 
     const location = {
-      pathname: `${this.props.match.url}/${selectedRow[0].getAttribute("uid")}`,
+      pathname: `${this.props.match.url}/${selectedId}`,
       state: {
         groupId: this.state.groupId,
         groupName: this.state.groupName
       }
-    }
+    };
 
     this.props.history.push(location);
   }
 
   delAction() {
-    const selectedRow = document.getElementById("list")["DataTable"].selected();
+    const selectedId = $('table [name=user]:checked').val();
 
-    if (!selectedRow) {
+    if (!selectedId || this.state.isAnimating) {
       return;
     }
+
+    this.setState({isAnimating: true});
+
+    const request = async () => {
+      try {
+        let rs = await ajax('/sys/user/del.do', {id: selectedId});
+        let list = this.state.list.filter((user) => (user.cId !== selectedId));
+        this.setState({list: list});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   changedState(evt) {
-    const uid = evt.target.id.split("-")[1];
-    const updateList = this.state.list.map((item) => {
-      if (item.cId === uid) {
-        item.cAvailable = !item.cAvailable
+    let enabled;
+    const id = evt.target.id.split("-")[1];
+    const oldList = this.state.list.map((item) => (item));
+    const updateList = oldList.map((item) => {
+      if (item.cId === id) {
+        item.cAvailable = !item.cAvailable;
+        enabled = item.cAvailable;
       }
 
       return item;
     });
+    
+    this.setState({isAnimating: true, list: updateList});
 
-    this.setState({list: updateList});
+    const request = async () => {
+      try {
+        let rs = await ajax('/sys/user/enable.do', {id, enabled});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+          this.setState({list: oldList});
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   render() {
+    if (this.state.redirectToReferrer) {
+      return (
+        <Redirect to={{
+          pathname: '/login',
+          state: {from: this.props.location}
+        }}/>
+      )
+    }
+
     return (
-      <div className="layout__container">
-        <Header title="用户管理" profile={this.props.profile}/>
-        <main>
-          <div className="grid">
-            <div className="cell cell--12-col">
-              <div id="users" className="card shadow--2dp">
-                <div className="card__title">
-                  {this.state.groupName}
-                  <div onClick={this.createGroupsDialog} className="button button--icon js-button">
-                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                  </div>
-                  <div className="card__title--spacer"/>
-                  <Commands
-                    commands={this.props.commands}
-                    addAction={this.addAction}
-                    modAction={this.modAction}
-                    delAction={this.delAction}
-                  />
-                </div>
-                <div className="card__supporting-datatable">
-                  <Table list={this.state.list} changedState={this.changedState}/>
-                </div>
-              </div>
+      <div>
+        <h5 id="subNav">
+          <i className="fa fa-sitemap" aria-hidden="true"/>&nbsp;用户管理
+
+          <Commands
+            commands={this.props.commands}
+            addAction={this.addAction}
+            modAction={this.modAction}
+            delAction={this.delAction}
+          />
+        </h5>
+        <div id="main" className="main p-3">
+          <Progress isAnimating={this.state.isAnimating}/>
+
+          <div className="row">
+            <div className="col-12 col-lg-5 col-xl-4">
+              <Tree
+                defaults={this.state.groupId}
+                loadingText={false}
+                changed={this.changedGroup}
+              />
+            </div>
+            <div className="col-12 col-lg-7 col-xl-8">
+              <p className={'h6 pb-3 mb-0'}>{this.state.groupName}</p>
+
+              <Table list={this.state.list} changedState={this.changedState}/>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     )
   }

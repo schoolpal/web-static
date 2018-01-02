@@ -37,8 +37,8 @@ const TableItem = (data, selectedFunc, changedFunc) => {
   }
 
   data.map(item => {
-    const level = item.cId.split('-').length;
-    const spacingStyle = {marginLeft: 26 * level + "px"};
+    const level = item.cId.split('-').length - 1;
+    const spacingStyle = {marginLeft: 26 * level + "px", whiteSpace: 'nowrap'};
     const childrenClass = item.children ? '' : 'not-child';
     let func = [];
 

@@ -1,8 +1,9 @@
 import React from 'react'
+import ReactDOM from "react-dom";
 
-import getFuncDic from "../../api/getFuncDic";
-import getRankDic from "../../api/getRankDic";
-import nodeListToArray from "../../utils/nodeListToArray";
+import DialogTips from "../Dialog/DialogTips";
+
+import ajax from "../../utils/ajax";
 
 class Form extends React.Component {
   constructor(props) {
@@ -22,6 +23,7 @@ class Form extends React.Component {
       selectedRole: "",
       selectedFunc: []
     };
+    this.createDialogTips = this.createDialogTips.bind(this);
     this.changedAdmin = this.changedAdmin.bind(this);
     this.changedFunc = this.changedFunc.bind(this);
     this.changedRole = this.changedRole.bind(this);
@@ -29,13 +31,27 @@ class Form extends React.Component {
   }
 
   componentDidMount() {
-    let funcDic = getFuncDic().data;
-    let rankDic = getRankDic().data;
+    const request = async () => {
+      try {
+        let funcDic = await ajax('/func/listAllFuncs.do');
+        let rankDic = await ajax('/role/ranks.do');
 
-    funcDic = funcDic.filter(func => (func.cId === func.cRootId && func.cId !== this.FUNC_ADMIN));
-    rankDic = rankDic.filter(rank => (rank.cId !== this.RANK_ADMIN));
+        funcDic = funcDic.filter(func => (func.cId === func.cRootId && func.cId !== this.FUNC_ADMIN));
+        rankDic = rankDic.filter(rank => (rank.cId !== this.RANK_ADMIN));
 
-    this.setState({funcDic, rankDic})
+        this.setState({funcDic, rankDic})
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -55,6 +71,34 @@ class Form extends React.Component {
         this.form.desc.value = nextProps.data.cDesc;
       });
     }
+  }
+
+  componentWillUnmount() {
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
+    }
+  }
+
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
   }
 
   changedAdmin() {
