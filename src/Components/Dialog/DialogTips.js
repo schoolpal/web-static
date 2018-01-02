@@ -5,6 +5,7 @@ class DialogTips extends React.Component {
   constructor(props) {
     super(props)
 
+    this.dialogId = `d-${new Date().getTime()}`;
     this.state = {text: this.props.text};
     this.setText = this.setText.bind(this);
     this.accept = this.accept.bind(this);
@@ -12,10 +13,11 @@ class DialogTips extends React.Component {
   }
 
   componentDidMount() {
-    this.dialog = $("#dialogTips");
+    this.dialog = $(`#${this.dialogId}`);
   }
 
   setText(text) {
+    console.log(text)
     this.setState({text: text});
   }
 
@@ -33,7 +35,7 @@ class DialogTips extends React.Component {
 
   render() {
     return (
-      <div id="dialogTips" className="modal fade" tabIndex="-1" role="dialog">
+      <div id={this.dialogId} className="modal fade" tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">

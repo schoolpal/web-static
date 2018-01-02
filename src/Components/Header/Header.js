@@ -39,6 +39,8 @@ class Header extends React.Component {
         />,
         document.body.appendChild(this.tipsContainer)
       );
+    } else {
+      this.tips.setText('是否要退出本系统？');
     }
 
     this.tips.dialog.modal('show');
@@ -59,7 +61,7 @@ class Header extends React.Component {
 
     return (
       <nav id="nav" className="navbar navbar-dark bg-primary">
-        <ul className="navbar-nav" />
+        <ul className="navbar-nav"/>
 
         <div className="dropdown">
           <button id="menu-button" className="btn btn-link dropdown-toggle" data-toggle="dropdown">

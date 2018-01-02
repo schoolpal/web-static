@@ -10,7 +10,6 @@ import Progress from "../Progress/Progress"
 import mainSize from "../../utils/mainSize";
 import ajax from "../../utils/ajax";
 import {$} from "../../vendor";
-import groupProcess from "../../utils/groupProcess";
 
 const Table = ({list}) => {
   if (list.length) {
@@ -75,7 +74,7 @@ const Table = ({list}) => {
 
 class List extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       isAnimating: true,

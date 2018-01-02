@@ -13,7 +13,7 @@ class Roles extends React.Component {
   render() {
     const groupCommands = this.props.commands.find((item) => {
       return item.rule.test(this.props.location.pathname) === true
-    })
+    });
 
     return (
       <Switch>

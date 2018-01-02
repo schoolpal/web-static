@@ -18,9 +18,9 @@ const Del = ({action}) => (
   </button>
 );
 
-const Auth = ({action, disabled}) => (
-  <button onClick={action} className="button button--primary js-button" disabled={disabled}>
-    授权
+const Auth = ({action}) => (
+  <button onClick={action} className="btn btn-danger">
+    <i className="fa fa-shield" aria-hidden="true"/>&nbsp;&nbsp;授权
   </button>
 );
 
@@ -42,7 +42,7 @@ class Commands extends React.Component {
               case "Del":
                 return <Del key={index} action={this.props.delAction}/>;
               case "Auth":
-                return <Auth key={index} action={this.props.authAction} disabled={this.props.disabled}/>;
+                return <Auth key={index} action={this.props.authAction}/>;
               default:
                 return null;
             }

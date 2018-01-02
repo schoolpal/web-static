@@ -1,89 +1,83 @@
 import React from "react";
+import ReactDOM from "react-dom";
+import {Redirect} from 'react-router-dom';
+import {$} from '../../vendor';
 
-import Header from "../Header/Header";
+import Tree from '../Group/Tree';
+import DialogTips from "../Dialog/DialogTips";
 import Commands from "../Commands/Commands";
-import DialogGroup from "../Dialog/DialogGroup";
 import Progress from "../Progress/Progress"
 
-import getFuncByIds from "../../api/getFuncByIds";
-import getRolesByGroup from "../../api/getRolesByGroup";
-import getRoleById from "../../api/getRoleById"
+import mainSize from "../../utils/mainSize";
+import ajax from "../../utils/ajax";
 import permissionsProcess from "../../utils/permissionsProcess"
-import nodeListToArray from "../../utils/nodeListToArray"
-import ReactDOM from "react-dom";
+import groupProcess from "../../utils/groupProcess";
+
 
 const Table = ({list, selectedFunc, changedFunc}) => {
-  if (list.length) {
-    return (
-      <div className="card__supporting-datatable">
-        <table id="list" className="data-table groups js-data-table js-groups">
-          <thead>
-          <tr>
-            <th className="data-table__cell--non-numeric">系统菜单</th>
-            <th>选取</th>
-            <th className="data-table__cell--non-numeric">功能权限</th>
-          </tr>
-          </thead>
-          <tbody>{TableItem(list, selectedFunc, changedFunc)}</tbody>
-        </table>
-      </div>
-    );
-  } else {
-    return (
-      <div className="card__supporting-text">
-        <p>数据加载中...</p>
-      </div>
-    );
-  }
+  return (
+    <table className="table table-bordered table-sm">
+      <thead>
+      <tr>
+        <th>系统菜单</th>
+        <th>选取</th>
+        <th>功能权限</th>
+      </tr>
+      </thead>
+      <tbody>{TableItem(list, selectedFunc, changedFunc)}</tbody>
+    </table>
+  );
 };
 
 const TableItem = (data, selectedFunc, changedFunc) => {
   let table = [];
 
+  if (data.length === 0) {
+    return table;
+  }
+
   data.map(item => {
     const level = item.cId.split('-').length;
-    const spacingStyle = {marginLeft: 56 * level + "px"};
+    const spacingStyle = {marginLeft: 26 * level + "px"};
+    const childrenClass = item.children ? '' : 'not-child';
     let func = [];
 
     if (item.action) {
       func = item.action.map((func) => (
-        <label key={func.cId} className="checkbox js-checkbox" htmlFor={func.cId}>
+        <div key={func.cId} className="form-check form-check-inline">
           <input
+            className="form-check-input"
             type="checkbox"
-            id={func.cId}
-            className="checkbox__input"
             value={func.cId}
+            id={func.cId}
             onChange={changedFunc}
             checked={selectedFunc.includes(func.cId)}
           />
-          <span className="checkbox__label">{func.cNameLong}</span>
-        </label>
+          <label className="form-check-label" htmlFor={func.cId}>
+            {func.cNameLong}
+          </label>
+        </div>
       ))
     }
 
     table.push(
-      <tr key={item.cId} level={level} className="groups--show groups--arrowup">
-        <td className="data-table__cell--non-numeric">
-          <div className="groups-item" style={spacingStyle}>
-            <HasChildren
-              children={item.children && item.children.length ? true : false}
-            />
-            {item.cNameLong}
-          </div>
+      <tr key={item.cId} gid={item.cId} gname={item.cName} level={level}>
+        <td>
+          <p onClick={handleNode} className={'tree-node ' + childrenClass} style={spacingStyle}>{item.cNameLong}</p>
         </td>
         <td>
-          <label className="checkbox js-checkbox" htmlFor={item.cId}>
+          <div className="form-check form-check-inline">
             <input
+              className="form-check-input"
               type="checkbox"
               id={item.cId}
-              className="checkbox__input"
               value={item.cId}
               onChange={changedFunc}
               checked={selectedFunc.includes(item.cId)}
             />
-          </label>
+          </div>
         </td>
-        <td className="data-table__cell--non-numeric">{func}</td>
+        <td>{func}</td>
       </tr>
     );
 
@@ -98,22 +92,38 @@ const TableItem = (data, selectedFunc, changedFunc) => {
   return table;
 };
 
-const HasChildren = ({children}) => {
-  if (children) {
-    return (
-      <i
-        className="groups-item__start-detail fa fa-angle-down fa-fw groups-arrow"
-        aria-hidden="true"
-      />
-    );
-  } else {
-    return <span className="groups-item__start-detail"/>;
+const handleNode = (evt) => {
+  if ($(evt.target).hasClass('not-child')) {
+    return;
   }
+
+  const tr = $(evt.target).parents("tr");
+  const level = parseInt(tr.attr('level'));
+  const children = tr.nextAll('tr').filter((i, item) => (
+    $(item).attr('level') > level
+  ));
+
+  children.map((i, item) => {
+    const childrenLevel = parseInt($(item).attr('level'));
+
+    if ($(evt.target).hasClass('closed')) {
+      if (childrenLevel === (level + 1)) {
+        $(item).show();
+      }
+    } else {
+      $(item)
+        .hide()
+        .find('.tree-node')
+        .addClass('closed');
+    }
+  });
+
+  $(evt.target).toggleClass('closed');
 };
 
 class Permissions extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       isAnimating: false,
@@ -128,81 +138,117 @@ class Permissions extends React.Component {
       roles: [],
       list: []
     };
-    this.createGroupsDialog = this.createGroupsDialog.bind(this);
-    this.acceptGroupDialog = this.acceptGroupDialog.bind(this);
+    this.createDialogTips = this.createDialogTips.bind(this);
+    this.changedFilter = this.changedFilter.bind(this);
+    this.changedGroup = this.changedGroup.bind(this);
     this.changedRole = this.changedRole.bind(this);
     this.changedFunc = this.changedFunc.bind(this);
-    this.update = this.update.bind(this);
+    this.updated = this.updated.bind(this);
   }
 
   componentDidMount() {
-    const selectedFunc = getRoleById().data.functions.map((func) => (func.cId));
-
-    setTimeout(() => {
-      this.setState({
-        selectedRole: getRolesByGroup().data[0].cId,
-        selectedRoleText: getRolesByGroup().data[0].cName,
-        selectedFunc: selectedFunc,
-        roles: getRolesByGroup().data,
-        list: permissionsProcess(getFuncByIds().data)
-      }, () => {
-        const checkboxs = this.form.querySelectorAll(".js-checkbox");
-
-        for (let i = 0; i < checkboxs.length; i++) {
-          checkboxs[i]["Checkbox"].checkToggleState();
-        }
-      });
-    }, 500);
-  }
-
-  componentDidUpdate() {
-    const button = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-button"))
-    const menu = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-menu"))
-    const checkbox = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-checkbox"))
-    const dataTable = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-data-table"))
-    let elems = nodeListToArray(document.getElementById("permissions").querySelectorAll(".js-groups"))
-
-    elems = elems.concat(button, menu, checkbox, dataTable);
-
-    window.componentHandler.upgradeElements(elems);
+    mainSize()
   }
 
   componentWillUnmount() {
-    if (this.groupContainer) {
-      document.body.removeChild(this.groupContainer);
+    if (this.tipsContainer) {
+      document.body.removeChild(this.tipsContainer);
     }
   }
 
-  createGroupsDialog() {
-    if (this.group === undefined) {
-      this.groupContainer = document.createElement('div');
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
       ReactDOM.render(
-        <DialogGroup
-          accept={this.acceptGroupDialog}
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
           ref={(dom) => {
-            this.group = dom
+            this.tips = dom
           }}
         />,
-        document.body.appendChild(this.groupContainer)
+        document.body.appendChild(this.tipsContainer)
       );
+    } else {
+      this.tips.setText(text);
     }
 
-    this.group.dialog.show();
+    this.tips.dialog.modal('show');
   }
 
-  acceptGroupDialog(selected) {
+  changedFilter({groupId, roleId, roleName}) {
     this.setState({
-      groupId: selected.getAttribute("gid"),
-      groupName: selected.textContent
-    })
+      isAnimating: true
+    });
+
+    const request = async () => {
+      try {
+        let roles = this.state.roles;
+        let selectedRole = this.state.selectedRole;
+        let selectedRoleText = this.state.selectedRoleText;
+        let selectedFunc = [];
+        let list = [];
+
+        if (groupId) {
+          roles = await ajax('/org/listRoles.do', {id: groupId});
+          selectedRole = roles.length ? roles[0].cId : null;
+          selectedRoleText = roles.length ? roles[0].cName : null;
+        }
+
+        if (roleId) {
+          selectedRole = roleId;
+          selectedRoleText = roleName;
+        }
+
+        if (selectedRole) {
+          let selectedRoleDetails = await ajax('/role/query.do', {id: selectedRole});
+          selectedFunc = selectedRoleDetails.functions.map(funcs => (funcs.cId));
+          const selectedRoleAllFunc = selectedRoleDetails.rootFuncs.map(funcs => (funcs.cId));
+          list = await ajax('/func/list.do', {ids: selectedRoleAllFunc.join(',')});
+        }
+
+        this.setState({
+          selectedRole,
+          selectedRoleText,
+          selectedFunc,
+          roles,
+          list: list.length ? permissionsProcess(list) : list
+        });
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
+  }
+
+  changedGroup(groupId, groupName) {
+    this.setState({
+      groupId: groupId,
+      groupName: groupName
+    });
+
+    this.changedFilter({groupId})
   }
 
   changedRole(evt) {
     this.setState({
       selectedRole: evt.target.getAttribute("rid"),
       selectedRoleText: evt.target.textContent
+    });
+
+    this.changedFilter({
+      roleId: evt.target.getAttribute("rid"),
+      roleName: evt.target.textContent
     })
-    evt.target.parentNode["Menu"].toggle();
   }
 
   changedFunc(evt) {
@@ -218,71 +264,93 @@ class Permissions extends React.Component {
     this.setState({selectedFunc: tempFunc})
   }
 
-  update() {
-    const toast = document.getElementById("toast");
+  updated() {
+    if (this.state.isAnimating || !this.state.selectedRole || !this.state.selectedFunc.length) {
+      return;
+    }
 
     this.setState({isAnimating: true});
-    setTimeout(() => {
-      toast["Snackbar"].showSnackbar({message: "更新成功，需要重新登录才可生效！"})
-      this.setState({isAnimating: false})
-    }, 2500)
+    const request = async () => {
+      try {
+        let rs = await ajax('/sys/role/auth.do', {
+          id: this.state.selectedRole,
+          funcIds: this.state.selectedFunc.join(',')
+        });
+        this.createDialogTips('更新成功，权限修改成功后，用户需要重新登陆才能生效。');
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request();
   }
 
   render() {
+    if (this.state.redirectToReferrer) {
+      return (
+        <Redirect to={{
+          pathname: '/login',
+          state: {from: this.props.location}
+        }}/>
+      )
+    }
+
     const groupCommands = this.props.commands.find((item) => {
       return item.rule.test(this.props.location.pathname) === true
-    })
+    });
 
     return (
-      <div className="layout__container">
-        <Header title="权限管理" profile={this.props.profile}/>
-        <main>
-          <div className="grid">
-            <div className="cell cell--12-col">
-              <div id="permissions" className="card shadow--2dp">
-                <Progress isAnimating={this.state.isAnimating}/>
+      <div>
+        <h5 id="subNav">
+          <i className="fa fa-shield" aria-hidden="true"/>&nbsp;权限管理
 
-                <div className="card__title">
-                  {this.state.groupName}
-                  <div onClick={this.createGroupsDialog} className="button button--icon js-button"
-                       style={{marginRight: "32px"}}>
-                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                  </div>
+          <Commands
+            commands={groupCommands.commands}
+            authAction={this.updated}
+          />
+        </h5>
+        <div id="main" className="main p-3">
+          <Progress isAnimating={this.state.isAnimating}/>
 
-                  {this.state.selectedRoleText}
-                  <div id="role-button" className="button button--icon js-button">
-                    <i className="fa fa-angle-down" aria-hidden="true"></i>
-                  </div>
-                  <div className="menu menu--bottom-right js-menu" htmlFor="role-button">
-                    {
-                      this.state.roles.map((role) => (
-                        <div key={role.cId} rid={role.cId} onClick={this.changedRole}
-                             className="menu__item">{role.cName}</div>
-                      ))
-                    }
-                  </div>
-                </div>
-                <form ref={(dom) => {
-                  this.form = dom
-                }}>
-                  <Table
-                    list={this.state.list}
-                    selectedFunc={this.state.selectedFunc}
-                    changedFunc={this.changedFunc}
-                  />
-                </form>
-                <div className="card__actions">
-                  <div className="layout-spacer"></div>
-                  <Commands
-                    commands={groupCommands.commands}
-                    authAction={this.update}
-                    disabled={this.state.isAnimating}
-                  />
-                </div>
-              </div>
+          <div className="row">
+            <div className="col-12 col-lg-5 col-xl-4">
+              <Tree
+                defaults={this.state.groupId}
+                loadingText={false}
+                changed={this.changedGroup}
+              />
+            </div>
+            <div className="col-12 col-lg-2">
+              {
+                this.state.roles.map((role) => (
+                  <p
+                    key={role.cId}
+                    rid={role.cId}
+                    className={`${this.state.selectedRole === role.cId ? 'text-light bg-primary' : 'text-dark'} m-0 p-1`}
+                    onClick={this.changedRole}
+                  >
+                    {role.cName}
+                  </p>
+                ))
+              }
+            </div>
+            <div className="col-12 col-lg-5 col-xl-6">
+              <p className={'h6 pb-3 mb-0'}>{this.state.groupName}</p>
+
+              <Table
+                list={this.state.list}
+                selectedFunc={this.state.selectedFunc}
+                changedFunc={this.changedFunc}
+              />
             </div>
           </div>
-        </main>
+        </div>
       </div>
     )
   }
