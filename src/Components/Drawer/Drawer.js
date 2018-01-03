@@ -96,7 +96,7 @@ class Drawer extends React.Component {
   render() {
     return (
       <div id="drawer" className="aside-bar">
-        <div id="accordion" role="tablist">
+        <div id="accordion" className="drawer" role="tablist">
           {this.props.hasChangeGroupBtn ? <GroupDialogBBtn/> : ""}
           <Menu data={this.props.menu}/>
         </div>

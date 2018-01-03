@@ -1,9 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {Redirect} from 'react-router-dom'
+import {$} from "../../vendor";
 
 import DialogTips from "../Dialog/DialogTips";
 import ajax from "../../utils/ajax";
+
+const toggleDrawer = () => {
+  $('#drawer').toggle();
+};
 
 class Header extends React.Component {
   constructor(props) {
@@ -12,10 +17,6 @@ class Header extends React.Component {
     this.state = {isLogout: false};
     this.logout = this.logout.bind(this);
     this.createDialogTips = this.createDialogTips.bind(this);
-  }
-
-  componentDidMount() {
-
   }
 
   componentWillUnmount() {
@@ -61,6 +62,9 @@ class Header extends React.Component {
 
     return (
       <nav id="nav" className="navbar navbar-dark bg-primary">
+        <button onClick={toggleDrawer} className="btn btn-link">
+          <i className="fa fa-bars" aria-hidden="true"/>
+        </button>
         <ul className="navbar-nav"/>
 
         <div className="dropdown">
