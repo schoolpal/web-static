@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import DialogTips from "../Dialog/DialogTips";
 
 import ajax from "../../utils/ajax";
+import MD5Mixed from "../../utils/MD5Mixed";
 
 class Form extends React.Component {
   constructor(props) {
@@ -116,7 +117,13 @@ class Form extends React.Component {
 
     for (let i = 0; i < this.form.length; i++) {
       if (this.form[i].name) {
-        query[this.form[i].name] = this.form[i].value;
+        if (this.form[i].name === 'loginPass') {
+          if (!this.props.isEditor || this.form[i].value) {
+            query[this.form[i].name] = MD5Mixed(MD5Mixed(this.form[i].value));
+          }
+        } else {
+          query[this.form[i].name] = this.form[i].value;
+        }
       }
     }
 
@@ -169,7 +176,7 @@ class Form extends React.Component {
                     </div>
                     <div className="form-group">
                       <label htmlFor="loginPass"><em className="text-danger">*</em>登陆密码</label>
-                      <input type="text" className="form-control" name="loginPass" required={!this.props.isEditor}/>
+                      <input type="password" className="form-control" name="loginPass" required={!this.props.isEditor}/>
                     </div>
                     <div className="form-group">
                       <label htmlFor="realName"><em className="text-danger">*</em>姓名</label>

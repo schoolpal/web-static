@@ -119,7 +119,7 @@ class Login extends React.Component {
                 <div className="form-group">
                   <label htmlFor="userPwd">密码</label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control"
                     id="userPwd"
                     placeholder="Enter user password"
