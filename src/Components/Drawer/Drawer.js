@@ -2,20 +2,21 @@ import React from "react";
 import {NavLink} from "react-router-dom";
 import {$} from "../../vendor";
 
+import DialogGroup from "../Dialog/DialogGroup"
+
 import isPhone from "../../utils/isPhone";
-
 import SCHOOLPAL_CONFIG from "../../utils/config";
+import ReactDOM from "react-dom";
 
-const GroupDialogBBtn = () => (
-  <div id="dialog-button" className="list-item">
-    <i
-      className="fa fa-home fa-fw list-item__start-detail"
-      aria-hidden="true"
-    />
-    Group
-    <span className="list-item__end-detail">
-      <i className="fa fa-angle-right" aria-hidden="true"/>
-    </span>
+const GroupDialogBBtn = ({groupName, action}) => (
+  <div>
+    <div className="item groups">
+      <a href="javascript:;" className="d-block" onClick={action}>
+        {groupName}
+        <i className="fa fa-ellipsis-v fa-fw float-right" aria-hidden="true"/>
+      </a>
+    </div>
+    <div className="divider"/>
   </div>
 );
 
@@ -49,20 +50,22 @@ const Menu = data => {
       );
     } else {
       menu.push(
-        <NavLink
-          key={item.cId}
-          to={`/${SCHOOLPAL_CONFIG.AUTH[item.cId].PATH}`}
-          className="d-block"
-          activeClassName="active"
-        >
-          <i
-            className={`fa ${
-              SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-              } fa-fw`}
-            aria-hidden="true"
-          />
-          {item.cNameLong}
-        </NavLink>
+        <div className="item">
+          <NavLink
+            key={item.cId}
+            to={`/${SCHOOLPAL_CONFIG.AUTH[item.cId].PATH}`}
+            className="d-block"
+            activeClassName="active"
+          >
+            <i
+              className={`fa ${
+                SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
+                } fa-fw`}
+              aria-hidden="true"
+            />
+            {item.cNameLong}
+          </NavLink>
+        </div>
       );
     }
   });
@@ -72,7 +75,14 @@ const Menu = data => {
 
 class Drawer extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
+
+    this.state = {
+      groupId: this.props.profile.org.cId,
+      groupName: this.props.profile.org.cName
+    };
+    this.createGroupsDialog = this.createGroupsDialog.bind(this);
+    this.acceptGroupDialog = this.acceptGroupDialog.bind(this);
   }
 
   componentDidMount() {
@@ -93,11 +103,45 @@ class Drawer extends React.Component {
     })
   }
 
+  componentWillUnmount() {
+    if (this.groupContainer) {
+      document.body.removeChild(this.groupContainer);
+    }
+  }
+
+  createGroupsDialog() {
+    if (this.group === undefined) {
+      this.groupContainer = document.createElement('div');
+      ReactDOM.render(
+        <DialogGroup
+          accept={this.acceptGroupDialog}
+          defaults={this.state.groupId}
+          ref={(dom) => {
+            this.group = dom
+          }}
+        />,
+        document.body.appendChild(this.groupContainer)
+      );
+    }
+
+    this.group.dialog.modal('show');
+  }
+
+  acceptGroupDialog(selected) {
+    this.setState({
+      groupId: selected.id,
+      groupName: selected.name
+    });
+
+    this.props.changed(selected)
+  }
+
   render() {
     return (
       <div id="drawer" className="aside-bar">
         <div id="accordion" className="drawer" role="tablist">
-          {this.props.hasChangeGroupBtn ? <GroupDialogBBtn/> : ""}
+          {this.props.hasChangeGroupBtn ?
+            <GroupDialogBBtn groupName={this.state.groupName} action={this.createGroupsDialog}/> : null}
           <Menu data={this.props.menu}/>
         </div>
       </div>

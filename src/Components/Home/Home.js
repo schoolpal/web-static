@@ -9,6 +9,7 @@ import Group from "../Group/Group";
 import Roles from "../Roles/Roles";
 import Permissions from "../Permissions/Permissions";
 import User from "../User/User"
+import Act from '../Mkt/Act/Act';
 import NoMatch from "../NoMatch/NoMatch";
 import DialogTips from "../Dialog/DialogTips";
 
@@ -19,15 +20,28 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {profile: null, redirectToReferrer: false};
+    this.state = {
+      profile: null,
+      group: null,
+      redirectToReferrer: false
+    };
     this.createDialogTips = this.createDialogTips.bind(this);
+    this.changedCrmGroup = this.changedCrmGroup.bind(this);
   }
 
   componentDidMount() {
     const request = async () => {
       try {
         let profile = await ajax('/user/profile.do');
-        this.setState({profile: profileProcess(profile)});
+        const fmtProfile = profileProcess(profile);
+        console.log(fmtProfile)
+        this.setState({
+          profile: fmtProfile,
+          group: {
+            id: fmtProfile.profile.org.cId,
+            name: fmtProfile.profile.org.cName
+          }
+        });
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -62,6 +76,10 @@ class Home extends React.Component {
     this.tips.dialog.modal('show');
   }
 
+  changedCrmGroup(group) {
+    this.setState({group});
+  }
+
   render() {
     if (this.state.redirectToReferrer) {
       return (
@@ -83,8 +101,10 @@ class Home extends React.Component {
     return (
       <div className="container-fluid">
         <Drawer
+          profile={this.state.profile.profile}
           menu={this.state.profile.menu}
           hasChangeGroupBtn={this.state.profile.hasChangeGroupBtn}
+          changed={this.changedCrmGroup}
         />
 
         <main>
@@ -123,6 +143,14 @@ class Home extends React.Component {
               profile={this.state.profile.profile}
               commands={this.state.profile.commands}
               component={User}
+            />
+            <PrivateRoute
+              path="/mkt/act"
+              access={this.state.profile.access}
+              profile={this.state.profile.profile}
+              commands={this.state.profile.commands}
+              changedCrmGroup={this.state.group}
+              component={Act}
             />
             <Route render={(props) => (
               <NoMatch {...props} profile={this.state.profile.profile}/>

@@ -36,22 +36,17 @@ export default function (data) {
   menu.map(item => {
     item.children = [];
 
-    item.children = func.filter(children => {
-      return (
-        children.cId !== children.cParentId && item.cId === children.cParentId
-      );
-    });
+    item.children = func.filter(children => (
+      children.cId !== children.cParentId && item.cId === children.cParentId
+    ));
 
     if (item.cRootId === ADMIN_ID) {
       hasChangeGroupBtn = false;
     }
   });
 
-  func.filter(item => {
-    if (
-      SCHOOLPAL_CONFIG.AUTH[item.cId] &&
-      SCHOOLPAL_CONFIG.AUTH[item.cId].PATH_RULE !== undefined
-    ) {
+  func.map(item => {
+    if (SCHOOLPAL_CONFIG.AUTH[item.cId] && SCHOOLPAL_CONFIG.AUTH[item.cId].PATH_RULE !== undefined) {
       access.push(SCHOOLPAL_CONFIG.AUTH[item.cId].PATH_RULE);
     }
 
@@ -64,9 +59,7 @@ export default function (data) {
     }
 
     if (item.WidgetType === "Command") {
-      const index = commands.findIndex(cmd => {
-        return cmd.id === item.cParentId;
-      });
+      const index = commands.findIndex(cmd => (cmd.id === item.cParentId));
 
       if (index + 1) {
         commands[index].commands.push(item.CommandCode);

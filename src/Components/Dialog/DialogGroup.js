@@ -89,6 +89,7 @@ class DialogGroup extends React.Component {
   constructor(props) {
     super(props);
 
+    this.dialogId = `d-${new Date().getTime()}`;
     this.state = {list: [], selected: null, errText: null};
     this.handleSelect = this.handleSelect.bind(this);
     this.accept = this.accept.bind(this);
@@ -96,7 +97,7 @@ class DialogGroup extends React.Component {
   }
 
   componentDidMount() {
-    this.dialog = $("#dialogGroup");
+    this.dialog = $(`#${this.dialogId}`);
     this.dialog
       .on('click', '[data-node]', handleNode)
       .on('click', '[data-o]', this.handleSelect);
@@ -134,7 +135,7 @@ class DialogGroup extends React.Component {
     elem.addClass('selected');
 
     selected = {
-      id: elem.data('o'),
+      id: elem.data('o').toString(),
       name: elem.children('span').text()
     };
 
@@ -156,7 +157,7 @@ class DialogGroup extends React.Component {
 
   render() {
     return (
-      <div id="dialogGroup" className="modal fade" tabIndex="-1" role="dialog">
+      <div id={this.dialogId} className="modal fade" tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">

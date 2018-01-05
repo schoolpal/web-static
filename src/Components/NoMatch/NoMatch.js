@@ -1,16 +1,22 @@
 import React from "react";
+import mainSize from "../../utils/mainSize";
 
-import Header from "../Header/Header"
+class NoMatch extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
-const NoMatch = ({profile}) => {
-  return (
-    <div className="layout__container">
-      <Header title="权限管理" profile={profile}/>
-      <main>
+  componentDidMount() {
+    mainSize();
+  }
+
+  render() {
+    return (
+      <div id="main" className="main p-3">
         <p>您没有权限访问此页面，或页面不存在 ！</p>
-      </main>
-    </div>
-  )
+      </div>
+    )
+  }
 }
 
 export default NoMatch;
