@@ -23,11 +23,23 @@ export default {
     },
     "1-2": {
       PATH: "mkt/leads",
-      PATH_RULE: /^\/mkt\/leads$/,
-      ICON_CLASS: "fa-filter"
+      PATH_RULE: /^\/mkt\/leads(\/((?!create).)*)?$/,
+      ICON_CLASS: "fa-filter",
+      CATEGORY: '销售',
+      NAME: '线索'
     },
-    "1-2-1": {PATH_RULE: /^\/mkt\/leads\/create$/},
-    "1-2-2": {PATH_RULE: /^\/mkt\/leads\/((?!create).)*$/},
+    "1-2-1": {
+      PATH_RULE: /^\/mkt\/leads\/create$/,
+      ICON_CLASS: "fa-filter",
+      CATEGORY: '销售',
+      NAME: '线索'
+    },
+    "1-2-2": {
+      PATH_RULE: /^\/mkt\/leads\/edit\/((?!create).)*$/,
+      ICON_CLASS: "fa-filter",
+      CATEGORY: '销售',
+      NAME: '线索'
+    },
 
 
     //销售相关权限配置

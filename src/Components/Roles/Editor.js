@@ -117,7 +117,12 @@ class Editor extends React.Component {
     }
 
     if (this.state.isUpdated) {
-      return <Redirect to="/roles"/>
+      return (
+        <Redirect to={{
+          pathname: '/roles',
+          state: {groupId: this.props.location.state.groupId}
+        }}/>
+      )
     }
 
     return (
@@ -128,8 +133,8 @@ class Editor extends React.Component {
           <p className="d-inline text-muted">角色编辑</p>
           <div className="btn-group float-right" role="group">
             <button onClick={() => {
-              historyBack(this.props.history)
-            }} type="button" className="btn btn-light">返回
+              this.props.history.push('/roles', {groupId: this.props.location.state.groupId});
+            }} type="button" className="btn btn-light">取消
             </button>
             <button
               type="submit"

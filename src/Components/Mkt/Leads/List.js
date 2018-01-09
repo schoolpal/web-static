@@ -13,25 +13,33 @@ import fmtDate from '../../../utils/fmtDate';
 import fmtTitle from '../../../utils/fmtTitle';
 import ajax from "../../../utils/ajax";
 
-
 const Table = ({list, goto}) => {
   return (
     <table className="table table-bordered table-sm">
       <thead>
       <tr>
-        <th>序号(ID)</th>
         <th>创建人</th>
         <th>创建时间</th>
-        <th>活动名称</th>
-        <th>开始时间</th>
-        <th>结束时间</th>
-        <th>预计花费</th>
-        <th>实际花费</th>
-        <th>获取线索量</th>
-        <th>转化机会量</th>
-        <th>签约客户量</th>
-        <th>签约客户金额</th>
-        <th>ROI</th>
+        <th>所属组织</th>
+        <th>所属用户</th>
+        <th>来源</th>
+        <th>渠道</th>
+        <th>阶段</th>
+        <th>状态</th>
+        <th>学员姓名</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>在读年级</th>
+        <th>所在学校</th>
+        <th>家长姓名</th>
+        <th>与学员关系</th>
+        <th>电话号码</th>
+        <th>微信号</th>
+        <th>家庭住址</th>
+        <th>课程类别</th>
+        <th>课程产品</th>
+        <th>备注</th>
+        <th>沟通记录</th>
       </tr>
       </thead>
       <tbody>{TableItem(list, goto)}</tbody>
@@ -47,69 +55,39 @@ const TableItem = (data, goto) => {
   }
 
   data.map(item => {
-    const spacingStyle = {marginLeft: 26 * item.level + "px"};
-    const childrenClass = item.children ? '' : 'not-child';
-
     table.push(
-      <tr key={item.id} level={item.level}>
-        <td>{item.id}</td>
+      <tr key={item.id}>
         <td>{item.creatorName}</td>
         <td>{fmtDate(item.createTime)}</td>
+        <td>{item.orgnizationName}</td>
+        <td>{item.executiveName}</td>
+        <td>{item.sourceName}</td>
+        <td>{item.channelName}</td>
+        <td>{item.stageName}</td>
+        <td>{item.statusName}</td>
         <td>
-          <p onClick={handleNode} className={'tree-node ' + childrenClass} style={spacingStyle}>
-            <a onClick={goto} aid={item.id} href="javascript:;">{item.name}</a>
-          </p>
+          <a onClick={goto} lid={item.id} href="javascript:;">{item.student.name}</a>
         </td>
-        <td>{fmtDate(item.startDate)}</td>
-        <td>{fmtDate(item.endDate)}</td>
-        <td>{item.budget}</td>
-        <td>{item.cost}</td>
-        <td>{item.leads}</td>
-        <td>{item.opportunities}</td>
-        <td>{item.contracts}</td>
-        <td>{item.totalAmount}</td>
-        <td>{item.roi}</td>
+        <td>{item.student.genderText !== 'null' ? item.student.genderText : '--'}</td>
+        <td>{item.student.age !== 'null' ? item.student.age : '--'}</td>
+        <td>{item.student.classGrade !== 'null' ? item.student.classGrade : '--'}</td>
+        <td>{item.student.schoolName ? item.student.schoolName : '--'}</td>
+        <td>
+          <a onClick={goto} lid={item.id} href="javascript:;">{item.parent.name}</a>
+        </td>
+        <td>{item.parent.relation ? item.parent.relation : '--'}</td>
+        <td>{item.parent.cellphone ? item.parent.cellphone : '--'}</td>
+        <td>{item.parent.weichat ? item.parent.weichat : '--'}</td>
+        <td>{item.parent.address ? item.parent.address : '--'}</td>
+        <td>{item.courseType !== 'null' ? item.courseType : '--'}</td>
+        <td>{item.courseName !== 'null' ? item.courseName : '--'}</td>
+        <td>{item.note ? item.note : '--'}</td>
+        <td>--</td>
       </tr>
     );
-
-    if (item.children && item.children.length) {
-      let children = [];
-
-      children.push(TableItem(item.children, goto));
-      table.push(children);
-    }
   });
 
   return table;
-};
-
-const handleNode = (evt) => {
-  if ($(evt.target).hasClass('not-child')) {
-    return;
-  }
-
-  const tr = $(evt.target).parents("tr");
-  const level = parseInt(tr.attr('level'));
-  const children = tr.nextAll('tr').filter((i, item) => (
-    $(item).attr('level') > level
-  ));
-
-  children.map((i, item) => {
-    const childrenLevel = parseInt($(item).attr('level'));
-
-    if ($(evt.target).hasClass('closed')) {
-      if (childrenLevel === (level + 1)) {
-        $(item).show();
-      }
-    } else {
-      $(item)
-        .hide()
-        .find('.tree-node')
-        .addClass('closed');
-    }
-  });
-
-  $(evt.target).toggleClass('closed');
 };
 
 class List extends React.Component {
@@ -133,10 +111,10 @@ class List extends React.Component {
   componentDidMount() {
     const request = async () => {
       try {
-        let list = await ajax('/mkt/activity/list.do', {orgnizationId: this.state.group.id});
-        const ids = list.map((act) => (act.id));
+        let list = await ajax('/mkt/leads/list.do', {orgId: this.state.group.id});
+        const ids = list.map((leads) => (leads.id));
 
-        this.setState({list: actProcess(list), ids: ids});
+        this.setState({list: list, ids: ids});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -158,12 +136,12 @@ class List extends React.Component {
 
       const request = async () => {
         try {
-          let list = await ajax('/mkt/activity/list.do', {orgnizationId: nextProps.changedCrmGroup.id});
-          const ids = list.map((act) => (act.id));
+          let list = await ajax('/mkt/leads/list.do', {orgId: nextProps.changedCrmGroup.id});
+          const ids = list.map((leads) => (leads.id));
 
           this.setState({
             group: nextProps.changedCrmGroup,
-            list: actProcess(list),
+            list: list,
             ids: ids
           });
         } catch (err) {
@@ -210,7 +188,7 @@ class List extends React.Component {
   }
 
   goToDetails(evt) {
-    const url = `${this.props.match.url}/${evt.target.getAttribute('aid')}`;
+    const url = `${this.props.match.url}/${evt.target.getAttribute('lid')}`;
 
     this.props.history.push(url, {ids: this.state.ids});
   }

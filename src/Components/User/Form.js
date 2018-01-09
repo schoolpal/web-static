@@ -13,7 +13,8 @@ class Form extends React.Component {
     this.RANK_ADMIN = 4;
     this.RANK_MANGER = 1;
     this.state = {
-      roles: [],
+      businessRoles: [],
+      sysRoles: [],
       selectedRoles: [],
     };
     this.createDialogTips = this.createDialogTips.bind(this);
@@ -25,18 +26,29 @@ class Form extends React.Component {
     const request = async () => {
       try {
         let roles = await ajax('/org/listRoles.do', {id: this.props.groupId});
-        this.setState({roles});
+        let businessRoles = [];
+        let sysRoles = [];
+
+        roles.map((role) => {
+          if (role.cRankId === this.RANK_ADMIN) {
+            sysRoles.push(role);
+          } else {
+            businessRoles.push(role);
+          }
+        });
+
+        this.setState({businessRoles, sysRoles});
 
         if (this.props.isEditor) {
           let data = await ajax('/sys/user/query.do', {id: this.props.editorId});
           const selectedRoles = data.roles.map(role => (role.cId));
 
           this.setState({selectedRoles}, () => {
-            this.form.loginName.value = data.cLoginname;
-            this.form.realName.value = data.cRealname;
+            this.form.loginName.value = data.cLoginName;
+            this.form.realName.value = data.cRealName;
             this.form.phone.value = data.cPhone;
             this.form.email.value = data.cEmail;
-            this.form.nickName.value = data.cNickname;
+            this.form.nickName.value = data.cNickName;
             this.form.im.value = data.cQq;
           })
         }
@@ -89,7 +101,7 @@ class Form extends React.Component {
     for (let i = 0; i < this.form.rank.length; i++) {
       adminAndManger.push(this.form.rank[i].value)
     }
-    console.log(adminAndManger);
+
     if (evt.target.getAttribute('type') === 'radio') {
       tempRoles.push(evt.target.value);
     } else {
@@ -133,7 +145,7 @@ class Form extends React.Component {
   }
 
   render() {
-    if (!this.state.roles.length || (this.props.isEditor && !this.state.selectedRoles.length)) {
+    if (this.props.isEditor && !this.state.selectedRoles.length) {
       return (
         <form ref={(dom) => {
           this.form = dom
@@ -159,6 +171,7 @@ class Form extends React.Component {
               <div className="card-body">
                 <div className="row">
                   <div className="col-12 col-lg-8">
+                    <p className={'h6 pb-3 mb-0'}>用户角色</p>
                     <div className="form-group">
                       <label htmlFor="group"><em className="text-danger">*</em>所属组织</label>
                       <input
@@ -202,7 +215,7 @@ class Form extends React.Component {
                   <div className="col-12 col-lg-4">
                     <p className={'h6 pb-3 mb-0'}>用户角色</p>
                     {
-                      this.state.roles.map(role => {
+                      this.state.businessRoles.map(role => {
                         if (role.cRankId === this.RANK_ADMIN || role.cRankId === this.RANK_MANGER) {
                           return (
                             <div className="form-check">
@@ -238,6 +251,25 @@ class Form extends React.Component {
                           )
                         }
                       })
+                    }
+                    <br/>
+                    {
+                      this.state.sysRoles.map(role => (
+                        <div className="form-check">
+                          <input
+                            id={role.cId}
+                            className="form-check-input"
+                            type="radio"
+                            name="rank"
+                            value={role.cId}
+                            onChange={this.changedRole}
+                            checked={this.state.selectedRoles.includes(role.cId)}
+                          />
+                          <label className="form-check-label" htmlFor={role.cId}>
+                            {role.cName}
+                          </label>
+                        </div>
+                      ))
                     }
                   </div>
                 </div>

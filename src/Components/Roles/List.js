@@ -80,8 +80,8 @@ class List extends React.Component {
       isAnimating: true,
       redirectToReferrer: false,
 
-      groupId: this.props.profile.org.cId,
-      groupName: this.props.profile.org.cName,
+      groupId: this.props.location.state && this.props.location.state.groupId ? this.props.location.state.groupId : this.props.profile.org.cId,
+      groupName: this.props.location.state && this.props.location.state.groupId ? this.props.location.state.groupId : this.props.profile.org.cName,
 
       list: []
     };

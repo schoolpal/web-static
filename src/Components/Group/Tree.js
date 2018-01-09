@@ -129,7 +129,7 @@ class Tree extends React.Component {
 
     this.tree.find('[data-o]').removeClass('selected');
     elem.addClass('selected');
-    this.props.changed(elem.data('o'), elem.children('span').text());
+    this.props.changed(elem.data('o').toString(), elem.children('span').text());
   }
 
   render() {

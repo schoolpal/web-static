@@ -11,10 +11,13 @@ import Progress from "../Progress/Progress"
 import mainSize from "../../utils/mainSize";
 import ajax from "../../utils/ajax";
 import permissionsProcess from "../../utils/permissionsProcess"
-import groupProcess from "../../utils/groupProcess";
 
 
 const Table = ({list, selectedFunc, changedFunc}) => {
+  if (!list.length) {
+    return null;
+  }
+
   return (
     <table className="table table-bordered table-sm">
       <thead>
@@ -128,11 +131,11 @@ class Permissions extends React.Component {
     this.state = {
       isAnimating: false,
 
-      groupId: this.props.profile.org.cId,
-      groupName: this.props.profile.org.cName,
+      groupId: this.props.location.state && this.props.location.state.groupId ? this.props.location.state.groupId : this.props.profile.org.cId,
+      groupName: this.props.location.state && this.props.location.state.groupId ? null : this.props.profile.org.cName,
 
-      selectedRole: null,
-      selectedRoleText: null,
+      selectedRole: this.props.location.state && this.props.location.state.roleId ? this.props.location.state.roleId : null,
+      selectedRoleText: this.props.location.state && this.props.location.state.roleName ? this.props.location.state.roleName : null,
       selectedFunc: [],
 
       roles: [],
@@ -193,8 +196,11 @@ class Permissions extends React.Component {
 
         if (groupId) {
           roles = await ajax('/org/listRoles.do', {id: groupId});
-          selectedRole = roles.length ? roles[0].cId : null;
-          selectedRoleText = roles.length ? roles[0].cName : null;
+
+          if (!selectedRole) {
+            selectedRole = roles.length ? roles[0].cId : null;
+            selectedRoleText = roles.length ? roles[0].cName : null;
+          }
         }
 
         if (roleId) {
@@ -231,10 +237,22 @@ class Permissions extends React.Component {
   }
 
   changedGroup(groupId, groupName) {
-    this.setState({
-      groupId: groupId,
-      groupName: groupName
-    });
+    if (this.state.groupId !== groupId) {
+      this.setState({
+        groupId: groupId,
+        groupName: groupName,
+        selectedRole: null,
+        selectedRoleText: null,
+        selectedFunc: [],
+
+        roles: [],
+        list: []
+      }, () => {
+        this.changedFilter({groupId})
+      });
+
+      return;
+    }
 
     this.changedFilter({groupId})
   }
@@ -341,7 +359,7 @@ class Permissions extends React.Component {
               }
             </div>
             <div className="col-12 col-lg-5 col-xl-6">
-              <p className={'h6 pb-3 mb-0'}>{this.state.groupName}</p>
+              <p className={'h6 pb-3 mb-0'}>{this.state.selectedRoleText || ''}</p>
 
               <Table
                 list={this.state.list}

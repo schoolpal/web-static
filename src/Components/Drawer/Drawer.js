@@ -139,10 +139,15 @@ class Drawer extends React.Component {
   render() {
     return (
       <div id="drawer" className="aside-bar">
-        <div id="accordion" className="drawer" role="tablist">
-          {this.props.hasChangeGroupBtn ?
-            <GroupDialogBBtn groupName={this.state.groupName} action={this.createGroupsDialog}/> : null}
-          <Menu data={this.props.menu}/>
+        <div className="drawer">
+          <div className="drawer-spacer">
+            <img src="http://www.risecenter.com/images/index/rise_logo.png"/>
+          </div>
+          <div id="accordion" role="tablist">
+            {this.props.hasChangeGroupBtn ?
+              <GroupDialogBBtn groupName={this.state.groupName} action={this.createGroupsDialog}/> : null}
+            <Menu data={this.props.menu}/>
+          </div>
         </div>
       </div>
     );

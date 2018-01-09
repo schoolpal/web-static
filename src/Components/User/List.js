@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Redirect} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 import Tree from '../Group/Tree';
 import DialogTips from "../Dialog/DialogTips";
@@ -11,7 +11,7 @@ import mainSize from "../../utils/mainSize";
 import ajax from "../../utils/ajax";
 import {$} from "../../vendor";
 
-const Table = ({list, changedState}) => {
+const Table = ({list, changedState, groupId}) => {
   if (list.length) {
     return (
       <table className="table table-bordered table-sm">
@@ -66,8 +66,22 @@ const Table = ({list, changedState}) => {
               <td>
                 {
                   user.roles.map((role) => {
-                    return role.cName
-                  }).join(',')
+                    return (
+                      <Link
+                        className="btn btn-link"
+                        to={{
+                          pathname: `/permissions`,
+                          state: {
+                            groupId: groupId,
+                            roleId: role.cId,
+                            roleName: role.cName
+                          }
+                        }}
+                      >
+                        {role.cName}
+                      </Link>
+                    )
+                  })
                 }
               </td>
             </tr>
@@ -105,8 +119,8 @@ class List extends React.Component {
     this.state = {
       isAnimating: true,
       redirectToReferrer: false,
-      groupId: this.props.profile.org.cId,
-      groupName: this.props.profile.org.cName,
+      groupId: this.props.location.state && this.props.location.state.groupId ? this.props.location.state.groupId : this.props.profile.org.cId,
+      groupName: this.props.location.state && this.props.location.state.groupId ? this.props.location.state.groupId : this.props.profile.org.cName,
 
       list: []
     };
@@ -245,7 +259,7 @@ class List extends React.Component {
 
       return item;
     });
-    
+
     this.setState({isAnimating: true, list: updateList});
 
     const request = async () => {
@@ -302,7 +316,11 @@ class List extends React.Component {
             <div className="col-12 col-lg-7 col-xl-8">
               <p className={'h6 pb-3 mb-0'}>{this.state.groupName}</p>
 
-              <Table list={this.state.list} changedState={this.changedState}/>
+              <Table
+                list={this.state.list}
+                changedState={this.changedState}
+                groupId={this.state.groupId}
+              />
             </div>
           </div>
         </div>

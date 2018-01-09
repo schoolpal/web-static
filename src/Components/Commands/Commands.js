@@ -24,6 +24,12 @@ const Auth = ({action}) => (
   </button>
 );
 
+const Defaults = ({text, action}) => (
+  <button onClick={action} type="button" className="btn btn-primary">
+    {text}
+  </button>
+);
+
 class Commands extends React.Component {
   constructor(props) {
     super(props)
@@ -43,6 +49,10 @@ class Commands extends React.Component {
                 return <Del key={index} action={this.props.delAction}/>;
               case "Auth":
                 return <Auth key={index} action={this.props.authAction}/>;
+              case 'Assign':
+                return <Defaults key={index} action={this.props.assignAction} text="分配给"/>;
+              case 'Convert':
+                return <Defaults key={index} action={this.props.convertAction} text="转化为"/>;
               default:
                 return null;
             }

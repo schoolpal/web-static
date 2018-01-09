@@ -29,12 +29,6 @@ class Form extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.changedCrmGroup !== nextProps.changedCrmGroup) {
-      this.setState({
-        group: nextProps.changedCrmGroup
-      })
-    }
-
     if (!this.props.data && nextProps.data) {
       this.setState({
         parentId: nextProps.data.parentId,

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import ReactDOM from "react-dom";
 import {Redirect} from 'react-router-dom'
 
@@ -6,13 +6,12 @@ import Form from "./Form";
 import DialogTips from "../../Dialog/DialogTips";
 import Progress from "../../Progress/Progress"
 
-import historyBack from "../../../utils/historyBack";
 import mainSize from "../../../utils/mainSize";
+import historyBack from "../../../utils/historyBack";
+import fmtTitle from '../../../utils/fmtTitle';
 import ajax from "../../../utils/ajax";
-import fmtTitle from "../../../utils/fmtTitle";
-import fmtDate from "../../../utils/fmtDate";
 
-class Editor extends React.Component {
+class Create extends React.Component {
   constructor(props) {
     super(props);
 
@@ -23,32 +22,14 @@ class Editor extends React.Component {
       redirectToReferrer: false,
       redirectToList: false,
       isAnimating: false,
-      isUpdated: false,
-      id: this.props.match.params.actId,
-      data: null
+      isCreated: false,
+      createdId: null
     };
     this.createDialogTips = this.createDialogTips.bind(this);
-    this.updated = this.updated.bind(this);
+    this.create = this.create.bind(this);
   }
 
   componentDidMount() {
-    const request = async () => {
-      try {
-        let data = await ajax('/mkt/activity/query.do', {id: this.state.id});
-
-        this.setState({data: data});
-      } catch (err) {
-        if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
-        } else {
-          this.createDialogTips(`${err.errCode}: ${err.errText}`);
-        }
-      } finally {
-        this.setState({isAnimating: false});
-      }
-    };
-
-    request();
     mainSize();
   }
 
@@ -86,34 +67,33 @@ class Editor extends React.Component {
     this.tips.dialog.modal('show');
   }
 
-  updated() {
-    let query = this.form.getFormValue();
+  create() {
+    const query = this.form.getFormValue();
 
     if (!query) {
       return;
     }
 
-    this.setState({isAnimating: true});
     query.orgnizationId = this.state.group.id;
-    query.id = this.state.id;
-
-    const request = async () => {
-      try {
-        let rs = await ajax('/mkt/activity/mod.do', query);
-
-        this.setState({isUpdated: true})
-      } catch (err) {
-        if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
-        } else {
-          this.createDialogTips(`${err.errCode}: ${err.errText}`);
-        }
-      } finally {
-        this.setState({isAnimating: false});
-      }
-    };
-
-    request()
+    // this.setState({isAnimating: true});
+    //
+    // const request = async () => {
+    //   try {
+    //     let rs = await ajax('/mkt/activity/add.do', query);
+    //
+    //     this.setState({isCreated: true, createdId: rs})
+    //   } catch (err) {
+    //     if (err.errCode === 401) {
+    //       this.setState({redirectToReferrer: true})
+    //     } else {
+    //       this.createDialogTips(`${err.errCode}: ${err.errText}`);
+    //     }
+    //   } finally {
+    //     this.setState({isAnimating: false});
+    //   }
+    // };
+    //
+    // request()
   }
 
   render() {
@@ -128,15 +108,19 @@ class Editor extends React.Component {
 
     if (this.state.redirectToList) {
       return (
-        <Redirect to="/mkt/act"/>
+        <Redirect to="/mkt/leads"/>
       )
     }
 
-    if (this.state.isUpdated) {
+    if (this.state.isCreated) {
+      let ids = this.ids;
+
+      ids.push(this.state.createdId);
+
       return (
         <Redirect to={{
-          pathname: `/mkt/act/${this.state.id}`,
-          state: {ids: this.ids}
+          pathname: `/mkt/leads/${this.state.createdId}`,
+          state: {ids: ids}
         }}/>
       )
     }
@@ -146,16 +130,16 @@ class Editor extends React.Component {
         <h5 id="subNav">
           <i className={`fa ${this.title.icon}`} aria-hidden="true"/>
           &nbsp;{this.title.text}&nbsp;&nbsp;|&nbsp;&nbsp;
-          <p className="d-inline text-muted">{this.title.text}编辑</p>
+          <p className="d-inline text-muted">{this.title.text}创建</p>
           <div className="btn-group float-right" role="group">
             <button onClick={() => {
               historyBack(this.props.history)
-            }} type="button" className="btn btn-light">返回
+            }} type="button" className="btn btn-light">取消
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={this.updated}
+              onClick={this.create}
               disabled={this.state.isAnimating}
             >
               保存
@@ -167,9 +151,8 @@ class Editor extends React.Component {
           <Progress isAnimating={this.state.isAnimating}/>
 
           <Form
-            isEditor={true}
+            isEditor={false}
             changedCrmGroup={this.state.group}
-            data={this.state.data}
             ref={(dom) => {
               this.form = dom
             }}
@@ -180,4 +163,4 @@ class Editor extends React.Component {
   }
 }
 
-export default Editor;
+export default Create;

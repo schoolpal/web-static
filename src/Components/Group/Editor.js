@@ -126,7 +126,7 @@ class Editor extends React.Component {
           <div className="btn-group float-right" role="group">
             <button onClick={() => {
               historyBack(this.props.history)
-            }} type="button" className="btn btn-light">返回
+            }} type="button" className="btn btn-light">取消
             </button>
             <button
               type="submit"

@@ -26,6 +26,34 @@ main {
   box-sizing: border-box;
 }
 
+.b-t {
+  position: relative;
+}
+
+.b-t:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: #eceeef;
+}
+
+.b-b {
+  position: relative;
+}
+
+.b-b:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #eceeef;
+}
+
 main h5 {
   position: relative;
   margin-bottom: 0;
@@ -74,6 +102,23 @@ main h5 p {
   border-right: 1px solid rgb(250, 250, 250);
   overflow: hidden;
   touch-action: none;
+}
+
+.aside-bar .drawer-spacer {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  box-sizing: border-box;
+  height: 54px;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.aside-bar .drawer-spacer img {
+  display: inline-block;
+  height: 100%;
 }
 
 .aside-bar .divider {

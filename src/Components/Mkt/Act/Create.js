@@ -16,6 +16,7 @@ class Create extends React.Component {
     super(props);
 
     this.title = fmtTitle(this.props.location.pathname);
+    this.ids = this.props.location.state.ids;
     this.state = {
       group: this.props.changedCrmGroup,
       redirectToReferrer: false,
@@ -112,7 +113,16 @@ class Create extends React.Component {
     }
 
     if (this.state.isCreated) {
-      return <Redirect to={`/mkt/act/${this.state.createdId}`}/>
+      let ids = this.ids;
+
+      ids.push(this.state.createdId);
+
+      return (
+        <Redirect to={{
+          pathname: `/mkt/act/${this.state.createdId}`,
+          state: {ids: ids}
+        }}/>
+      )
     }
 
     return (

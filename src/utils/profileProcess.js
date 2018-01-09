@@ -14,8 +14,8 @@ export default function (data) {
   let commands = [];
   let access = [];
 
-  profile.cRealname = data.cRealname;
-  profile.cNickname = data.cNickname;
+  profile.cRealname = data.cRealName;
+  profile.cNickname = data.cNickName;
   profile.cPhone = data.cPhone;
   profile.cEmail = data.cEmail;
   profile.cQq = data.cQq;

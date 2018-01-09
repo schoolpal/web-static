@@ -10,6 +10,7 @@ import Roles from "../Roles/Roles";
 import Permissions from "../Permissions/Permissions";
 import User from "../User/User"
 import Act from '../Mkt/Act/Act';
+import Leads from '../Mkt/Leads/Leads';
 import NoMatch from "../NoMatch/NoMatch";
 import DialogTips from "../Dialog/DialogTips";
 
@@ -98,6 +99,12 @@ class Home extends React.Component {
       );
     }
 
+    const query = {
+      access: this.state.profile.access,
+      profile: this.state.profile.profile,
+      commands: this.state.profile.commands
+    };
+
     return (
       <div className="container-fluid">
         <Drawer
@@ -116,42 +123,12 @@ class Home extends React.Component {
               path={this.props.match.url}
               render={() => (<div/>)}
             />
-            <PrivateRoute
-              path="/groups"
-              access={this.state.profile.access}
-              profile={this.state.profile.profile}
-              commands={this.state.profile.commands}
-              component={Group}
-            />
-            <PrivateRoute
-              path="/roles"
-              access={this.state.profile.access}
-              profile={this.state.profile.profile}
-              commands={this.state.profile.commands}
-              component={Roles}
-            />
-            <PrivateRoute
-              path="/permissions"
-              access={this.state.profile.access}
-              profile={this.state.profile.profile}
-              commands={this.state.profile.commands}
-              component={Permissions}
-            />
-            <PrivateRoute
-              path="/users"
-              access={this.state.profile.access}
-              profile={this.state.profile.profile}
-              commands={this.state.profile.commands}
-              component={User}
-            />
-            <PrivateRoute
-              path="/mkt/act"
-              access={this.state.profile.access}
-              profile={this.state.profile.profile}
-              commands={this.state.profile.commands}
-              changedCrmGroup={this.state.group}
-              component={Act}
-            />
+            <PrivateRoute path="/groups" component={Group}{...query}/>
+            <PrivateRoute path="/roles" component={Roles}{...query}/>
+            <PrivateRoute path="/permissions" component={Permissions}{...query}/>
+            <PrivateRoute path="/users" component={User}{...query}/>
+            <PrivateRoute path="/mkt/act" changedCrmGroup={this.state.group} component={Act}{...query}/>
+            <PrivateRoute path="/mkt/leads" changedCrmGroup={this.state.group} component={Leads}{...query}/>
             <Route render={(props) => (
               <NoMatch {...props} profile={this.state.profile.profile}/>
             )}/>

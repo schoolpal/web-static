@@ -192,7 +192,7 @@ class View extends React.Component {
   }
 
   modAction() {
-    this.props.history.push(`${this.props.match.url}/edit`);
+    this.props.history.push(`${this.props.match.url}/edit`, {ids: this.ids});
   }
 
   delAction() {
