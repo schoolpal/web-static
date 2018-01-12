@@ -3,8 +3,17 @@ import ReactDOM from 'react-dom'
 
 import DialogDate from '../../Dialog/DialogDate';
 import DialogAct from "../../Dialog/DialogAct"
+import Source from '../../Dic/Source';
+import Stages from '../../Dic/Stages';
+import Status from '../../Dic/Status';
+import Gender from '../../Dic/Gender';
+import Relation from '../../Dic/Relation';
+import Grade from '../../Dic/Grade';
+import CourseType from '../../Dic/CourseType';
+import CourseName from '../../Dic/CourseName';
 
 import fmtDate from '../../../utils/fmtDate'
+import ajax from "../../../utils/ajax";
 
 class Form extends React.Component {
   constructor(props) {
@@ -12,6 +21,9 @@ class Form extends React.Component {
 
     this.state = {
       group: this.props.changedCrmGroup,
+      channelId: null,
+      channelText: null,
+      option: null,
       data: null
     };
     this.createActDialog = this.createActDialog.bind(this);
@@ -20,7 +32,29 @@ class Form extends React.Component {
   }
 
   componentDidMount() {
+    const request = async () => {
+      try {
+        let status = await ajax('/mkt/leads/status/list.do', {typeId: 1});
+        let stage = await ajax('/mkt/leads/stage/list.do', {typeId: 1});
+        let source = await ajax('/mkt/leads/source/list.do', {typeId: 1});
+        let relation = await ajax('/mkt/relation/list.do');
+        let gender = await ajax('/mkt/gender/list.do');
 
+        this.setState({
+          option: {status, stage, source, relation, gender}
+        });
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request()
   }
 
   componentWillUnmount() {
@@ -54,26 +88,19 @@ class Form extends React.Component {
 
   acceptActDialog(selected) {
     this.setState({
-      parentId: selected.id,
-      parentName: selected.name,
-      startDate: null,
-      endDate: null
+      channelId: selected.id,
+      channelText: selected.name,
     })
   }
 
   getFormValue() {
-    if (!this.form.checkValidity() || (!this.state.startDate && !this.state.endDate)) {
+    if (!this.form.checkValidity() || !this.state.channelId) {
       return
     }
 
     let query = {};
 
-    if (this.state.parentId !== 'root') {
-      query.parentId = this.state.parentId;
-    }
-
-    query.startDate = this.state.startDate;
-    query.endDate = this.state.endDate;
+    query.channelId = this.state.channelId;
 
     for (let i = 0; i < this.form.length; i++) {
       if (this.form[i].tagName !== 'BUTTON' && !this.form[i].readOnly) {
@@ -85,21 +112,21 @@ class Form extends React.Component {
   }
 
   render() {
-    // if (!this.state.data) {
-    //   return (
-    //     <form ref={(dom) => {
-    //       this.form = dom
-    //     }}>
-    //       <div className="row justify-content-md-center">
-    //         <div className="col col-12">
-    //           <div className="card">
-    //             <div className="card-body">数据加载中...</div>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </form>
-    //   )
-    // } else {
+    if (!this.state.option || (this.props.isEditor && !this.state.data)) {
+      return (
+        <form ref={(dom) => {
+          this.form = dom
+        }}>
+          <div className="row justify-content-md-center">
+            <div className="col col-12">
+              <div className="card">
+                <div className="card-body">数据加载中...</div>
+              </div>
+            </div>
+          </div>
+        </form>
+      )
+    } else {
       return (
         <form ref={(dom) => {
           this.form = dom
@@ -112,117 +139,97 @@ class Form extends React.Component {
                   <div className="row">
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>学员姓名
+                        </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="studentName" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">学员姓别</label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Gender data={this.state.option.gender}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>学员年龄
+                        </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="age" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">在读年级</label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Grade/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">所在学校</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="schoolName"/>
                         </div>
                       </div>
                     </div>
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>家长姓名
+                        </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="parentName" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>与孩子关系
+                        </label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Relation data={this.state.option.relation}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>联系电话
+                        </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="cellphone" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">微信号</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
+                          <input type="text" className="form-control" name="weichat"/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">家庭住址</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" placeholder="Password"/>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
-                        <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
-                        <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <input type="text" className="form-control" name="address"/>
                         </div>
                       </div>
                     </div>
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">课程类别</label>
                         <div className="col-7">
-                          <textarea className="form-control" rows="3"/>
+                          <CourseType/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">课程产品</label>
+                        <div className="col-7">
+                          <CourseName/>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">备注</label>
+                        <div className="col-7">
+                          <textarea className="form-control" rows="3" name="note"/>
                         </div>
                       </div>
                     </div>
@@ -231,21 +238,19 @@ class Form extends React.Component {
                   <div className="row">
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>信息来源
+                        </label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Source data={this.state.option.source}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>具体渠道
+                        </label>
                         <div className="input-group col-7">
-                          <input type="text" className="form-control" readOnly={true}/>
+                          <input type="text" className="form-control" value={this.state.channelText} readOnly={true}/>
                           <span className="input-group-btn">
                             <button onClick={this.createActDialog} className="btn btn-secondary" type="button">
                               <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"/>
@@ -256,27 +261,19 @@ class Form extends React.Component {
                     </div>
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>线索阶段
+                        </label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Stages data={this.state.option.stage}/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">信息来源</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>线索状态
+                        </label>
                         <div className="col-7">
-                          <select className="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                          </select>
+                          <Status data={this.state.option.status}/>
                         </div>
                       </div>
                     </div>
@@ -290,7 +287,7 @@ class Form extends React.Component {
         </form>
       )
     }
-  // }
+  }
 }
 
 export default Form;

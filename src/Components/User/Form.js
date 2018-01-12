@@ -171,7 +171,7 @@ class Form extends React.Component {
               <div className="card-body">
                 <div className="row">
                   <div className="col-12 col-lg-8">
-                    <p className={'h6 pb-3 mb-0'}>用户角色</p>
+                    <p className={'h6 pb-3 mb-0'}>用户信息</p>
                     <div className="form-group">
                       <label htmlFor="group"><em className="text-danger">*</em>所属组织</label>
                       <input

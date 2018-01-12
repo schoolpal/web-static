@@ -74,7 +74,7 @@ class Create extends React.Component {
       return;
     }
 
-    query.orgnizationId = this.state.group.id;
+    query.organizationId = this.state.group.id;
     this.setState({isAnimating: true});
 
     const request = async () => {

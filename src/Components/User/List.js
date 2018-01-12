@@ -57,9 +57,9 @@ const Table = ({list, changedState, groupId}) => {
                   <label htmlFor={`switch-${user.cId}`}/>
                 </div>
               </td>
-              < td> {user.cLoginname}</td>
-              <td>{user.cRealname}</td>
-              <td>{user.cNickname}</td>
+              < td> {user.cLoginName}</td>
+              <td>{user.cRealName}</td>
+              <td>{user.cNickName}</td>
               <td>{user.cPhone}</td>
               <td>{user.cEmail}</td>
               <td>{user.cQq}</td>

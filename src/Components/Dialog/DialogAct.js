@@ -5,7 +5,7 @@ import {$} from "../../vendor";
 import actProcess from "../../utils/actAndGroupProcess";
 import ajax from "../../utils/ajax";
 
-const Act = ({list}) => {
+const Act = ({list, notRoot}) => {
   if (list === null) {
     return (
       <div className="dialog__body">数据加载中...</div>
@@ -15,11 +15,15 @@ const Act = ({list}) => {
   return (
     <div className="tree">
       <ul>
-        <li>
-          <div className="hd">
-            <p data-o="root" className="select"><span>作为一级活动</span></p>
-          </div>
-        </li>
+        {
+          notRoot ? '' : (
+            <li>
+              <div className="hd">
+                <p data-o="root" className="select"><span>作为一级活动</span></p>
+              </div>
+            </li>
+          )
+        }
         {ActItem(list)}
       </ul>
     </div>
@@ -29,7 +33,7 @@ const Act = ({list}) => {
 const ActItem = data => {
   let tree = [];
 
-  if (!data.length){
+  if (!data.length) {
     return tree;
   }
 
@@ -206,7 +210,8 @@ class DialogAct extends React.Component {
             </div>
             <div className="modal-body">
               {
-                this.state.errText ? <p>{this.state.errText}</p> : <Act list={this.state.list}/>
+                this.state.errText ? <p>{this.state.errText}</p> :
+                  <Act list={this.state.list} notRoot={this.props.notRoot}/>
               }
             </div>
             <div className="modal-footer">

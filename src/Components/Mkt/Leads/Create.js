@@ -74,26 +74,27 @@ class Create extends React.Component {
       return;
     }
 
-    query.orgnizationId = this.state.group.id;
-    // this.setState({isAnimating: true});
-    //
-    // const request = async () => {
-    //   try {
-    //     let rs = await ajax('/mkt/activity/add.do', query);
-    //
-    //     this.setState({isCreated: true, createdId: rs})
-    //   } catch (err) {
-    //     if (err.errCode === 401) {
-    //       this.setState({redirectToReferrer: true})
-    //     } else {
-    //       this.createDialogTips(`${err.errCode}: ${err.errText}`);
-    //     }
-    //   } finally {
-    //     this.setState({isAnimating: false});
-    //   }
-    // };
-    //
-    // request()
+    query.organizationId = this.state.group.id;
+
+    this.setState({isAnimating: true});
+
+    const request = async () => {
+      try {
+        let rs = await ajax('/mkt/leads/add.do', query);
+
+        this.setState({isCreated: true, createdId: rs})
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request()
   }
 
   render() {
