@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import DialogDate from '../../Dialog/DialogDate';
+import ContactList from "../../Contact/List";
+import DialogTips from "../../Dialog/DialogTips";
 import DialogAct from "../../Dialog/DialogAct"
 import Source from '../../Dic/Source';
 import Stages from '../../Dic/Stages';
@@ -12,7 +13,6 @@ import Grade from '../../Dic/Grade';
 import CourseType from '../../Dic/CourseType';
 import CourseName from '../../Dic/CourseName';
 
-import fmtDate from '../../../utils/fmtDate'
 import ajax from "../../../utils/ajax";
 
 class Form extends React.Component {
@@ -26,6 +26,7 @@ class Form extends React.Component {
       option: null,
       data: null
     };
+    this.createDialogTips = this.createDialogTips.bind(this);
     this.createActDialog = this.createActDialog.bind(this);
     this.acceptActDialog = this.acceptActDialog.bind(this);
     this.getFormValue = this.getFormValue.bind(this);
@@ -39,9 +40,39 @@ class Form extends React.Component {
         let source = await ajax('/mkt/leads/source/list.do', {typeId: 1});
         let relation = await ajax('/mkt/relation/list.do');
         let gender = await ajax('/mkt/gender/list.do');
+        let data = null;
+
+        if (this.props.isEditor) {
+          data = await ajax('/mkt/leads/query.do', {id: this.props.editorId});
+        }
 
         this.setState({
-          option: {status, stage, source, relation, gender}
+          option: {status, stage, source, relation, gender},
+          data: data
+        }, () => {
+          if (this.props.isEditor) {
+            this.form.studentName.value = this.state.data.student.name;
+            this.form.studentGender.value = this.state.data.student.genderId;
+            this.form.age.value = this.state.data.student.age;
+            this.form.classGrade.value = this.state.data.student.classGrade;
+            this.form.schoolName.value = this.state.data.student.schoolName;
+            this.form.parentName.value = this.state.data.parent.name;
+            this.form.relation.value = this.state.data.parent.relation;
+            this.form.cellphone.value = this.state.data.parent.cellphone;
+            // this.form.weichat.value = this.state.data.student.name;
+            this.form.address.value = this.state.data.parent.address;
+            this.form.courseType.value = this.state.data.courseType;
+            this.form.courseName.value = this.state.data.courseName;
+            this.form.note.value = this.state.data.note;
+            this.form.sourceId.value = this.state.data.sourceId;
+            this.form.stageId.value = this.state.data.stageId;
+            this.form.statusId.value = this.state.data.statusId;
+
+            this.setState({
+              channelId: this.state.data.channelId,
+              channelText: this.state.data.channelName
+            })
+          }
         });
       } catch (err) {
         if (err.errCode === 401) {
@@ -67,6 +98,28 @@ class Form extends React.Component {
     }
   }
 
+  createDialogTips(text) {
+    if (this.tips === undefined) {
+      this.tipsContainer = document.createElement('div');
+
+      ReactDOM.render(
+        <DialogTips
+          accept={this.logout}
+          title="提示"
+          text={text}
+          ref={(dom) => {
+            this.tips = dom
+          }}
+        />,
+        document.body.appendChild(this.tipsContainer)
+      );
+    } else {
+      this.tips.setText(text);
+    }
+
+    this.tips.dialog.modal('show');
+  }
+
   createActDialog() {
     if (this.act === undefined) {
       this.actContainer = document.createElement('div');
@@ -75,6 +128,7 @@ class Form extends React.Component {
           accept={this.acceptActDialog}
           changedCrmGroup={this.state.group}
           notRoot={true}
+          defaults={this.state.channelId}
           ref={(dom) => {
             this.act = dom
           }}
@@ -280,6 +334,14 @@ class Form extends React.Component {
                     <div className="col"/>
                     <div className="col"/>
                   </div>
+                  {
+                    this.props.isEditor && this.state.data ? <ContactList
+                      id={this.state.data.id}
+                      canEdit={true}
+                      groupName={this.state.data.organizationName}
+                      userName={this.state.data.executiveName}
+                    /> : null
+                  }
                 </div>
               </div>
             </div>

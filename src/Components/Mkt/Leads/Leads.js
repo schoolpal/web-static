@@ -4,7 +4,7 @@ import {Route, Switch} from 'react-router-dom'
 import List from './List'
 import Create from './Create'
 import View from './View';
-// import Editor from "./Editor";
+import Editor from "./Editor";
 
 const Leads = ({commands, location, match, profile, changedCrmGroup}) => {
   const groupCommands = commands.find((item) => {
@@ -16,11 +16,11 @@ const Leads = ({commands, location, match, profile, changedCrmGroup}) => {
       <Route path={`${match.url}/create`} render={(props) => (
         <Create {...props} profile={profile} changedCrmGroup={changedCrmGroup}/>
       )}/>
-      {/*<Route path={`${match.url}/:actId/edit`} render={(props) => (*/}
-      {/*<Editor {...props} profile={profile} changedCrmGroup={changedCrmGroup}/>*/}
-      {/*)}/>*/}
+      <Route path={`${match.url}/:actId/edit`} render={(props) => (
+        <Editor {...props} profile={profile} changedCrmGroup={changedCrmGroup}/>
+      )}/>
       <Route path={`${match.url}/:leadsId`} render={(props) => (
-        <View key={props.match.params.actId} {...props} profile={profile} commands={groupCommands.commands}
+        <View key={props.match.params.leadsId} {...props} profile={profile} commands={groupCommands.commands}
               changedCrmGroup={changedCrmGroup}/>
       )}/>
       <Route path={`${match.url}`} render={(props) => (

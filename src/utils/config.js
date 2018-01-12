@@ -46,25 +46,61 @@ export default {
     "2": {ICON_CLASS: "fa-tags"},
     "2-1": {
       PATH: "sales/oppor",
-      PATH_RULE: /^\/sales\/oppor$/,
-      ICON_CLASS: "fa-file-o"
+      PATH_RULE: /^\/sales\/oppor(\/((?!create).)*)?$/,
+      ICON_CLASS: "fa-file-o",
+      CATEGORY: '销售',
+      NAME: '机会'
     },
-    "2-1-1": {PATH_RULE: /^\/sales\/oppor\/create$/},
-    "2-1-2": {PATH_RULE: /^\/sales\/oppor\/((?!create).)*$/},
+    "2-1-1": {
+      PATH_RULE: /^\/sales\/oppor\/create$/,
+      ICON_CLASS: "fa-file-o",
+      CATEGORY: '销售',
+      NAME: '机会'
+    },
+    "2-1-2": {
+      PATH_RULE: /^\/sales\/oppor\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-file-o",
+      CATEGORY: '销售',
+      NAME: '机会'
+    },
     "2-2": {
       PATH: "sales/contract",
-      PATH_RULE: /^\/sales\/contract$/,
-      ICON_CLASS: "fa-file-text-o"
+      PATH_RULE: /^\/sales\/contract(\/((?!create).)*)?$/,
+      ICON_CLASS: "fa-file-text-o",
+      CATEGORY: '我的',
+      NAME: '合同'
     },
-    "2-2-1": {PATH_RULE: /^\/sales\/contract\/create$/},
-    "2-2-2": {PATH_RULE: /^\/sales\/contract\/((?!create).)*$/},
+    "2-2-1": {
+      PATH_RULE: /^\/sales\/contract\/create$/,
+      ICON_CLASS: "fa-file-text-o",
+      CATEGORY: '我的',
+      NAME: '合同'
+    },
+    "2-2-2": {
+      PATH_RULE: /^\/sales\/contract\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-file-text-o",
+      CATEGORY: '我的',
+      NAME: '合同'
+    },
     "2-3": {
       PATH: "sales/student",
       PATH_RULE: /^\/sales\/student$/,
-      ICON_CLASS: "fa-graduation-cap"
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '我的',
+      NAME: '学员'
     },
-    "2-3-1": {PATH_RULE: /^\/sales\/student\/create$/},
-    "2-3-2": {PATH_RULE: /^\/sales\/student\/((?!create).)*$/},
+    "2-3-1": {
+      PATH_RULE: /^\/sales\/student\/create$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '我的',
+      NAME: '学员'
+    },
+    "2-3-2": {
+      PATH_RULE: /^\/sales\/student\/((?!create).)*$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '我的',
+      NAME: '学员'
+    },
 
 
     //服务相关权限配置

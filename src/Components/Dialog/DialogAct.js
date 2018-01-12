@@ -129,7 +129,7 @@ class DialogAct extends React.Component {
     const request = async () => {
       try {
         let list = await ajax('/mkt/activity/listTree.do', {orgId: this.state.group.id});
-        console.log(list, actProcess(list))
+
         this.setState({list: actProcess(list)}, () => {
           if (this.props.defaults) {
             this.dialog.find(`[data-o=${this.props.defaults}]`).trigger('click');

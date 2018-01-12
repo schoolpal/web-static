@@ -2,11 +2,12 @@ import React from 'react'
 import ReactDOM from "react-dom";
 import {Link, Redirect} from 'react-router-dom'
 
+import ContactList from "../../Contact/List";
 import DialogTips from "../../Dialog/DialogTips";
-import Progress from "../../Progress/Progress"
+import DialogUser from '../../Dialog/DialogUser';
+import Progress from "../../Progress/Progress";
 import Commands from "../../Commands/Commands";
 
-import historyBack from "../../../utils/historyBack";
 import fmtTitle from "../../../utils/fmtTitle";
 import ajax from "../../../utils/ajax";
 import mainSize from "../../../utils/mainSize";
@@ -23,7 +24,7 @@ const NextBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/mkt/act/${ids[curIndex + 1]}`,
+        pathname: `/mkt/leads/${ids[curIndex + 1]}`,
         state: {ids: ids}
       }}
     >
@@ -43,7 +44,7 @@ const PrevBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/mkt/act/${ids[curIndex - 1]}`,
+        pathname: `/mkt/leads/${ids[curIndex - 1]}`,
         state: {ids: ids}
       }}
     >
@@ -63,7 +64,7 @@ class View extends React.Component {
       group: this.props.changedCrmGroup,
       redirectToReferrer: false,
       redirectToList: false,
-      isAnimating: true,
+      isAnimating: false,
       id: this.props.match.params.leadsId,
       data: null
     };
@@ -71,7 +72,9 @@ class View extends React.Component {
     this.modAction = this.modAction.bind(this);
     this.delAction = this.delAction.bind(this);
     this.convertAction = this.convertAction.bind(this);
+    this.convertAccept = this.convertAccept.bind(this);
     this.assignAction = this.assignAction.bind(this);
+    this.assignAccept = this.assignAccept.bind(this);
   }
 
   componentDidMount() {
@@ -86,8 +89,6 @@ class View extends React.Component {
         } else {
           this.createDialogTips(`${err.errCode}: ${err.errText}`);
         }
-      } finally {
-        this.setState({isAnimating: false});
       }
     };
 
@@ -130,7 +131,7 @@ class View extends React.Component {
   }
 
   modAction() {
-    this.props.history.push(`${this.props.match.url}/edit`);
+    this.props.history.push(`${this.props.match.url}/edit`, {ids: this.ids});
   }
 
   delAction() {
@@ -153,9 +154,81 @@ class View extends React.Component {
   }
 
   convertAction() {
+    const defaults = {
+      groupId: this.state.data.organizationId,
+      groupName: this.state.data.organizationName,
+      userId: this.state.data.executiveId,
+      userName: this.state.data.executiveName
+    };
+    this.userContainer = document.createElement('div');
+    ReactDOM.render(
+      <DialogUser
+        accept={this.convertAccept}
+        title={this.state.data.student.name}
+        container={this.userContainer}
+        defaults={defaults}
+        ref={(dom) => {
+          this.user = dom
+        }}
+      />,
+      document.body.appendChild(this.userContainer)
+    );
+
+    this.user.dialog.modal('show');
+  }
+
+  convertAccept(selected) {
+    console.log(selected)
   }
 
   assignAction() {
+    const defaults = {
+      groupId: this.state.data.organizationId,
+      groupName: this.state.data.organizationName,
+      userId: this.state.data.executiveId,
+      userName: this.state.data.executiveName
+    };
+    this.userContainer = document.createElement('div');
+    ReactDOM.render(
+      <DialogUser
+        accept={this.assignAccept}
+        title={this.state.data.student.name}
+        container={this.userContainer}
+        defaults={defaults}
+        ref={(dom) => {
+          this.user = dom
+        }}
+      />,
+      document.body.appendChild(this.userContainer)
+    );
+
+    this.user.dialog.modal('show');
+  }
+
+  assignAccept(selected) {
+    this.setState({isAnimating: true});
+    const request = async () => {
+      try {
+        let rs = await ajax('/mkt/leads/assign.do', {id: this.state.id, assigneeId: selected.user.id});
+        let data = Object.assign({}, this.state.data);
+
+        data.organizationId = selected.group.id;
+        data.organizationName = selected.group.name;
+        data.executiveId = selected.user.id;
+        data.executiveName = selected.user.name;
+        this.setState({data})
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request()
   }
 
   render() {
@@ -170,7 +243,35 @@ class View extends React.Component {
 
     if (this.state.redirectToList) {
       return (
-        <Redirect to="/mkt/act"/>
+        <Redirect to="/mkt/leads"/>
+      )
+    }
+
+    if (!this.state.data) {
+      return (
+        <div>
+          <h5 id="subNav">
+            <i className={`fa ${this.title.icon}`} aria-hidden="true"/>
+            &nbsp;{this.title.text}&nbsp;&nbsp;|&nbsp;&nbsp;
+
+            <div className="btn-group float-right ml-4" role="group">
+              <button onClick={() => {
+                this.props.history.push('/mkt/leads');
+              }} type="button" className="btn btn-light">返回
+              </button>
+            </div>
+          </h5>
+
+          <div id="main" className="main p-3">
+            <div className="row justify-content-md-center">
+              <div className="col col-12">
+                <div className="card">
+                  <div className="card-body">数据加载中...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )
     }
 
@@ -187,7 +288,7 @@ class View extends React.Component {
           </div>
           <div className="btn-group float-right ml-4" role="group">
             <button onClick={() => {
-              this.props.history.push('/mkt/act');
+              this.props.history.push('/mkt/leads');
             }} type="button" className="btn btn-light">返回
             </button>
           </div>
@@ -379,7 +480,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value=""
+                            value={this.state.data ? this.state.data.channelName : ''}
                           />
                         </div>
                       </div>
@@ -416,7 +517,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.data ? this.state.data.orgnizationName : ''}
+                            value={this.state.data ? this.state.data.organizationName : ''}
                           />
                         </div>
                       </div>
@@ -457,6 +558,12 @@ class View extends React.Component {
                       </div>
                     </div>
                   </div>
+                  <ContactList
+                    id={this.state.id}
+                    canEdit={false}
+                    groupName={this.state.data.organizationName}
+                    userName={this.state.data.executiveName}
+                  />
                 </div>
               </div>
             </div>
