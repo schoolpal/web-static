@@ -35,9 +35,9 @@ class Form extends React.Component {
   componentDidMount() {
     const request = async () => {
       try {
-        let status = await ajax('/mkt/leads/status/list.do', {typeId: 1});
-        let stage = await ajax('/mkt/leads/stage/list.do', {typeId: 1});
-        let source = await ajax('/mkt/leads/source/list.do', {typeId: 1});
+        let status = await ajax('/mkt/leads/status/list.do', {typeId: 2});
+        let stage = await ajax('/mkt/leads/stage/list.do', {typeId: 2});
+        let source = await ajax('/mkt/leads/source/list.do', {typeId: 2});
         let relation = await ajax('/mkt/relation/list.do');
         let gender = await ajax('/mkt/gender/list.do');
         let data = null;
@@ -316,7 +316,17 @@ class Form extends React.Component {
                     <div className="col">
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>线索阶段
+                          <em className="text-danger">*</em>类型
+                        </label>
+                        <div className="col-7">
+                          <select className="form-control" name="typeId">
+                            <option value="2">新招</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>阶段
                         </label>
                         <div className="col-7">
                           <Stages data={this.state.option.stage}/>
@@ -324,7 +334,7 @@ class Form extends React.Component {
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>线索状态
+                          <em className="text-danger">*</em>状态
                         </label>
                         <div className="col-7">
                           <Status data={this.state.option.status}/>

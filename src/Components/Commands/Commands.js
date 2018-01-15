@@ -53,6 +53,8 @@ class Commands extends React.Component {
                 return <Defaults key={index} action={this.props.assignAction} text="分配给"/>;
               case 'Convert':
                 return <Defaults key={index} action={this.props.convertAction} text="转化为"/>;
+              case 'Sign':
+                return <Defaults key={index} action={this.props.SignAction} text="创建合同"/>;
               default:
                 return null;
             }

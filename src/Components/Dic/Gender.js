@@ -8,7 +8,7 @@ import objectToArray from "../../utils/objectToArray";
 
 class Gender extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       redirectToReferrer: false,
@@ -73,11 +73,11 @@ class Gender extends React.Component {
     }
 
     return (
-      <select className="form-control" name="studentGender">
+      <select className="form-control" name={this.props.name || "studentGender"}>
         <option value="">请选择</option>
         {
           this.state.list.map(item => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            <option key={item.id} value={item.name}>{item.name}</option>
           ))
         }
       </select>

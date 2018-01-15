@@ -1,7 +1,7 @@
 import React from 'react'
 
-const CourseName = () => (
-  <select name="courseName" className="form-control">
+const CourseName = ({name}) => (
+  <select name={name || "courseName"} className="form-control">
     <option value="">请选择</option>
     <option value="课程1">课程1</option>
     <option value="课程2">课程2</option>

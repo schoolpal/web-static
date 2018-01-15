@@ -84,7 +84,7 @@ export default {
     },
     "2-3": {
       PATH: "sales/student",
-      PATH_RULE: /^\/sales\/student$/,
+      PATH_RULE: /^\/sales\/student(\/((?!create).)*)?$/,
       ICON_CLASS: "fa-graduation-cap",
       CATEGORY: '我的',
       NAME: '学员'
@@ -96,7 +96,7 @@ export default {
       NAME: '学员'
     },
     "2-3-2": {
-      PATH_RULE: /^\/sales\/student\/((?!create).)*$/,
+      PATH_RULE: /^\/sales\/student\/((?!create).)*\/edit$/,
       ICON_CLASS: "fa-graduation-cap",
       CATEGORY: '我的',
       NAME: '学员'
@@ -159,5 +159,8 @@ export default {
     "7-4": {PATH: "users", PATH_RULE: /^\/users$/, ICON_CLASS: "fa-user"},
     "7-4-1": {PATH_RULE: /^\/users\/create$/},
     "7-4-2": {PATH_RULE: /^\/users\/((?!create).)*$/}
-  }
+  },
+
+  TYPE_ID: {1: '线索', 2: '新招', 3: '续报'},
+  DOCUMENT: {1: '身份证'}
 };

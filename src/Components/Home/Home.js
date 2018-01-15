@@ -11,6 +11,9 @@ import Permissions from "../Permissions/Permissions";
 import User from "../User/User"
 import Act from '../Mkt/Act/Act';
 import Leads from '../Mkt/Leads/Leads';
+import Appor from '../Sales/Appor/Appor';
+import Contract from '../Sales/Contract/Contract';
+import Student from '../Sales/Student/Student';
 import NoMatch from "../NoMatch/NoMatch";
 import DialogTips from "../Dialog/DialogTips";
 
@@ -129,6 +132,9 @@ class Home extends React.Component {
             <PrivateRoute path="/users" component={User}{...query}/>
             <PrivateRoute path="/mkt/act" changedCrmGroup={this.state.group} component={Act}{...query}/>
             <PrivateRoute path="/mkt/leads" changedCrmGroup={this.state.group} component={Leads}{...query}/>
+            <PrivateRoute path="/sales/oppor" changedCrmGroup={this.state.group} component={Appor}{...query}/>
+            <PrivateRoute path="/sales/contract" changedCrmGroup={this.state.group} component={Contract}{...query}/>
+            <PrivateRoute path="/sales/student" changedCrmGroup={this.state.group} component={Student}{...query}/>
             <Route render={(props) => (
               <NoMatch {...props} profile={this.state.profile.profile}/>
             )}/>

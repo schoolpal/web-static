@@ -1,77 +1,69 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import ContactList from "../../Contact/List";
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import 'react-day-picker/lib/style.css';
+
 import DialogTips from "../../Dialog/DialogTips";
-import DialogAct from "../../Dialog/DialogAct"
-import Source from '../../Dic/Source';
-import Stages from '../../Dic/Stages';
-import Status from '../../Dic/Status';
 import Gender from '../../Dic/Gender';
 import Relation from '../../Dic/Relation';
 import Grade from '../../Dic/Grade';
 import CourseType from '../../Dic/CourseType';
 import CourseName from '../../Dic/CourseName';
+import Document from '../../Dic/Document';
 
 import ajax from "../../../utils/ajax";
+import fmtDate from "../../../utils/fmtDate";
+import calculateAge from "../../../utils/calculateAge";
 
 class Form extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       group: this.props.changedCrmGroup,
-      channelId: null,
-      channelText: null,
+      birthday: null,
+      age: 0,
       option: null,
       data: null
     };
+    this.changeBirthday = this.changeBirthday.bind(this);
     this.createDialogTips = this.createDialogTips.bind(this);
-    this.createActDialog = this.createActDialog.bind(this);
-    this.acceptActDialog = this.acceptActDialog.bind(this);
     this.getFormValue = this.getFormValue.bind(this);
   }
 
   componentDidMount() {
     const request = async () => {
       try {
-        let status = await ajax('/mkt/leads/status/list.do', {typeId: 1});
-        let stage = await ajax('/mkt/leads/stage/list.do', {typeId: 1});
-        let source = await ajax('/mkt/leads/source/list.do', {typeId: 1});
         let relation = await ajax('/mkt/relation/list.do');
         let gender = await ajax('/mkt/gender/list.do');
         let data = null;
 
         if (this.props.isEditor) {
-          data = await ajax('/mkt/leads/query.do', {id: this.props.editorId});
+          data = await ajax('/sales/contract/query.do', {id: this.props.editorId});
+        } else {
+
         }
 
+        const birthday = new Date(data.stuBirthday);
+        const age = calculateAge(birthday);
+
         this.setState({
-          option: {status, stage, source, relation, gender},
-          data: data
+          option: {relation, gender},
+          data: data,
+          birthday,
+          age
         }, () => {
           if (this.props.isEditor) {
-            this.form.studentName.value = this.state.data.student.name;
-            this.form.studentGender.value = this.state.data.student.genderId;
-            this.form.age.value = this.state.data.student.age;
-            this.form.classGrade.value = this.state.data.student.classGrade;
-            this.form.schoolName.value = this.state.data.student.schoolName;
-            this.form.parentName.value = this.state.data.parent.name;
-            this.form.relation.value = this.state.data.parent.relation;
-            this.form.cellphone.value = this.state.data.parent.cellphone;
-            this.form.wechat.value = this.state.data.parent.wechat;
-            this.form.address.value = this.state.data.parent.address;
-            this.form.courseType.value = this.state.data.courseType;
-            this.form.courseName.value = this.state.data.courseName;
-            this.form.note.value = this.state.data.note;
-            this.form.sourceId.value = this.state.data.sourceId;
-            this.form.stageId.value = this.state.data.stageId;
-            this.form.statusId.value = this.state.data.statusId;
-
-            this.setState({
-              channelId: this.state.data.channelId,
-              channelText: this.state.data.channelName
-            })
+            for (let i = 0; i < this.form.length; i++) {
+              if (this.form[i].name) {
+                if (this.form[i].name === 'startDate' || this.form[i].name === 'endDate') {
+                  this.form[i].value = fmtDate(this.state.data[this.form[i].name]);
+                } else {
+                  this.form[i].value = this.state.data[this.form[i].name];
+                }
+              }
+            }
           }
         });
       } catch (err) {
@@ -120,45 +112,32 @@ class Form extends React.Component {
     this.tips.dialog.modal('show');
   }
 
-  createActDialog() {
-    if (this.act === undefined) {
-      this.actContainer = document.createElement('div');
-      ReactDOM.render(
-        <DialogAct
-          accept={this.acceptActDialog}
-          changedCrmGroup={this.state.group}
-          notRoot={true}
-          defaults={this.state.channelId}
-          ref={(dom) => {
-            this.act = dom
-          }}
-        />,
-        document.body.appendChild(this.actContainer)
-      );
-    }
+  changeBirthday(day) {
+    const birthday = day;
+    const age = calculateAge(birthday);
 
-    this.act.dialog.modal('show');
-  }
-
-  acceptActDialog(selected) {
-    this.setState({
-      channelId: selected.id,
-      channelText: selected.name,
-    })
+    this.setState({birthday, age});
   }
 
   getFormValue() {
-    if (!this.form.checkValidity() || !this.state.channelId) {
+    if (!this.form.checkValidity()) {
       return
     }
 
     let query = {};
 
-    query.channelId = this.state.channelId;
+    query.stuBirthday = this.state.birthday;
+    query.stuCode = this.form.code.value;
+    query.courseOriId = 1;
+    query.courseSesId = 2;
 
     for (let i = 0; i < this.form.length; i++) {
-      if (this.form[i].tagName !== 'BUTTON' && !this.form[i].readOnly) {
-        query[this.form[i].name] = this.form[i].value;
+      if (this.form[i].name) {
+        if (this.form[i].name === 'startDate' || this.form[i].name === 'endDate') {
+          query[this.form[i].name] = new Date(this.form[i].value);
+        } else {
+          query[this.form[i].name] = this.form[i].value;
+        }
       }
     }
 
@@ -189,7 +168,7 @@ class Form extends React.Component {
             <div className="col col-12">
               <div className="card">
                 <div className="card-body">
-                  <p className="ht pb-3 b-b">线索信息</p>
+                  <p className="ht pb-3 b-b">基本信息</p>
                   <div className="row">
                     <div className="col">
                       <div className="form-group row">
@@ -197,13 +176,29 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>学员姓名
                         </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="studentName" required={true}/>
+                          <input type="text" className="form-control" name="stuName" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">学员姓别</label>
                         <div className="col-7">
-                          <Gender data={this.state.option.gender}/>
+                          <Gender data={this.state.option.gender} name="stuGender"/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>出生年月
+                        </label>
+                        <div className="col-7">
+                          <DayPickerInput
+                            value={this.state.birthday}
+                            dayPickerProps={{
+                              initialMonth: this.state.birthday
+                            }}
+                            onDayChange={day => {
+                              this.changeBirthday(day)
+                            }}
+                          />
                         </div>
                       </div>
                       <div className="form-group row">
@@ -211,19 +206,34 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>学员年龄
                         </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="age" required={true}/>
+                          <input type="text" className="form-control" name="stuAge"
+                                 value={this.state.age ? this.state.age : ''} readOnly={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">在读年级</label>
                         <div className="col-7">
-                          <Grade/>
+                          <Grade name="stuGrade"/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">所在学校</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="schoolName"/>
+                          <input type="text" className="form-control" name="stuSchool_name"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">证件类型</label>
+                        <div className="col-7">
+                          <Document name="stuIdType"/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">证件号码</label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="stuIdCode"/>
                         </div>
                       </div>
                     </div>
@@ -233,7 +243,7 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>家长姓名
                         </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="parentName" required={true}/>
+                          <input type="text" className="form-control" name="parName" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
@@ -249,22 +259,32 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>联系电话
                         </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="cellphone" required={true}/>
+                          <input type="text" className="form-control" name="parCellphone" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">微信号</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="wechat"/>
+                          <input type="text" className="form-control" name="parWechat"/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">电子邮箱</label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="parEmail"/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">家庭住址</label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="address"/>
+                          <input type="text" className="form-control" name="parAddress"/>
                         </div>
                       </div>
                     </div>
+                    <div className="col"/>
+                  </div>
+                  <p className="ht pt-3 pb-3 b-t b-b">合同信息</p>
+                  <div className="row">
                     <div className="col">
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">课程类别</label>
@@ -278,70 +298,97 @@ class Form extends React.Component {
                           <CourseName/>
                         </div>
                       </div>
-                    </div>
-                    <div className="col">
-                      <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">备注</label>
-                        <div className="col-7">
-                          <textarea className="form-control" rows="3" name="note"/>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="ht pt-3 pb-3 b-t b-b">线索进程</p>
-                  <div className="row">
-                    <div className="col">
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>信息来源
+                          <em className="text-danger">*</em>课时
                         </label>
                         <div className="col-7">
-                          <Source data={this.state.option.source}/>
+                          <input type="text" className="form-control" name="courseHours" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>具体渠道
+                          <em className="text-danger">*</em>课次
                         </label>
-                        <div className="input-group col-7">
-                          <input type="text" className="form-control" value={this.state.channelText} readOnly={true}/>
-                          <span className="input-group-btn">
-                            <button onClick={this.createActDialog} className="btn btn-secondary" type="button">
-                              <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true"/>
-                            </button>
-                          </span>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="courseTimes" required={true}/>
                         </div>
                       </div>
                     </div>
                     <div className="col">
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>线索阶段
+                          <em className="text-danger">*</em>合同金额
                         </label>
                         <div className="col-7">
-                          <Stages data={this.state.option.stage}/>
+                          <input type="text" className="form-control" name="oriPrice" required={true}/>
                         </div>
                       </div>
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">
-                          <em className="text-danger">*</em>线索状态
+                          <em className="text-danger">*</em>折扣金额
                         </label>
                         <div className="col-7">
-                          <Status data={this.state.option.status}/>
+                          <input type="text" className="form-control" name="discPrice" required={true}/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>应付金额
+                        </label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="finalPrice" required={true}/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>已付金额
+                        </label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="paid" required={true}/>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>合同编号
+                        </label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="code" required={true}/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>合同类型
+                        </label>
+                        <div className="col-7">
+                          <select className="form-control" name="type">
+                            <option value="2">新招</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>签约日期
+                        </label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="startDate" required={true}
+                                 placeholder={fmtDate(new Date())}/>
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>到期日期
+                        </label>
+                        <div className="col-7">
+                          <input type="text" className="form-control" name="endDate" required={true}
+                                 placeholder={fmtDate(new Date())}/>
                         </div>
                       </div>
                     </div>
                     <div className="col"/>
-                    <div className="col"/>
                   </div>
-                  {
-                    this.props.isEditor && this.state.data ? <ContactList
-                      id={this.state.data.id}
-                      canEdit={true}
-                      groupName={this.state.data.organizationName}
-                      userName={this.state.data.executiveName}
-                    /> : null
-                  }
                 </div>
               </div>
             </div>

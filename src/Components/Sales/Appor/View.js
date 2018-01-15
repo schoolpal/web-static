@@ -12,6 +12,7 @@ import fmtTitle from "../../../utils/fmtTitle";
 import ajax from "../../../utils/ajax";
 import mainSize from "../../../utils/mainSize";
 import fmtDate from "../../../utils/fmtDate";
+import config from "../../../utils/config";
 
 const NextBtn = ({id, ids}) => {
   const curIndex = ids.indexOf(id);
@@ -24,7 +25,7 @@ const NextBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/mkt/leads/${ids[curIndex + 1]}`,
+        pathname: `/sales/oppor/${ids[curIndex + 1]}`,
         state: {ids: ids}
       }}
     >
@@ -44,7 +45,7 @@ const PrevBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/mkt/leads/${ids[curIndex - 1]}`,
+        pathname: `/sales/oppor/${ids[curIndex - 1]}`,
         state: {ids: ids}
       }}
     >
@@ -65,14 +66,13 @@ class View extends React.Component {
       redirectToReferrer: false,
       redirectToList: false,
       isAnimating: false,
-      id: this.props.match.params.leadsId,
+      id: this.props.match.params.opporId,
       data: null
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
     this.delAction = this.delAction.bind(this);
-    this.convertAction = this.convertAction.bind(this);
-    this.convertAccept = this.convertAccept.bind(this);
+    this.SignAction = this.SignAction.bind(this);
     this.assignAction = this.assignAction.bind(this);
     this.assignAccept = this.assignAccept.bind(this);
   }
@@ -80,7 +80,7 @@ class View extends React.Component {
   componentDidMount() {
     const request = async () => {
       try {
-        let data = await ajax('/mkt/leads/query.do', {id: this.state.id});
+        let data = await ajax('/sales/oppor/query.do', {id: this.state.id});
 
         this.setState({data: data});
       } catch (err) {
@@ -153,32 +153,8 @@ class View extends React.Component {
     request();
   }
 
-  convertAction() {
-    const defaults = {
-      groupId: this.state.data.organizationId,
-      groupName: this.state.data.organizationName,
-      userId: this.state.data.executiveId,
-      userName: this.state.data.executiveName
-    };
-    this.userContainer = document.createElement('div');
-    ReactDOM.render(
-      <DialogUser
-        accept={this.convertAccept}
-        title={this.state.data.student.name}
-        container={this.userContainer}
-        defaults={defaults}
-        ref={(dom) => {
-          this.user = dom
-        }}
-      />,
-      document.body.appendChild(this.userContainer)
-    );
-
-    this.user.dialog.modal('show');
-  }
-
-  convertAccept(selected) {
-    console.log(selected)
+  SignAction() {
+    this.props.history.push('/sales/contract/create', {data: this.state.data});
   }
 
   assignAction() {
@@ -209,7 +185,7 @@ class View extends React.Component {
     this.setState({isAnimating: true});
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/leads/assign.do', {id: this.state.id, assigneeId: selected.user.id});
+        let rs = await ajax('/sales/oppor/assign.do', {id: this.state.id, assigneeId: selected.user.id});
         let data = Object.assign({}, this.state.data);
 
         data.organizationId = selected.group.id;
@@ -243,7 +219,7 @@ class View extends React.Component {
 
     if (this.state.redirectToList) {
       return (
-        <Redirect to="/mkt/leads"/>
+        <Redirect to="/sales/oppor"/>
       )
     }
 
@@ -256,7 +232,7 @@ class View extends React.Component {
 
             <div className="btn-group float-right ml-4" role="group">
               <button onClick={() => {
-                this.props.history.push('/mkt/leads');
+                this.props.history.push('/sales/oppor');
               }} type="button" className="btn btn-light">返回
               </button>
             </div>
@@ -288,7 +264,7 @@ class View extends React.Component {
           </div>
           <div className="btn-group float-right ml-4" role="group">
             <button onClick={() => {
-              this.props.history.push('/mkt/leads');
+              this.props.history.push('/sales/oppor');
             }} type="button" className="btn btn-light">返回
             </button>
           </div>
@@ -297,7 +273,7 @@ class View extends React.Component {
             modAction={this.modAction}
             delAction={this.delAction}
             assignAction={this.assignAction}
-            convertAction={this.convertAction}
+            SignAction={this.SignAction}
           />
         </h5>
 
@@ -487,7 +463,18 @@ class View extends React.Component {
                     </div>
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">线索阶段</label>
+                        <label className="col-5 col-form-label font-weight-bold">类型</label>
+                        <div className="col-7">
+                          <input
+                            type="text"
+                            readOnly={true}
+                            className="form-control-plaintext"
+                            value={this.state.data ? config.TYPE_ID[this.state.data.typeId] : ''}
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">阶段</label>
                         <div className="col-7">
                           <input
                             type="text"
@@ -498,7 +485,7 @@ class View extends React.Component {
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">线索状态</label>
+                        <label className="col-5 col-form-label font-weight-bold">状态</label>
                         <div className="col-7">
                           <input
                             type="text"
