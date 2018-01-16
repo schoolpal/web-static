@@ -151,6 +151,8 @@ class Editor extends React.Component {
             isEditor={true}
             editorId={this.state.id}
             changedCrmGroup={this.state.group}
+            contactOrgName={this.props.profile.org.cName}
+            contactUserName={this.props.profile.cRealname}
             ref={(dom) => {
               this.form = dom
             }}

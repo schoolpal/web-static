@@ -42,7 +42,19 @@ class Form extends React.Component {
         if (this.props.isEditor) {
           data = await ajax('/sales/contract/query.do', {id: this.props.editorId});
         } else {
-
+          data = {
+            stuName: this.props.apporData.student.name,
+            stuGrade: this.props.apporData.student.classGrade,
+            stuBirthday: new Date(this.props.apporData.student.birthday),
+            stuSchoolName: this.props.apporData.student.schoolName,
+            parName: this.props.apporData.parent.name,
+            relation: this.props.apporData.parent.relation,
+            parCellphone: this.props.apporData.parent.cellphone,
+            parWechat: this.props.apporData.parent.wechat || '',
+            parAddress: this.props.apporData.parent.address,
+            courseType: this.props.apporData.courseType,
+            courseName: this.props.apporData.courseName
+          }
         }
 
         const birthday = new Date(data.stuBirthday);
@@ -50,21 +62,31 @@ class Form extends React.Component {
 
         this.setState({
           option: {relation, gender},
-          data: data,
+          data,
           birthday,
           age
         }, () => {
-          if (this.props.isEditor) {
-            for (let i = 0; i < this.form.length; i++) {
-              if (this.form[i].name) {
-                if (this.form[i].name === 'startDate' || this.form[i].name === 'endDate') {
-                  this.form[i].value = fmtDate(this.state.data[this.form[i].name]);
-                } else {
-                  this.form[i].value = this.state.data[this.form[i].name];
-                }
+          const keys = Object.keys(data);
+
+          keys.map(key => {
+            if (this.form[key]) {
+              if (key === 'startDate' || key === 'endDate') {
+                this.form[key].value = fmtDate(data[key]);
+              } else {
+                this.form[key].value = data[key];
               }
             }
-          }
+          })
+          //
+          // for (let i = 0; i < this.form.length; i++) {
+          //   if (this.form[i].name) {
+          //     if (this.form[i].name === 'startDate' || this.form[i].name === 'endDate') {
+          //       this.form[i].value = fmtDate(this.state.data[this.form[i].name]);
+          //     } else {
+          //       this.form[i].value = this.state.data[this.form[i].name] || '';
+          //     }
+          //   }
+          // }
         });
       } catch (err) {
         if (err.errCode === 401) {
@@ -120,7 +142,7 @@ class Form extends React.Component {
   }
 
   getFormValue() {
-    if (!this.form.checkValidity()) {
+    if (!this.form.checkValidity() || !this.form.stuGrade.value || !this.form.courseType.value || !this.form.courseName.value) {
       return
     }
 
@@ -211,15 +233,19 @@ class Form extends React.Component {
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">在读年级</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>在读年级
+                        </label>
                         <div className="col-7">
                           <Grade name="stuGrade"/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">所在学校</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>所在学校
+                        </label>
                         <div className="col-7">
-                          <input type="text" className="form-control" name="stuSchool_name"/>
+                          <input type="text" className="form-control" name="stuSchoolName" required={true}/>
                         </div>
                       </div>
                     </div>
@@ -287,13 +313,17 @@ class Form extends React.Component {
                   <div className="row">
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">课程类别</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>课程类别
+                        </label>
                         <div className="col-7">
                           <CourseType/>
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">课程产品</label>
+                        <label className="col-5 col-form-label font-weight-bold">
+                          <em className="text-danger">*</em>课程产品
+                        </label>
                         <div className="col-7">
                           <CourseName/>
                         </div>

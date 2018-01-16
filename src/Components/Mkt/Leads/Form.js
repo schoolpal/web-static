@@ -52,7 +52,7 @@ class Form extends React.Component {
         }, () => {
           if (this.props.isEditor) {
             this.form.studentName.value = this.state.data.student.name;
-            this.form.studentGender.value = this.state.data.student.genderId;
+            this.form.studentGender.value = this.state.data.student.genderText;
             this.form.age.value = this.state.data.student.age;
             this.form.classGrade.value = this.state.data.student.classGrade;
             this.form.schoolName.value = this.state.data.student.schoolName;
@@ -338,8 +338,8 @@ class Form extends React.Component {
                     this.props.isEditor && this.state.data ? <ContactList
                       id={this.state.data.id}
                       canEdit={true}
-                      groupName={this.state.data.organizationName}
-                      userName={this.state.data.executiveName}
+                      groupName={this.props.contactOrgName}
+                      userName={this.props.contactUserName}
                     /> : null
                   }
                 </div>

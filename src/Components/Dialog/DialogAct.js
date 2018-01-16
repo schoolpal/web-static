@@ -130,7 +130,7 @@ class DialogAct extends React.Component {
       try {
         let list = await ajax('/mkt/activity/listTree.do', {orgId: this.state.group.id});
 
-        this.setState({list: actProcess(list)}, () => {
+        this.setState({list: actProcess(list, this.props.notRoot)}, () => {
           if (this.props.defaults) {
             this.dialog.find(`[data-o=${this.props.defaults}]`).trigger('click');
           }
@@ -203,7 +203,7 @@ class DialogAct extends React.Component {
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">请选择一个组织</h5>
+              <h5 className="modal-title">请选择一个活动</h5>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>

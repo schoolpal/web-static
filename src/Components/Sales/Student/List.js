@@ -47,7 +47,7 @@ const TableItem = (data, path) => {
         <td>{index + 1}</td>
         <td><Link to={`${path}/${item.id}`}>{item.name}</Link></td>
         <td>{item.code}</td>
-        <td></td>
+        <td>{item.genderText}</td>
         <td>{fmtDate(item.birthday)}</td>
         <td>{calculateAge(fmtDate(item.birthday))}</td>
         <td>{CONFIG.DOCUMENT[item.idType]}</td>

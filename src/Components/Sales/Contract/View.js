@@ -59,7 +59,6 @@ class View extends React.Component {
     super(props);
 
     this.commands = this.props.commands.filter((command) => (command !== 'Add'));
-    this.ids = this.props.location.state.ids;
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {
       group: this.props.changedCrmGroup,
@@ -67,7 +66,8 @@ class View extends React.Component {
       redirectToList: false,
       isAnimating: false,
       id: this.props.match.params.contractId,
-      data: null
+      data: null,
+      ids: []
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
@@ -78,8 +78,10 @@ class View extends React.Component {
     const request = async () => {
       try {
         let data = await ajax('/sales/contract/query.do', {id: this.state.id});
+        let list = await ajax('/sales/contract/list.do', {organizationId: this.state.group.id});
+        const ids = list.map((contract) => (contract.id));
 
-        this.setState({data: data});
+        this.setState({data, ids});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -202,8 +204,8 @@ class View extends React.Component {
           <p className="d-inline text-muted">{this.state.data.stuName}</p>
 
           <div className="btn-group float-right ml-4" role="group">
-            <PrevBtn id={this.state.id} ids={this.ids}/>
-            <NextBtn id={this.state.id} ids={this.ids}/>
+            <PrevBtn id={this.state.id} ids={this.state.ids}/>
+            <NextBtn id={this.state.id} ids={this.state.ids}/>
           </div>
           <div className="btn-group float-right ml-4" role="group">
             <button onClick={() => {
@@ -290,7 +292,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.stuSchoolName}
                           />
                         </div>
                       </div>
@@ -537,7 +539,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.orgName}
                           />
                         </div>
                       </div>
@@ -548,7 +550,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.executiveName}
                           />
                         </div>
                       </div>
@@ -559,7 +561,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.creatorName}
                           />
                         </div>
                       </div>

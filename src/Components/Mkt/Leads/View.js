@@ -64,6 +64,7 @@ class View extends React.Component {
       group: this.props.changedCrmGroup,
       redirectToReferrer: false,
       redirectToList: false,
+      redirectToConvert: false,
       isAnimating: false,
       id: this.props.match.params.leadsId,
       data: null
@@ -137,7 +138,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/activity/del.do', {id: this.state.id});
+        let rs = await ajax('/mkt/leads/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -178,7 +179,24 @@ class View extends React.Component {
   }
 
   convertAccept(selected) {
-    console.log(selected)
+    this.setState({isAnimating: true});
+    const request = async () => {
+      try {
+        let rs = await ajax('/mkt/leads/convert.do', {id: this.state.id, assigneeId: selected.user.id});
+
+        this.setState({redirectToConvert: true});
+      } catch (err) {
+        if (err.errCode === 401) {
+          this.setState({redirectToReferrer: true})
+        } else {
+          this.createDialogTips(`${err.errCode}: ${err.errText}`);
+        }
+      } finally {
+        this.setState({isAnimating: false});
+      }
+    };
+
+    request()
   }
 
   assignAction() {
@@ -244,6 +262,12 @@ class View extends React.Component {
     if (this.state.redirectToList) {
       return (
         <Redirect to="/mkt/leads"/>
+      )
+    }
+
+    if (this.state.redirectToConvert) {
+      return (
+        <Redirect to={`/sales/oppor/${this.state.id}`}/>
       )
     }
 

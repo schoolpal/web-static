@@ -4,13 +4,12 @@ import {Link, Redirect} from 'react-router-dom'
 import {$} from "../../../vendor";
 
 import DialogTips from "../../Dialog/DialogTips";
-import Commands from "../../Commands/Commands";
 import Progress from "../../Progress/Progress"
 
-import actProcess from "../../../utils/actProcess";
 import mainSize from "../../../utils/mainSize";
 import fmtDate from '../../../utils/fmtDate';
 import fmtTitle from '../../../utils/fmtTitle';
+import CONFIG from '../../../utils/config';
 import ajax from "../../../utils/ajax";
 
 const Table = ({list, goto}) => {
@@ -54,13 +53,13 @@ const TableItem = (data, goto) => {
     table.push(
       <tr key={index}>
         <td>{index + 1}</td>
-        <td></td>
+        <td>{item.creatorName}</td>
         <td>{fmtDate(item.createTime)}</td>
-        <td></td>
-        <td></td>
-        <td>{item.type}</td>
+        <td>{item.orgName}</td>
+        <td>{item.executiveName}</td>
+        <td>{CONFIG.TYPE_ID[item.type]}</td>
         <td>
-          <a onClick={goto} lid={item.id} href="javascript:;">{item.code}</a>
+          <a onClick={goto} cid={item.id} href="javascript:;">{item.code}</a>
         </td>
         <td>{fmtDate(item.startDate)}</td>
         <td>{fmtDate(item.endDate)}</td>
@@ -179,7 +178,7 @@ class List extends React.Component {
   goToDetails(evt) {
     const url = `${this.props.match.url}/${evt.target.getAttribute('cid')}`;
 
-    this.props.history.push(url, {ids: this.state.ids});
+    this.props.history.push(url);
   }
 
   render() {

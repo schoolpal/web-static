@@ -18,36 +18,18 @@ class Create extends React.Component {
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {
       group: this.props.changedCrmGroup,
+      oriId: this.props.location.state.oriId,
       redirectToReferrer: false,
       redirectToList: false,
       isAnimating: false,
       isCreated: false,
       createdId: null,
-      ids: []
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.create = this.create.bind(this);
   }
 
   componentDidMount() {
-    const request = async () => {
-      try {
-        let list = await ajax('/sales/contract/list.do', {organizationId: this.state.group.id});
-        const ids = list.map((contract) => (contract.id));
-
-        this.setState({ids: ids});
-      } catch (err) {
-        if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
-        } else {
-          this.createDialogTips(`${err.errCode}: ${err.errText}`);
-        }
-      } finally {
-        this.setState({isAnimating: false});
-      }
-    };
-
-    request();
     mainSize();
   }
 
@@ -93,6 +75,7 @@ class Create extends React.Component {
     }
 
     query.orgId = this.state.group.id;
+    query.oriId = this.state.oriId;
 
     this.setState({isAnimating: true});
 
@@ -132,14 +115,9 @@ class Create extends React.Component {
     }
 
     if (this.state.isCreated) {
-      let ids = this.state.ids;
-
-      ids.push(this.state.createdId);
-
       return (
         <Redirect to={{
           pathname: `/sales/contract/${this.state.createdId}`,
-          state: {ids: ids}
         }}/>
       )
     }

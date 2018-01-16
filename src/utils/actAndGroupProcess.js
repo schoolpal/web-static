@@ -1,5 +1,5 @@
 function insertAct(rootData, data) {
-  if (rootData.id === data.cParentId) {
+  if (rootData.id === data.parentId) {
     if (!rootData.children) {
       rootData.children = [];
     }
@@ -22,7 +22,7 @@ function insertAct(rootData, data) {
 function getActTree(data) {
   let act = [];
 
-  data.map((item, index) => {
+  data.map(item => {
     if (item.id === item.rootId) {
       act.push({
         id: item.id,
@@ -44,16 +44,22 @@ function getActTree(data) {
   return act;
 }
 
-export default function (data) {
+export default function (data, isAll) {
   let act = [];
 
   data.orgList.map((org) => {
     if (data.actListMap[org.cId].length) {
+      let actList = data.actListMap[org.cId];
+
+      if (!isAll) {
+        actList = actList.filter(act => (act.level < 3))
+      }
+
       const temp = {
         id: org.cId,
         name: org.cName,
         type: 'group',
-        children: getActTree(data.actListMap[org.cId])
+        children: getActTree(actList)
       };
 
       act.push(temp)

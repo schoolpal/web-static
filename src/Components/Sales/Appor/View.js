@@ -59,7 +59,6 @@ class View extends React.Component {
     super(props);
 
     this.commands = this.props.commands.filter((command) => (command !== 'Add'));
-    this.ids = this.props.location.state.ids;
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {
       group: this.props.changedCrmGroup,
@@ -67,7 +66,8 @@ class View extends React.Component {
       redirectToList: false,
       isAnimating: false,
       id: this.props.match.params.opporId,
-      data: null
+      data: null,
+      ids: []
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
@@ -81,8 +81,10 @@ class View extends React.Component {
     const request = async () => {
       try {
         let data = await ajax('/sales/oppor/query.do', {id: this.state.id});
+        let list = await ajax('/sales/oppor/list.do', {orgId: this.state.group.id, typeId: 2});
+        const ids = list.map((leads) => (leads.id));
 
-        this.setState({data: data});
+        this.setState({data, ids});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -137,7 +139,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/activity/del.do', {id: this.state.id});
+        let rs = await ajax('/sales/oppor/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -154,7 +156,7 @@ class View extends React.Component {
   }
 
   SignAction() {
-    this.props.history.push('/sales/contract/create', {data: this.state.data});
+    this.props.history.push('/sales/contract/create', {data: this.state.data, oriId: this.state.id});
   }
 
   assignAction() {
@@ -259,8 +261,8 @@ class View extends React.Component {
           <p className="d-inline text-muted">{this.state.data ? this.state.data.student.name : ''}</p>
 
           <div className="btn-group float-right ml-4" role="group">
-            <PrevBtn id={this.state.id} ids={this.ids}/>
-            <NextBtn id={this.state.id} ids={this.ids}/>
+            <PrevBtn id={this.state.id} ids={this.state.ids}/>
+            <NextBtn id={this.state.id} ids={this.state.ids}/>
           </div>
           <div className="btn-group float-right ml-4" role="group">
             <button onClick={() => {

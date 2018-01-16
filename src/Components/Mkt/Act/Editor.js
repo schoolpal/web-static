@@ -10,7 +10,6 @@ import historyBack from "../../../utils/historyBack";
 import mainSize from "../../../utils/mainSize";
 import ajax from "../../../utils/ajax";
 import fmtTitle from "../../../utils/fmtTitle";
-import fmtDate from "../../../utils/fmtDate";
 
 class Editor extends React.Component {
   constructor(props) {
