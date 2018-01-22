@@ -67,7 +67,7 @@ const TableItem = (data, goto) => {
         <td>{item.parName}</td>
         <td>{item.parCellphone}</td>
         <td>{item.courseType}</td>
-        <td></td>
+        <td>{item.courseName}</td>
         <td>{item.oriPrice}</td>
         <td>{item.discPrice}</td>
         <td>{item.finalPrice}</td>

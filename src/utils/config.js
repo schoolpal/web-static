@@ -83,20 +83,20 @@ export default {
       NAME: '合同'
     },
     "2-3": {
-      PATH: "sales/student",
-      PATH_RULE: /^\/sales\/student(\/((?!create).)*)?$/,
-      ICON_CLASS: "fa-graduation-cap",
-      CATEGORY: '我的',
-      NAME: '学员'
-    },
-    "2-3-1": {
-      PATH_RULE: /^\/sales\/student\/create$/,
+      PATH: "sales/customer",
+      PATH_RULE: /^\/sales\/customer(\/(student|parent|contract)\/((?!create).)*)?$/,
       ICON_CLASS: "fa-graduation-cap",
       CATEGORY: '我的',
       NAME: '学员'
     },
     "2-3-2": {
-      PATH_RULE: /^\/sales\/student\/((?!create).)*\/edit$/,
+      PATH_RULE: /^\/sales\/customer\/student\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '我的',
+      NAME: '学员'
+    },
+    "2-3-5": {
+      PATH_RULE: /^\/sales\/customer\/parent\/((?!create).)*\/edit$/,
       ICON_CLASS: "fa-graduation-cap",
       CATEGORY: '我的',
       NAME: '学员'

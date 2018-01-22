@@ -77,16 +77,6 @@ class Form extends React.Component {
               }
             }
           })
-          //
-          // for (let i = 0; i < this.form.length; i++) {
-          //   if (this.form[i].name) {
-          //     if (this.form[i].name === 'startDate' || this.form[i].name === 'endDate') {
-          //       this.form[i].value = fmtDate(this.state.data[this.form[i].name]);
-          //     } else {
-          //       this.form[i].value = this.state.data[this.form[i].name] || '';
-          //     }
-          //   }
-          // }
         });
       } catch (err) {
         if (err.errCode === 401) {
@@ -142,7 +132,7 @@ class Form extends React.Component {
   }
 
   getFormValue() {
-    if (!this.form.checkValidity() || !this.form.stuGrade.value || !this.form.courseType.value || !this.form.courseName.value) {
+    if (!this.form.checkValidity() || !this.form.stuGrade.value || !this.form.courseId.value || !this.form.courseName.value) {
       return
     }
 
@@ -150,8 +140,7 @@ class Form extends React.Component {
 
     query.stuBirthday = this.state.birthday;
     query.stuCode = this.form.code.value;
-    query.courseOriId = 1;
-    query.courseSesId = 2;
+    query.courseType = this.form.courseId.options[this.form.courseId.selectedIndex].text;
 
     for (let i = 0; i < this.form.length; i++) {
       if (this.form[i].name) {
@@ -204,7 +193,7 @@ class Form extends React.Component {
                       <div className="form-group row">
                         <label className="col-5 col-form-label font-weight-bold">学员姓别</label>
                         <div className="col-7">
-                          <Gender data={this.state.option.gender} name="stuGender"/>
+                          <Gender data={this.state.option.gender} name="stuGenderId"/>
                         </div>
                       </div>
                       <div className="form-group row">
@@ -317,7 +306,7 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>课程类别
                         </label>
                         <div className="col-7">
-                          <CourseType/>
+                          <CourseType name="courseId"/>
                         </div>
                       </div>
                       <div className="form-group row">
@@ -393,7 +382,7 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>合同类型
                         </label>
                         <div className="col-7">
-                          <select className="form-control" name="type">
+                          <select className="form-control" name="typeId">
                             <option value="2">新招</option>
                           </select>
                         </div>

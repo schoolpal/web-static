@@ -45,7 +45,7 @@ const TableItem = (data, path) => {
     table.push(
       <tr key={index}>
         <td>{index + 1}</td>
-        <td><Link to={`${path}/${item.id}`}>{item.name}</Link></td>
+        <td><Link to={`${path}/student/${item.id}`}>{item.name}</Link></td>
         <td>{item.code}</td>
         <td>{item.genderText}</td>
         <td>{fmtDate(item.birthday)}</td>

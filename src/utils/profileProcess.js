@@ -62,7 +62,10 @@ export default function (data) {
       const index = commands.findIndex(cmd => (cmd.id === item.cParentId));
 
       if (index + 1) {
-        commands[index].commands.push(item.CommandCode);
+        commands[index].commands.push({
+          id: item.cId,
+          name: item.CommandCode
+        });
       }
     }
   });

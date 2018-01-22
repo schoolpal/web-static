@@ -73,11 +73,11 @@ class Gender extends React.Component {
     }
 
     return (
-      <select className="form-control" name={this.props.name || "studentGender"}>
+      <select className="form-control" name={this.props.name || "studentGenderId"}>
         <option value="">请选择</option>
         {
           this.state.list.map(item => (
-            <option key={item.id} value={item.name}>{item.name}</option>
+            <option key={item.id} value={item.id}>{item.name}</option>
           ))
         }
       </select>

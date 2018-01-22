@@ -36,10 +36,12 @@ class Commands extends React.Component {
   }
 
   render() {
+    const list = this.props.commands.map(command => (command.name));
+
     return (
       <div className="btn-group float-right" role="group">
         {
-          this.props.commands.map((command, index) => {
+          list.map((command, index) => {
             switch (command) {
               case "Add":
                 return <Add key={index} action={this.props.addAction}/>;

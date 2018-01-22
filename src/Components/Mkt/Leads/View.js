@@ -57,7 +57,7 @@ class View extends React.Component {
   constructor(props) {
     super(props);
 
-    this.commands = this.props.commands.filter((command) => (command !== 'Add'));
+    this.commands = this.props.commands.filter(command => (command.name !== 'Add'));
     this.ids = this.props.location.state.ids;
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {

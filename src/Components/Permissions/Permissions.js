@@ -319,9 +319,7 @@ class Permissions extends React.Component {
       )
     }
 
-    const groupCommands = this.props.commands.find((item) => {
-      return item.rule.test(this.props.location.pathname) === true
-    });
+    const groupCommands = this.props.commands.find(item => (item.rule.test(this.props.location.pathname) === true));
 
     return (
       <div>

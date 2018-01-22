@@ -5,30 +5,22 @@ import List from './List'
 import Create from './Create'
 import Editor from './Editor'
 
-class Group extends React.Component {
-  constructor(props) {
-    super(props)
-  }
+const Group = ({location, match, profile}) => {
+  const commands = commands.find(item => (item.rule.test(location.pathname) === true));
 
-  render() {
-    const groupCommands = this.props.commands.find((item) => {
-      return item.rule.test(this.props.location.pathname) === true
-    })
-
-    return (
-      <Switch>
-        <Route path={`${this.props.match.url}/create`} render={(props) => (
-          <Create {...props} profile={this.props.profile}/>
-        )}/>
-        <Route path={`${this.props.match.url}/:groupId`} render={(props) => (
-          <Editor {...props} profile={this.props.profile}/>
-        )}/>
-        <Route path={`${this.props.match.url}`} render={(props) => (
-          <List {...props} profile={this.props.profile} commands={groupCommands.commands}/>
-        )}/>
-      </Switch>
-    )
-  }
-}
+  return (
+    <Switch>
+      <Route path={`${match.url}/create`} render={(props) => (
+        <Create {...props} profile={profile}/>
+      )}/>
+      <Route path={`${match.url}/:groupId`} render={(props) => (
+        <Editor {...props} profile={profile}/>
+      )}/>
+      <Route path={`${match.url}`} render={(props) => (
+        <List {...props} profile={profile} commands={commands.commands}/>
+      )}/>
+    </Switch>
+  )
+};
 
 export default Group;

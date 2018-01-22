@@ -58,7 +58,7 @@ class View extends React.Component {
   constructor(props) {
     super(props);
 
-    this.commands = this.props.commands.filter((command) => (command !== 'Add'));
+    this.commands = this.props.commands.filter(command => (command.name !== 'Add'));
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {
       group: this.props.changedCrmGroup,
@@ -136,7 +136,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/activity/del.do', {id: this.state.id});
+        let rs = await ajax('/sales/contract/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -248,7 +248,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.stuGenderText}
                           />
                         </div>
                       </div>
@@ -412,7 +412,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.data.courseName}
                           />
                         </div>
                       </div>

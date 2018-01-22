@@ -52,7 +52,7 @@ class Form extends React.Component {
         }, () => {
           if (this.props.isEditor) {
             this.form.studentName.value = this.state.data.student.name;
-            this.form.studentGender.value = this.state.data.student.genderText;
+            this.form.studentGenderId.value = this.state.data.student.genderId;
             this.form.age.value = this.state.data.student.age;
             this.form.classGrade.value = this.state.data.student.classGrade;
             this.form.schoolName.value = this.state.data.student.schoolName;

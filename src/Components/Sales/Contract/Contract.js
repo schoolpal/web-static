@@ -7,9 +7,7 @@ import View from './View';
 import Editor from "./Editor";
 
 const Contract = ({commands, location, match, profile, changedCrmGroup}) => {
-  const groupCommands = commands.find((item) => {
-    return item.rule.test(location.pathname) === true
-  });
+  const groupCommands = commands.find(item => (item.rule.test(location.pathname) === true));
 
   return (
     <Switch>
