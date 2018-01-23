@@ -46,14 +46,15 @@ class Form extends React.Component {
             stuName: this.props.apporData.student.name,
             stuGrade: this.props.apporData.student.classGrade,
             stuBirthday: new Date(this.props.apporData.student.birthday),
+            stuGenderId: this.props.apporData.student.genderId || '',
             stuSchoolName: this.props.apporData.student.schoolName,
             parName: this.props.apporData.parent.name,
             relation: this.props.apporData.parent.relation,
             parCellphone: this.props.apporData.parent.cellphone,
             parWechat: this.props.apporData.parent.wechat || '',
             parAddress: this.props.apporData.parent.address,
-            courseType: this.props.apporData.courseType,
-            courseName: this.props.apporData.courseName
+            courseId: this.props.apporData.courseId || '',
+            courseName: this.props.apporData.courseName || ''
           }
         }
 
@@ -306,7 +307,7 @@ class Form extends React.Component {
                           <em className="text-danger">*</em>课程类别
                         </label>
                         <div className="col-7">
-                          <CourseType name="courseId"/>
+                          <CourseType/>
                         </div>
                       </div>
                       <div className="form-group row">

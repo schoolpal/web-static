@@ -504,7 +504,7 @@ class View extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={CONFIG.TYPE_ID[this.state.data.type]}
+                            value={CONFIG.TYPE_ID[this.state.data.typeId]}
                           />
                         </div>
                       </div>

@@ -63,11 +63,11 @@ class ContractView extends React.Component {
       group: this.props.changedCrmGroup,
       redirectToReferrer: false,
       redirectToList: false,
-      isAnimating: false,
       id: this.props.match.params.studentId,
       ids: [],
       data: {name: this.props.location.state.stuName},
-      contractList: []
+      contractList: [],
+      isEmpty: false
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
@@ -80,8 +80,9 @@ class ContractView extends React.Component {
         let list = await ajax('/sales/customer/student/list.do', {organizationId: this.state.group.id});
         let contractList = await ajax('/sales/contract/queryListByStudentId.do', {id: this.state.id});
         const ids = list.map((student) => (student.id));
+        const isEmpty = !contractList.length;
 
-        this.setState({ids, contractList});
+        this.setState({ids, contractList, isEmpty});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -168,7 +169,7 @@ class ContractView extends React.Component {
       )
     }
 
-    if (!this.state.contractList.length) {
+    if (!this.state.isEmpty && !this.state.contractList.length) {
       return (
         <div>
           <h5 id="subNav">
@@ -191,6 +192,47 @@ class ContractView extends React.Component {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )
+    }
+
+    if (this.state.isEmpty && !this.state.contractList.length) {
+      return (
+        <div>
+          <h5 id="subNav">
+            <i className={`fa ${this.title.icon}`} aria-hidden="true"/>
+            &nbsp;{this.title.text}&nbsp;&nbsp;|&nbsp;&nbsp;
+
+            <div className="btn-group float-right ml-4" role="group">
+              <button onClick={() => {
+                this.props.history.push('/sales/contract');
+              }} type="button" className="btn btn-light">返回
+              </button>
+            </div>
+          </h5>
+
+          <div id="main" className="main p-3">
+            <div className="row justify-content-md-center">
+              <div className="col col-12">
+                <div className="card">
+                  <div className="card-body">无合同记录...</div>
+                </div>
+              </div>
+            </div>
+
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item"><Link to={`/sales/customer/student/${this.state.id}`}>学员信息</Link></li>
+                <li className="breadcrumb-item">
+                  <Link to={{
+                    pathname: `/sales/customer/parent/${this.state.id}`,
+                    state: {stuName: this.state.data.name}
+                  }}>家长信息</Link>
+                </li>
+                <li className="breadcrumb-item active">合同信息</li>
+              </ol>
+            </nav>
           </div>
         </div>
       )

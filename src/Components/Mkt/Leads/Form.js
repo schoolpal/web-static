@@ -61,8 +61,8 @@ class Form extends React.Component {
             this.form.cellphone.value = this.state.data.parent.cellphone;
             this.form.wechat.value = this.state.data.parent.wechat;
             this.form.address.value = this.state.data.parent.address;
-            this.form.courseType.value = this.state.data.courseType;
-            this.form.courseName.value = this.state.data.courseName;
+            this.form.courseId.value = this.state.data.courseId ? this.state.data.courseId : '';
+            this.form.courseName.value = this.state.data.courseName ? this.state.data.courseName : '';
             this.form.note.value = this.state.data.note;
             this.form.sourceId.value = this.state.data.sourceId;
             this.form.stageId.value = this.state.data.stageId;

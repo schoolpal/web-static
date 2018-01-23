@@ -52,17 +52,17 @@ class Form extends React.Component {
         }, () => {
           if (this.props.isEditor) {
             this.form.studentName.value = this.state.data.student.name;
-            this.form.studentGenderId.value = this.state.data.student.genderId;
+            this.form.studentGenderId.value = this.state.data.student.genderId || '';
             this.form.age.value = this.state.data.student.age;
             this.form.classGrade.value = this.state.data.student.classGrade;
             this.form.schoolName.value = this.state.data.student.schoolName;
             this.form.parentName.value = this.state.data.parent.name;
-            this.form.relation.value = this.state.data.parent.relation;
+            this.form.relation.value = this.state.data.parent.relation || '';
             this.form.cellphone.value = this.state.data.parent.cellphone;
             this.form.wechat.value = this.state.data.parent.wechat;
             this.form.address.value = this.state.data.parent.address;
-            this.form.courseType.value = this.state.data.courseType;
-            this.form.courseName.value = this.state.data.courseName;
+            this.form.courseId.value = this.state.data.courseId || '';
+            this.form.courseName.value = this.state.data.courseName || '';
             this.form.note.value = this.state.data.note;
             this.form.sourceId.value = this.state.data.sourceId;
             this.form.stageId.value = this.state.data.stageId;

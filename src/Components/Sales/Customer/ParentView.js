@@ -131,7 +131,7 @@ class ParentView extends React.Component {
   }
 
   modAction() {
-    this.props.history.push(`${this.props.match.url}/edit`);
+    this.props.history.push(`${this.props.match.url}/edit`, {stuName: this.state.data.name});
   }
 
   delAction() {
@@ -246,7 +246,7 @@ class ParentView extends React.Component {
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={''}
+                            value={this.state.parentList[0].relation}
                           />
                         </div>
                       </div>
