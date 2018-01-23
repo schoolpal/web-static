@@ -16,7 +16,6 @@ import mainSize from "../../../utils/mainSize";
 import ajax from "../../../utils/ajax";
 import fmtTitle from "../../../utils/fmtTitle";
 import calculateAge from "../../../utils/calculateAge";
-import fmtDate from "../../../utils/fmtDate";
 
 class StudentEditor extends React.Component {
   constructor(props) {
@@ -128,8 +127,7 @@ class StudentEditor extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sales/customer/student/mod.do', query);
-
+        await ajax('/sales/customer/student/mod.do', query);
         this.setState({isUpdated: true})
       } catch (err) {
         if (err.errCode === 401) {

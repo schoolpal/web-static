@@ -80,8 +80,7 @@ class Editor extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/leads/mod.do', query);
-
+        await ajax('/mkt/leads/mod.do', query);
         this.setState({isUpdated: true})
       } catch (err) {
         if (err.errCode === 401) {
@@ -153,6 +152,8 @@ class Editor extends React.Component {
             changedCrmGroup={this.state.group}
             contactOrgName={this.props.profile.org.cName}
             contactUserName={this.props.profile.cRealname}
+            replace={this.props.history.replace}
+            from={this.props.location}
             ref={(dom) => {
               this.form = dom
             }}

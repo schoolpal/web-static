@@ -189,7 +189,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/contact/add.do', query);
+        await ajax('/contact/add.do', query);
         let list = await ajax('/contact/list.do', {leadsId: this.state.id});
 
         this.setState({list});
@@ -218,7 +218,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/contact/mod.do', query);
+        await ajax('/contact/mod.do', query);
         const list = this.state.list.map(item => {
           if (item.id === query.id) {
             item.approachId = query.approachId;

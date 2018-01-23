@@ -1,13 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Link, Redirect} from 'react-router-dom'
-import {$} from "../../../vendor";
+import {Redirect} from 'react-router-dom'
 
 import DialogTips from "../../Dialog/DialogTips";
 import Commands from "../../Commands/Commands";
 import Progress from "../../Progress/Progress"
 
-import actProcess from "../../../utils/actProcess";
 import mainSize from "../../../utils/mainSize";
 import fmtDate from '../../../utils/fmtDate';
 import fmtTitle from '../../../utils/fmtTitle';

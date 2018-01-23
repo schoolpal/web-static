@@ -66,8 +66,7 @@ class Create extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/org/add.do', query);
-
+        await ajax('/sys/org/add.do', query);
         this.setState({isCreated: true})
       } catch (err) {
         if (err.errCode === 401) {
@@ -127,6 +126,8 @@ class Create extends React.Component {
           <Form
             isEditor={false}
             parentGroup={parentGroup}
+            replace={this.props.history.replace}
+            from={this.props.location}
             ref={(dom) => {
               this.form = dom
             }}

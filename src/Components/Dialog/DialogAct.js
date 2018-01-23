@@ -1,5 +1,4 @@
 import React from 'react'
-import {Redirect} from 'react-router-dom'
 import {$} from "../../vendor";
 
 import actProcess from "../../utils/actAndGroupProcess";
@@ -38,8 +37,6 @@ const ActItem = data => {
   }
 
   data.map(item => {
-    let children = [];
-
     if (item.children && item.children.length) {
       let children = [];
 
@@ -137,7 +134,8 @@ class DialogAct extends React.Component {
         });
       } catch (err) {
         if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
+          this.dialog.modal('hide');
+          this.props.replace('/login', {from: this.props.from})
         } else {
           this.setState({errText: `${err.errCode}: ${err.errText}`});
         }
@@ -189,15 +187,6 @@ class DialogAct extends React.Component {
   }
 
   render() {
-    if (this.state.redirectToReferrer) {
-      return (
-        <Redirect to={{
-          pathname: '/login',
-          state: {from: this.props.location}
-        }}/>
-      )
-    }
-
     return (
       <div id={this.dialogId} className="modal fade" tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">

@@ -54,10 +54,13 @@ class Form extends React.Component {
   createGroupsDialog() {
     if (this.group === undefined) {
       this.groupContainer = document.createElement('div');
+
       ReactDOM.render(
         <DialogGroup
           accept={this.acceptGroupDialog}
           defaults={this.state.parentId}
+          replace={this.props.replace}
+          from={this.props.from}
           ref={(dom) => {
             this.group = dom
           }}
@@ -151,7 +154,7 @@ class Form extends React.Component {
                   </div>
                   <div className="form-group">
                     <label htmlFor="address"><em className="text-danger">*</em>详细地址</label>
-                    <textarea name="address" className="form-control" rows="3" required={true}></textarea>
+                    <textarea name="address" className="form-control" rows="3" required={true}/>
                   </div>
                   <div className="form-group">
                     <label htmlFor="owner"><em className="text-danger">*</em>负责人</label>

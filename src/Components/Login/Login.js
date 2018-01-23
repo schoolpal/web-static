@@ -67,11 +67,10 @@ class Login extends React.Component {
 
         mixedPWD = MD5Mixed(MD5Mixed(MD5Mixed(userPwd)) + salt);
 
-        let login = await ajax('/user/login.do', {
+        await ajax('/user/login.do', {
           loginName: userName,
           mixedPWD: mixedPWD
         });
-
         this.setState({redirectToReferrer: true});
       } catch (err) {
         this.createDialogTips(`${err.errCode}: ${err.errText}`);

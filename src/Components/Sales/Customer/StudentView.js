@@ -3,8 +3,6 @@ import ReactDOM from "react-dom";
 import {Link, Redirect} from 'react-router-dom'
 
 import DialogTips from "../../Dialog/DialogTips";
-import DialogUser from '../../Dialog/DialogUser';
-import Progress from "../../Progress/Progress";
 import Commands from "../../Commands/Commands";
 
 import fmtTitle from "../../../utils/fmtTitle";
@@ -73,7 +71,6 @@ class StudentView extends React.Component {
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
-    this.delAction = this.delAction.bind(this);
   }
 
   componentDidMount() {
@@ -135,25 +132,6 @@ class StudentView extends React.Component {
 
   modAction() {
     this.props.history.push(`${this.props.match.url}/edit`);
-  }
-
-  delAction() {
-    const request = async () => {
-      try {
-        let rs = await ajax('/mkt/activity/del.do', {id: this.state.id});
-        this.setState({redirectToList: true});
-      } catch (err) {
-        if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
-        } else {
-          this.createDialogTips(`${err.errCode}: ${err.errText}`);
-        }
-      } finally {
-        this.setState({isAnimating: false});
-      }
-    };
-
-    request();
   }
 
   render() {

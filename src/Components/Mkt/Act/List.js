@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Link, Redirect} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import {$} from "../../../vendor";
 
 import DialogTips from "../../Dialog/DialogTips";

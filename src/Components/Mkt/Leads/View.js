@@ -138,7 +138,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/leads/del.do', {id: this.state.id});
+        await ajax('/mkt/leads/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -168,6 +168,8 @@ class View extends React.Component {
         title={this.state.data.student.name}
         container={this.userContainer}
         defaults={defaults}
+        replace={this.props.history.replace}
+        from={this.props.location}
         ref={(dom) => {
           this.user = dom
         }}
@@ -182,8 +184,7 @@ class View extends React.Component {
     this.setState({isAnimating: true});
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/leads/convert.do', {id: this.state.id, assigneeId: selected.user.id});
-
+        await ajax('/mkt/leads/convert.do', {id: this.state.id, assigneeId: selected.user.id});
         this.setState({redirectToConvert: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -213,6 +214,8 @@ class View extends React.Component {
         title={this.state.data.student.name}
         container={this.userContainer}
         defaults={defaults}
+        replace={this.props.history.replace}
+        from={this.props.location}
         ref={(dom) => {
           this.user = dom
         }}
@@ -227,7 +230,7 @@ class View extends React.Component {
     this.setState({isAnimating: true});
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/leads/assign.do', {id: this.state.id, assigneeId: selected.user.id});
+        await ajax('/mkt/leads/assign.do', {id: this.state.id, assigneeId: selected.user.id});
         let data = Object.assign({}, this.state.data);
 
         data.organizationId = selected.group.id;

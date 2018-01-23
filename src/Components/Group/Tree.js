@@ -26,8 +26,6 @@ const GroupItem = (data, selected) => {
   let tree = [];
 
   data.map(item => {
-    let children = [];
-
     if (item.children && item.children.length) {
       let children = [];
 
@@ -121,7 +119,6 @@ class Tree extends React.Component {
 
   handleSelect(evt) {
     const elem = $(evt.target).data('o') ? $(evt.target) : $(evt.target).parent();
-    let selected = null;
 
     if (elem.hasClass('selected')) {
       return;

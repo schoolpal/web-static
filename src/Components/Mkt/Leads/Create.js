@@ -154,6 +154,8 @@ class Create extends React.Component {
           <Form
             isEditor={false}
             changedCrmGroup={this.state.group}
+            replace={this.props.history.replace}
+            from={this.props.location}
             ref={(dom) => {
               this.form = dom
             }}

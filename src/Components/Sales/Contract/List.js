@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Link, Redirect} from 'react-router-dom'
-import {$} from "../../../vendor";
+import {Redirect} from 'react-router-dom'
 
 import DialogTips from "../../Dialog/DialogTips";
 import Progress from "../../Progress/Progress"

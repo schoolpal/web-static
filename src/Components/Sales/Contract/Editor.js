@@ -80,8 +80,7 @@ class Editor extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sales/contract/mod.do', query);
-
+        await ajax('/sales/contract/mod.do', query);
         this.setState({isUpdated: true})
       } catch (err) {
         if (err.errCode === 401) {

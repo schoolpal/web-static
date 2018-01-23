@@ -290,7 +290,7 @@ class Permissions extends React.Component {
     this.setState({isAnimating: true});
     const request = async () => {
       try {
-        let rs = await ajax('/sys/role/auth.do', {
+        await ajax('/sys/role/auth.do', {
           id: this.state.selectedRole,
           funcIds: this.state.selectedFunc.join(',')
         });

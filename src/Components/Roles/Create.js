@@ -7,7 +7,6 @@ import DialogTips from "../Dialog/DialogTips";
 import Progress from "../Progress/Progress"
 
 import mainSize from "../../utils/mainSize";
-import historyBack from "../../utils/historyBack";
 import ajax from "../../utils/ajax";
 
 class Create extends React.Component {
@@ -67,8 +66,7 @@ class Create extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/role/add.do', query);
-
+        await ajax('/sys/role/add.do', query);
         this.setState({isCreated: true})
       } catch (err) {
         if (err.errCode === 401) {

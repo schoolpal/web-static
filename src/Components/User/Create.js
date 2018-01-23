@@ -7,7 +7,6 @@ import DialogTips from "../Dialog/DialogTips";
 import Progress from "../Progress/Progress"
 
 import mainSize from "../../utils/mainSize";
-import historyBack from "../../utils/historyBack";
 import ajax from "../../utils/ajax";
 
 class Create extends React.Component {
@@ -56,7 +55,6 @@ class Create extends React.Component {
   }
 
   create() {
-    const toast = document.getElementById("toast");
     let query = this.form.getFormValue();
 
     if (!query) {
@@ -75,8 +73,7 @@ class Create extends React.Component {
           return;
         }
 
-        let rs = await ajax('/sys/user/add.do', query);
-
+        await ajax('/sys/user/add.do', query);
         this.setState({isCreated: true})
       } catch (err) {
         if (err.errCode === 401) {

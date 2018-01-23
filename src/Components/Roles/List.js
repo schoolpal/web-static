@@ -190,7 +190,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/role/del.do', {id: selectedId});
+        await ajax('/sys/role/del.do', {id: selectedId});
         let list = this.state.list.filter((role) => (role.cId !== selectedId));
         this.setState({list: list});
       } catch (err) {

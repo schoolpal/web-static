@@ -72,7 +72,7 @@ class Header extends React.Component {
             {`${this.props.profile.cRealname}`}
           </button>
           <div className="dropdown-menu" aria-labelledby="menu-button">
-            <a onClick={this.createDialogTips} href="javascript:;" className="dropdown-item">登出系统</a>
+            <a onClick={this.createDialogTips} href="javascript:void(0)" className="dropdown-item">登出系统</a>
           </div>
         </div>
       </nav>

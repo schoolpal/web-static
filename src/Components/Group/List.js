@@ -213,7 +213,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/org/del.do', {id: selectedId});
+        await ajax('/sys/org/del.do', {id: selectedId});
         let list = await ajax('/sys/org/list.do');
         this.setState({list: groupProcess(list)});
       } catch (err) {

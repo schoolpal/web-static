@@ -115,8 +115,7 @@ class StudentEditor extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sales/customer/parent/mod.do', query);
-
+        await ajax('/sales/customer/parent/mod.do', query);
         this.setState({isUpdated: true})
       } catch (err) {
         if (err.errCode === 401) {

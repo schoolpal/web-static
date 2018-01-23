@@ -61,6 +61,8 @@ class Form extends React.Component {
           accept={this.acceptActDialog}
           changedCrmGroup={this.state.group}
           defaults={this.state.parentId}
+          replace={this.props.replace}
+          from={this.props.from}
           ref={(dom) => {
             this.act = dom
           }}

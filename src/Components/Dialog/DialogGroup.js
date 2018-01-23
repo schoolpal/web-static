@@ -24,8 +24,6 @@ const GroupItem = data => {
   let tree = [];
 
   data.map(item => {
-    let children = [];
-
     if (item.children && item.children.length) {
       let children = [];
 
@@ -90,7 +88,11 @@ class DialogGroup extends React.Component {
     super(props);
 
     this.dialogId = `d-${new Date().getTime()}`;
-    this.state = {list: [], selected: null, errText: null};
+    this.state = {
+      list: [],
+      selected: null,
+      errText: null
+    };
     this.handleSelect = this.handleSelect.bind(this);
     this.accept = this.accept.bind(this);
     this.cancel = this.cancel.bind(this);
@@ -113,7 +115,8 @@ class DialogGroup extends React.Component {
         });
       } catch (err) {
         if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
+          this.dialog.modal('hide');
+          this.props.replace('/login', {from: this.props.from})
         } else {
           this.setState({errText: `${err.errCode}: ${err.errText}`});
         }

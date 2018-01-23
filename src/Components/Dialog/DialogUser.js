@@ -5,7 +5,6 @@ import {$} from "../../vendor";
 
 import DialogGroup from './DialogGroup';
 import ajax from "../../utils/ajax";
-import groupProcess from "../../utils/groupProcess";
 
 class DialogUser extends React.Component {
   constructor(props) {
@@ -45,7 +44,8 @@ class DialogUser extends React.Component {
         });
       } catch (err) {
         if (err.errCode === 401) {
-          this.setState({redirectToReferrer: true})
+          this.dialog.modal('hide');
+          this.props.replace('/login', {from: this.props.from})
         } else {
           this.setState({errText: `${err.errCode}: ${err.errText}`});
         }
@@ -62,6 +62,8 @@ class DialogUser extends React.Component {
         <DialogGroup
           accept={this.acceptGroupDialog}
           defaults={this.state.groupId}
+          replace={this.props.replace}
+          from={this.props.from}
           ref={(dom) => {
             this.group = dom
           }}

@@ -1,5 +1,3 @@
-import {$} from "../vendor";
-
 export default function () {
   const mainElem = document.getElementById('main');
   let nH = document.getElementById('nav') ? document.getElementById('nav').getBoundingClientRect().height : 0;

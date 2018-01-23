@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import {Link, Redirect} from 'react-router-dom'
 
 import DialogTips from "../../Dialog/DialogTips";
-import DialogUser from '../../Dialog/DialogUser';
 import Progress from "../../Progress/Progress";
 import Commands from "../../Commands/Commands";
 
@@ -136,7 +135,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/sales/contract/del.do', {id: this.state.id});
+        await ajax('/sales/contract/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {

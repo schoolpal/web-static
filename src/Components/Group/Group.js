@@ -5,8 +5,8 @@ import List from './List'
 import Create from './Create'
 import Editor from './Editor'
 
-const Group = ({location, match, profile}) => {
-  const commands = commands.find(item => (item.rule.test(location.pathname) === true));
+const Group = ({commands, location, match, profile}) => {
+  const cmd = commands.find(item => (item.rule.test(location.pathname) === true));
 
   return (
     <Switch>
@@ -17,7 +17,7 @@ const Group = ({location, match, profile}) => {
         <Editor {...props} profile={profile}/>
       )}/>
       <Route path={`${match.url}`} render={(props) => (
-        <List {...props} profile={profile} commands={commands.commands}/>
+        <List {...props} profile={profile} commands={cmd.commands}/>
       )}/>
     </Switch>
   )

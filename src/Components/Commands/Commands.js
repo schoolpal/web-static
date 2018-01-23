@@ -30,41 +30,35 @@ const Defaults = ({text, action}) => (
   </button>
 );
 
-class Commands extends React.Component {
-  constructor(props) {
-    super(props)
-  }
+const Commands = (props) => {
+  const list = props.commands.map(command => (command.name));
 
-  render() {
-    const list = this.props.commands.map(command => (command.name));
-
-    return (
-      <div className="btn-group float-right" role="group">
-        {
-          list.map((command, index) => {
-            switch (command) {
-              case "Add":
-                return <Add key={index} action={this.props.addAction}/>;
-              case "Mod":
-                return <Mod key={index} action={this.props.modAction}/>;
-              case "Del":
-                return <Del key={index} action={this.props.delAction}/>;
-              case "Auth":
-                return <Auth key={index} action={this.props.authAction}/>;
-              case 'Assign':
-                return <Defaults key={index} action={this.props.assignAction} text="分配给"/>;
-              case 'Convert':
-                return <Defaults key={index} action={this.props.convertAction} text="转化为"/>;
-              case 'Sign':
-                return <Defaults key={index} action={this.props.SignAction} text="创建合同"/>;
-              default:
-                return null;
-            }
-          })
-        }
-      </div>
-    )
-  }
-}
+  return (
+    <div className="btn-group float-right" role="group">
+      {
+        list.map((command, index) => {
+          switch (command) {
+            case "Add":
+              return <Add key={index} action={props.addAction}/>;
+            case "Mod":
+              return <Mod key={index} action={props.modAction}/>;
+            case "Del":
+              return <Del key={index} action={props.delAction}/>;
+            case "Auth":
+              return <Auth key={index} action={props.authAction}/>;
+            case 'Assign':
+              return <Defaults key={index} action={props.assignAction} text="分配给"/>;
+            case 'Convert':
+              return <Defaults key={index} action={props.convertAction} text="转化为"/>;
+            case 'Sign':
+              return <Defaults key={index} action={props.SignAction} text="创建合同"/>;
+            default:
+              return null;
+          }
+        })
+      }
+    </div>
+  )
+};
 
 export default Commands;

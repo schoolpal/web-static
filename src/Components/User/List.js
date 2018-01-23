@@ -230,7 +230,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/user/del.do', {id: selectedId});
+        await ajax('/sys/user/del.do', {id: selectedId});
         let list = this.state.list.filter((user) => (user.cId !== selectedId));
         this.setState({list: list});
       } catch (err) {
@@ -264,7 +264,7 @@ class List extends React.Component {
 
     const request = async () => {
       try {
-        let rs = await ajax('/sys/user/enable.do', {id, enabled});
+        await ajax('/sys/user/enable.do', {id, enabled});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})

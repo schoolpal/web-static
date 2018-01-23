@@ -6,7 +6,6 @@ import DialogTips from "../../Dialog/DialogTips";
 import Progress from "../../Progress/Progress"
 import Commands from "../../Commands/Commands";
 
-import historyBack from "../../../utils/historyBack";
 import fmtTitle from "../../../utils/fmtTitle";
 import ajax from "../../../utils/ajax";
 import mainSize from "../../../utils/mainSize";
@@ -198,7 +197,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        let rs = await ajax('/mkt/activity/del.do', {id: this.state.id});
+        await ajax('/mkt/activity/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {

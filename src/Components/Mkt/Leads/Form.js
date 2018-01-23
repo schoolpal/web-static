@@ -129,6 +129,8 @@ class Form extends React.Component {
           changedCrmGroup={this.state.group}
           notRoot={true}
           defaults={this.state.channelId}
+          replace={this.props.replace}
+          from={this.props.from}
           ref={(dom) => {
             this.act = dom
           }}

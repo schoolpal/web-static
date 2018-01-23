@@ -141,7 +141,7 @@ class Drawer extends React.Component {
       <div id="drawer" className="aside-bar">
         <div className="drawer">
           <div className="drawer-spacer">
-            <img src="http://www.risecenter.com/images/index/rise_logo.png"/>
+            <img src="http://www.risecenter.com/images/index/rise_logo.png" alt=""/>
           </div>
           <div id="accordion" role="tablist">
             {this.props.hasChangeGroupBtn ?
