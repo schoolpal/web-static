@@ -35,7 +35,7 @@ class DialogUser extends React.Component {
 
     const request = async () => {
       try {
-        let list = await ajax('/org/listUsers.do', {id: this.state.groupId});
+        let list = await ajax('/org/listNonSystemUsers.do', {id: this.state.groupId});
 
         this.setState({
           list: list,

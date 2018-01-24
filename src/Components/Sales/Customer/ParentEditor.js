@@ -103,6 +103,7 @@ class StudentEditor extends React.Component {
 
     let query = {};
 
+    query.studentId = this.state.id;
     query.id = this.state.data.id;
 
     for (let i = 0; i < this.form.length; i++) {
