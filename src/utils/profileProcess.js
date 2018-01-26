@@ -46,8 +46,6 @@ export default function (data) {
     return comparison;
   });
 
-  console.log(func)
-
   menu = func.filter(getRootMenu);
 
   menu.map(item => {
