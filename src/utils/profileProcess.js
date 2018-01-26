@@ -1,4 +1,5 @@
 import SCHOOLPAL_CONFIG from "./config";
+import idToNumber from './idToNumber';
 
 const ADMIN_ID = "7";
 
@@ -30,6 +31,22 @@ export default function (data) {
     func = func.concat(item.functions);
     profile.roles.push(item.cName);
   });
+
+  func = func.sort((a, b) => {
+    const aid = idToNumber(a.cId);
+    const bid = idToNumber(b.cId);
+    let comparison = 0;
+
+    if (aid > bid) {
+      comparison = 1;
+    } else {
+      comparison = -1;
+    }
+
+    return comparison;
+  });
+
+  console.log(func)
 
   menu = func.filter(getRootMenu);
 

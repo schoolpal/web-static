@@ -57,7 +57,7 @@ const TableItem = (data, goto) => {
       <tr key={item.id}>
         <td>{item.creatorName}</td>
         <td>{fmtDate(item.createTime)}</td>
-        <td>{item.orgnizationName}</td>
+        <td>{item.organizationName}</td>
         <td>{item.executiveName}</td>
         <td>{item.sourceName}</td>
         <td>{item.channelName}</td>
