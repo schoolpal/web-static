@@ -16,6 +16,7 @@ class Form extends React.Component {
       businessRoles: [],
       sysRoles: [],
       selectedRoles: [],
+      data: null
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.changedRole = this.changedRole.bind(this);
@@ -43,7 +44,7 @@ class Form extends React.Component {
           let data = await ajax('/sys/user/query.do', {id: this.props.editorId});
           const selectedRoles = data.roles.map(role => (role.cId));
 
-          this.setState({selectedRoles}, () => {
+          this.setState({selectedRoles, data}, () => {
             this.form.loginName.value = data.cLoginName;
             this.form.realName.value = data.cRealName;
             this.form.phone.value = data.cPhone;
@@ -145,7 +146,7 @@ class Form extends React.Component {
   }
 
   render() {
-    if (this.props.isEditor && !this.state.selectedRoles.length) {
+    if (this.props.isEditor && !this.state.data) {
       return (
         <form ref={(dom) => {
           this.form = dom
