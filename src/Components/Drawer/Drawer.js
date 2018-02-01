@@ -20,6 +20,39 @@ const GroupDialogBBtn = ({groupName, action}) => (
   </div>
 );
 
+const MenuItem = ({item, path}) => {
+  if (path) {
+    return (
+      <NavLink
+        key={item.cId}
+        to={`/${SCHOOLPAL_CONFIG.AUTH[item.cId].PATH}`}
+        className="d-block"
+        activeClassName="active"
+      >
+        <i
+          className={`fa ${
+            SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
+            } fa-fw`}
+          aria-hidden="true"
+        />
+        {item.cNameLong}
+      </NavLink>
+    )
+  }
+
+  return (
+    <a>
+      <i
+        className={`fa ${
+          SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
+          } fa-fw`}
+        aria-hidden="true"
+      />
+      {item.cNameLong}
+    </a>
+  )
+};
+
 const Menu = data => {
   const menuData = data.data || data;
   let menu = [];
@@ -51,20 +84,7 @@ const Menu = data => {
     } else {
       menu.push(
         <div className="item">
-          <NavLink
-            key={item.cId}
-            to={`/${SCHOOLPAL_CONFIG.AUTH[item.cId].PATH}`}
-            className="d-block"
-            activeClassName="active"
-          >
-            <i
-              className={`fa ${
-                SCHOOLPAL_CONFIG.AUTH[item.cId].ICON_CLASS
-                } fa-fw`}
-              aria-hidden="true"
-            />
-            {item.cNameLong}
-          </NavLink>
+          <MenuItem path={SCHOOLPAL_CONFIG.AUTH[item.cId].PATH} item={item}/>
         </div>
       );
     }
