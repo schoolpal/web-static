@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Redirect} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 import {$} from "../../vendor";
 
 import DialogTips from "../Dialog/DialogTips";
@@ -72,6 +72,7 @@ class Header extends React.Component {
             {`${this.props.profile.cRealname}`}
           </button>
           <div className="dropdown-menu" aria-labelledby="menu-button">
+            <Link to="/changepwd" className="dropdown-item">修改密码</Link>
             <a onClick={this.createDialogTips} href="javascript:void(0)" className="dropdown-item">登出系统</a>
           </div>
         </div>

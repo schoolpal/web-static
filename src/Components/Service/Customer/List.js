@@ -1,47 +1,40 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Redirect} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 import DialogTips from "../../Dialog/DialogTips";
 import Progress from "../../Progress/Progress"
 
 import mainSize from "../../../utils/mainSize";
 import fmtDate from '../../../utils/fmtDate';
+import calculateAge from '../../../utils/calculateAge';
 import fmtTitle from '../../../utils/fmtTitle';
 import CONFIG from '../../../utils/config';
 import ajax from "../../../utils/ajax";
 
-const Table = ({list, goto}) => {
+const Table = ({list, path}) => {
   return (
     <table className="table table-bordered table-sm">
       <thead>
       <tr>
         <th>序号</th>
-        <th>创建人</th>
-        <th>创建时间</th>
-        <th>所属组织</th>
-        <th>所属用户</th>
-        <th>合同类型</th>
-        <th>合同编号</th>
-        <th>签约时间</th>
-        <th>到期时间</th>
         <th>学员姓名</th>
-        <th>家长姓名</th>
-        <th>联系电话</th>
-        <th>课程类别</th>
-        <th>课程</th>
-        <th>合同金额</th>
-        <th>折扣金额</th>
-        <th>应付金额</th>
-        <th>已付金额</th>
+        <th>学员编号</th>
+        <th>性别</th>
+        <th>出生年月</th>
+        <th>年龄</th>
+        <th>证件类型</th>
+        <th>证件号码</th>
+        <th>在读年级</th>
+        <th>所在学校</th>
       </tr>
       </thead>
-      <tbody>{TableItem(list, goto)}</tbody>
+      <tbody>{TableItem(list, path)}</tbody>
     </table>
   );
 };
 
-const TableItem = (data, goto) => {
+const TableItem = (data, path) => {
   let table = [];
 
   if (data.length === 0) {
@@ -52,25 +45,15 @@ const TableItem = (data, goto) => {
     table.push(
       <tr key={index}>
         <td>{index + 1}</td>
-        <td>{item.creatorName}</td>
-        <td>{fmtDate(item.createTime)}</td>
-        <td>{item.orgName}</td>
-        <td>{item.executiveName}</td>
-        <td>{CONFIG.TYPE_ID[item.typeId]}</td>
-        <td>
-          <a onClick={goto} cid={item.id} href="javascript:;">{item.code}</a>
-        </td>
-        <td>{fmtDate(item.startDate)}</td>
-        <td>{fmtDate(item.endDate)}</td>
-        <td>{item.stuName}</td>
-        <td>{item.parName}</td>
-        <td>{item.parCellphone}</td>
-        <td>{item.courseType}</td>
-        <td>{item.courseName}</td>
-        <td>{item.oriPrice}</td>
-        <td>{item.discPrice}</td>
-        <td>{item.finalPrice}</td>
-        <td>{item.paid}</td>
+        <td><Link to={`${path}/student/${item.id}`}>{item.name}</Link></td>
+        <td>{item.code}</td>
+        <td>{item.genderText}</td>
+        <td>{fmtDate(item.birthday)}</td>
+        <td>{calculateAge(fmtDate(item.birthday))}</td>
+        <td>{CONFIG.DOCUMENT[item.idType]}</td>
+        <td>{item.idCode}</td>
+        <td>{item.schoolGrade}</td>
+        <td>{item.schoolName}</td>
       </tr>
     );
   });
@@ -92,16 +75,14 @@ class List extends React.Component {
       redirectToReferrer: false,
     };
     this.createDialogTips = this.createDialogTips.bind(this);
-    this.goToDetails = this.goToDetails.bind(this);
   }
 
   componentDidMount() {
     const request = async () => {
       try {
-        let list = await ajax('/sales/contract/list.do', {organizationId: this.state.group.id});
-        const ids = list.map((contract) => (contract.id));
+        let list = await ajax('/service/customer/student/list.do', {organizationId: this.state.group.id});
 
-        this.setState({list: list, ids: ids});
+        this.setState({list: list});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -123,13 +104,11 @@ class List extends React.Component {
 
       const request = async () => {
         try {
-          let list = await ajax('/sales/contract/list.do', {organizationId: nextProps.changedCrmGroup.id});
-          const ids = list.map((contract) => (contract.id));
+          let list = await ajax('/service/customer/student/list.do', {organizationId: nextProps.changedCrmGroup.id});
 
           this.setState({
             group: nextProps.changedCrmGroup,
-            list: list,
-            ids: ids
+            list: list
           });
         } catch (err) {
           if (err.errCode === 401) {
@@ -174,12 +153,6 @@ class List extends React.Component {
     this.tips.dialog.modal('show');
   }
 
-  goToDetails(evt) {
-    const url = `${this.props.match.url}/${evt.target.getAttribute('cid')}`;
-
-    this.props.history.push(url);
-  }
-
   render() {
     if (this.state.redirectToReferrer) {
       return (
@@ -197,7 +170,7 @@ class List extends React.Component {
         </h5>
         <div id="main" className="main p-3">
           <Progress isAnimating={this.state.isAnimating}/>
-          <Table list={this.state.list} goto={this.goToDetails}/>
+          <Table list={this.state.list} path={this.props.match.url}/>
         </div>
       </div>
     )

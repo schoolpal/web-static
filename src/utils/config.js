@@ -107,18 +107,31 @@ export default {
     "3": {ICON_CLASS: "fa-cogs"},
     "3-1": {
       PATH: "service/contract",
-      PATH_RULE: /^\/service\/contract$/,
-      ICON_CLASS: "fa-file-o"
+      PATH_RULE: /^\/service\/contract(\/((?!create).)*)?$/,
+      ICON_CLASS: "fa-file-text-o",
+      CATEGORY: '合同'
     },
-    "3-1-1": {PATH_RULE: /^\/service\/contract\/create$/},
-    "3-1-2": {PATH_RULE: /^\/service\/contract\/((?!create).)*$/},
+    "3-1-2": {
+      PATH_RULE: /^\/service\/contract\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-file-text-o",
+      CATEGORY: '合同'
+    },
     "3-2": {
-      PATH: "service/student",
-      PATH_RULE: /^\/service\/student$/,
-      ICON_CLASS: "fa-graduation-cap"
+      PATH: "service/customer",
+      PATH_RULE: /^\/service\/customer(\/(student|parent|contract)\/((?!create).)*)?$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '学员'
     },
-    "3-2-1": {PATH_RULE: /^\/service\/student\/create$/},
-    "3-2-2": {PATH_RULE: /^\/service\/student\/((?!create).)*$/},
+    "3-2-2": {
+      PATH_RULE: /^\/service\/customer\/student\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '学员'
+    },
+    "3-2-5": {
+      PATH_RULE: /^\/service\/customer\/parent\/((?!create).)*\/edit$/,
+      ICON_CLASS: "fa-graduation-cap",
+      CATEGORY: '学员'
+    },
 
 
     //财务相关权限配置

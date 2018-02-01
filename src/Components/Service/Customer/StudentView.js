@@ -8,6 +8,9 @@ import Commands from "../../Commands/Commands";
 import fmtTitle from "../../../utils/fmtTitle";
 import ajax from "../../../utils/ajax";
 import mainSize from "../../../utils/mainSize";
+import fmtDate from "../../../utils/fmtDate";
+import CONFIG from "../../../utils/config";
+import calculateAge from "../../../utils/calculateAge";
 
 const NextBtn = ({id, ids}) => {
   const curIndex = ids.indexOf(id);
@@ -20,7 +23,7 @@ const NextBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/customer/parent/${ids[curIndex + 1]}`,
+        pathname: `/service/customer/student/${ids[curIndex + 1]}`,
         state: {ids: ids}
       }}
     >
@@ -40,7 +43,7 @@ const PrevBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/customer/parent/${ids[curIndex - 1]}`,
+        pathname: `/service/customer/student/${ids[curIndex - 1]}`,
         state: {ids: ids}
       }}
     >
@@ -49,11 +52,11 @@ const PrevBtn = ({id, ids}) => {
   )
 };
 
-class ParentView extends React.Component {
+class StudentView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.commands = this.props.commands.filter(command => (command.id === '2-3-5'));
+    this.commands = this.props.commands.filter(command => (command.id === '3-2-2'));
     this.title = fmtTitle(this.props.location.pathname);
     this.state = {
       group: this.props.changedCrmGroup,
@@ -62,8 +65,7 @@ class ParentView extends React.Component {
       isAnimating: false,
       id: this.props.match.params.studentId,
       ids: [],
-      data: {name: this.props.location.state.stuName},
-      parentList: []
+      data: null,
     };
     this.createDialogTips = this.createDialogTips.bind(this);
     this.modAction = this.modAction.bind(this);
@@ -72,11 +74,11 @@ class ParentView extends React.Component {
   componentDidMount() {
     const request = async () => {
       try {
-        let list = await ajax('/sales/customer/student/list.do', {organizationId: this.state.group.id});
-        let parentList = await ajax('/sales/customer/parent/queryListByStudentId.do', {id: this.state.id});
+        let list = await ajax('/service/customer/student/list.do', {organizationId: this.state.group.id});
+        let data = await ajax('/service/customer/student/query.do', {id: this.state.id});
         const ids = list.map((student) => (student.id));
 
-        this.setState({ids, parentList});
+        this.setState({data, ids});
       } catch (err) {
         if (err.errCode === 401) {
           this.setState({redirectToReferrer: true})
@@ -125,7 +127,7 @@ class ParentView extends React.Component {
   }
 
   modAction() {
-    this.props.history.push(`${this.props.match.url}/edit`, {stuName: this.state.data.name});
+    this.props.history.push(`${this.props.match.url}/edit`);
   }
 
   render() {
@@ -140,11 +142,11 @@ class ParentView extends React.Component {
 
     if (this.state.redirectToList) {
       return (
-        <Redirect to="/sales/customer"/>
+        <Redirect to="/service/customer"/>
       )
     }
 
-    if (!this.state.parentList.length) {
+    if (!this.state.data) {
       return (
         <div>
           <h5 id="subNav">
@@ -153,7 +155,7 @@ class ParentView extends React.Component {
 
             <div className="btn-group float-right ml-4" role="group">
               <button onClick={() => {
-                this.props.history.push('/sales/contract');
+                this.props.history.push('/service/customer');
               }} type="button" className="btn btn-light">返回
               </button>
             </div>
@@ -200,74 +202,96 @@ class ParentView extends React.Component {
             <div className="col col-12">
               <div className="card border-top-0">
                 <div className="card-body">
-                  <p className="ht pb-3 b-b">家长信息</p>
+                  <p className="ht pb-3 b-b">学员信息</p>
                   <div className="row">
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">家长姓名</label>
+                        <label className="col-5 col-form-label font-weight-bold">学员姓名</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].name}
+                            value={this.state.data.name}
                           />
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">与孩子关系</label>
+                        <label className="col-5 col-form-label font-weight-bold">学员姓别</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].relation}
+                            value={this.state.data.genderText}
                           />
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">联系电话</label>
+                        <label className="col-5 col-form-label font-weight-bold">出生年月</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].cellphone}
+                            value={fmtDate(this.state.data.birthday)}
                           />
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">家庭住址</label>
+                        <label className="col-5 col-form-label font-weight-bold">学员年龄</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].address}
+                            value={calculateAge(new Date(this.state.data.birthday))}
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">在读年级</label>
+                        <div className="col-7">
+                          <input
+                            type="text"
+                            readOnly={true}
+                            className="form-control-plaintext"
+                            value={this.state.data.classGrade}
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group row">
+                        <label className="col-5 col-form-label font-weight-bold">所在学校</label>
+                        <div className="col-7">
+                          <input
+                            type="text"
+                            readOnly={true}
+                            className="form-control-plaintext"
+                            value={this.state.data.schoolName}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="col">
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">微信号</label>
+                        <label className="col-5 col-form-label font-weight-bold">证件类型</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].wechat}
+                            value={CONFIG.DOCUMENT[this.state.data.idType]}
                           />
                         </div>
                       </div>
                       <div className="form-group row">
-                        <label className="col-5 col-form-label font-weight-bold">电子邮箱</label>
+                        <label className="col-5 col-form-label font-weight-bold">证件号码</label>
                         <div className="col-7">
                           <input
                             type="text"
                             readOnly={true}
                             className="form-control-plaintext"
-                            value={this.state.parentList[0].email}
+                            value={this.state.data.idCode}
                           />
                         </div>
                       </div>
@@ -282,8 +306,13 @@ class ParentView extends React.Component {
 
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-              <li className="breadcrumb-item"><Link to={`/sales/customer/student/${this.state.id}`}>学员信息</Link></li>
-              <li className="breadcrumb-item active">家长信息</li>
+              <li className="breadcrumb-item active">学员信息</li>
+              <li className="breadcrumb-item">
+                <Link to={{
+                  pathname: `/sales/customer/parent/${this.state.id}`,
+                  state: {stuName: this.state.data.name}
+                }}>家长信息</Link>
+              </li>
               <li className="breadcrumb-item">
                 <Link to={{
                   pathname: `/sales/customer/contract/${this.state.id}`,
@@ -298,4 +327,4 @@ class ParentView extends React.Component {
   }
 }
 
-export default ParentView;
+export default StudentView;

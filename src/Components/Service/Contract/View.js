@@ -24,7 +24,7 @@ const NextBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/contract/${ids[curIndex + 1]}`,
+        pathname: `/sales/oppor/${ids[curIndex + 1]}`,
         state: {ids: ids}
       }}
     >
@@ -44,7 +44,7 @@ const PrevBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/contract/${ids[curIndex - 1]}`,
+        pathname: `/sales/oppor/${ids[curIndex - 1]}`,
         state: {ids: ids}
       }}
     >
@@ -76,8 +76,8 @@ class View extends React.Component {
   componentDidMount() {
     const request = async () => {
       try {
-        let data = await ajax('/sales/contract/query.do', {id: this.state.id});
-        let list = await ajax('/sales/contract/list.do', {organizationId: this.state.group.id});
+        let data = await ajax('/service/contract/query.do', {id: this.state.id});
+        let list = await ajax('/service/contract/list.do', {organizationId: this.state.group.id});
         const ids = list.map((contract) => (contract.id));
 
         this.setState({data, ids});
@@ -135,7 +135,7 @@ class View extends React.Component {
   delAction() {
     const request = async () => {
       try {
-        await ajax('/sales/contract/del.do', {id: this.state.id});
+        await ajax('/service/contract/del.do', {id: this.state.id});
         this.setState({redirectToList: true});
       } catch (err) {
         if (err.errCode === 401) {
@@ -163,7 +163,7 @@ class View extends React.Component {
 
     if (this.state.redirectToList) {
       return (
-        <Redirect to="/sales/contract"/>
+        <Redirect to="/service/contract"/>
       )
     }
 

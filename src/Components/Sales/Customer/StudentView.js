@@ -23,7 +23,7 @@ const NextBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/oppor/${ids[curIndex + 1]}`,
+        pathname: `/sales/customer/student/${ids[curIndex + 1]}`,
         state: {ids: ids}
       }}
     >
@@ -43,7 +43,7 @@ const PrevBtn = ({id, ids}) => {
     <Link
       className="btn btn-light"
       to={{
-        pathname: `/sales/oppor/${ids[curIndex - 1]}`,
+        pathname: `/sales/customer/student/${ids[curIndex - 1]}`,
         state: {ids: ids}
       }}
     >

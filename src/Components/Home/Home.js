@@ -12,8 +12,11 @@ import User from "../User/User"
 import Act from '../Mkt/Act/Act';
 import Leads from '../Mkt/Leads/Leads';
 import Appor from '../Sales/Appor/Appor';
-import Contract from '../Sales/Contract/Contract';
-import Customer from '../Sales/Customer/Customer';
+import SalesContract from '../Sales/Contract/Contract';
+import SalesCustomer from '../Sales/Customer/Customer';
+import ServiceContract from '../Service/Contract/Contract';
+import ServiceCustomer from '../Service/Customer/Customer';
+import ChangePwd from '../ChangePwd/ChangePwd';
 import NoMatch from "../NoMatch/NoMatch";
 import DialogTips from "../Dialog/DialogTips";
 
@@ -38,7 +41,7 @@ class Home extends React.Component {
       try {
         let profile = await ajax('/user/profile.do');
         const fmtProfile = profileProcess(profile);
-        console.log(fmtProfile)
+
         this.setState({
           profile: fmtProfile,
           group: {
@@ -133,8 +136,15 @@ class Home extends React.Component {
             <PrivateRoute path="/mkt/act" changedCrmGroup={this.state.group} component={Act}{...query}/>
             <PrivateRoute path="/mkt/leads" changedCrmGroup={this.state.group} component={Leads}{...query}/>
             <PrivateRoute path="/sales/oppor" changedCrmGroup={this.state.group} component={Appor}{...query}/>
-            <PrivateRoute path="/sales/contract" changedCrmGroup={this.state.group} component={Contract}{...query}/>
-            <PrivateRoute path="/sales/customer" changedCrmGroup={this.state.group} component={Customer}{...query}/>
+            <PrivateRoute path="/sales/contract" changedCrmGroup={this.state.group}
+                          component={SalesContract}{...query}/>
+            <PrivateRoute path="/sales/customer" changedCrmGroup={this.state.group}
+                          component={SalesCustomer}{...query}/>
+            <PrivateRoute path="/service/contract" changedCrmGroup={this.state.group}
+                          component={ServiceContract}{...query}/>
+            <PrivateRoute path="/service/customer" changedCrmGroup={this.state.group}
+                          component={ServiceCustomer}{...query}/>
+            <Route path="/changepwd" component={ChangePwd}/>
             <Route render={(props) => (
               <NoMatch {...props} profile={this.state.profile.profile}/>
             )}/>
