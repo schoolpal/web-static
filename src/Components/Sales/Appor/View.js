@@ -175,6 +175,7 @@ class View extends React.Component {
         defaults={defaults}
         replace={this.props.history.replace}
         from={this.props.location}
+        path="/sales/oppor/listAssignableUsers.do"
         ref={(dom) => {
           this.user = dom
         }}
