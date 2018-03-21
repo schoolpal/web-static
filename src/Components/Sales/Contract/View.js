@@ -77,7 +77,7 @@ class View extends React.Component {
     const request = async () => {
       try {
         let data = await ajax('/sales/contract/query.do', {id: this.state.id});
-        let list = await ajax('/sales/contract/list.do', {organizationId: this.state.group.id});
+        let list = await ajax('/sales/contract/list.do', {orgId: this.state.group.id});
         const ids = list.map((contract) => (contract.id));
 
         this.setState({data, ids});
